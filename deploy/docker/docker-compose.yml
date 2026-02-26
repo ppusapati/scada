@@ -1,0 +1,84 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL + TimescaleDB ──
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    container_name: scada-postgres
+    environment:
+      POSTGRES_DB: scada_db
+      POSTGRES_USER: scada
+      POSTGRES_PASSWORD: scada_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../../backend/internal/db/migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scada -d scada_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── MQTT Broker (Mosquitto) ──
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: scada-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ../mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mqttdata:/mosquitto/data
+      - mqttlog:/mosquitto/log
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-i", "healthcheck", "-W", "3"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ── Go Backend ──
+  backend:
+    build:
+      context: ../../backend
+      dockerfile: ../deploy/docker/Dockerfile.backend
+    container_name: scada-backend
+    environment:
+      SERVER_HOST: "0.0.0.0"
+      SERVER_PORT: "8080"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: scada
+      DB_PASSWORD: scada_secret
+      DB_NAME: scada_db
+      DB_SSLMODE: disable
+      MQTT_BROKER: mosquitto
+      MQTT_PORT: "1883"
+      MQTT_CLIENT_ID: scada-backend
+      JWT_SECRET: change-this-to-a-secure-random-string
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
+
+  # ── Svelte Frontend ──
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: ../deploy/docker/Dockerfile.frontend
+    container_name: scada-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      PUBLIC_API_URL: http://localhost:8080
+      PUBLIC_WS_URL: ws://localhost:8080/ws
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  mqttdata:
+  mqttlog:

@@ -1,0 +1,21 @@
+# SCADA Embedded Sensor Configuration
+
+[device]
+id = "water-sensor-001"
+name = "Water Sensor Node 1"
+device_type = "water_sensor"
+subsystem = "water"
+location = "Treatment Plant A - Intake"
+
+[mqtt]
+broker_host = "localhost"
+broker_port = 1883
+client_id = "water-sensor-001"
+# username = "device_user"
+# password = "device_pass"
+keep_alive_secs = 30
+
+[sampling]
+interval_ms = 1000        # Read sensors every 1 second
+batch_size = 5             # Batch 5 readings
+publish_interval_ms = 5000 # Publish every 5 seconds

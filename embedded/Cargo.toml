@@ -1,0 +1,30 @@
+[package]
+name = "scada-embedded"
+version = "0.1.0"
+edition = "2021"
+description = "SCADA system embedded firmware for water and solar IoT sensors"
+
+[dependencies]
+rumqttc = "0.24"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+log = "0.4"
+env_logger = "0.11"
+chrono = { version = "0.4", features = ["serde"] }
+toml = "0.8"
+uuid = { version = "1.0", features = ["v4"] }
+rand = "0.8"
+
+[features]
+default = ["simulator"]
+simulator = []
+hardware = []
+
+[[bin]]
+name = "water-sensor"
+path = "src/bin/water_sensor.rs"
+
+[[bin]]
+name = "solar-sensor"
+path = "src/bin/solar_sensor.rs"
