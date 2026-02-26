@@ -1,0 +1,385 @@
+syntax = "proto3";
+
+package scada.v1;
+
+option go_package = "scada-system/proto/scada/v1;scadav1";
+
+import "google/protobuf/timestamp.proto";
+
+// ═══════════════════════════════════════════════
+// Common Types
+// ═══════════════════════════════════════════════
+
+enum Subsystem {
+  SUBSYSTEM_UNSPECIFIED = 0;
+  SUBSYSTEM_WATER = 1;
+  SUBSYSTEM_SOLAR = 2;
+}
+
+enum DeviceStatus {
+  DEVICE_STATUS_UNSPECIFIED = 0;
+  DEVICE_STATUS_ONLINE = 1;
+  DEVICE_STATUS_OFFLINE = 2;
+  DEVICE_STATUS_FAULT = 3;
+  DEVICE_STATUS_MAINTENANCE = 4;
+}
+
+enum AlarmSeverity {
+  ALARM_SEVERITY_UNSPECIFIED = 0;
+  ALARM_SEVERITY_CRITICAL = 1;
+  ALARM_SEVERITY_WARNING = 2;
+  ALARM_SEVERITY_INFO = 3;
+}
+
+enum OperatingMode {
+  OPERATING_MODE_UNSPECIFIED = 0;
+  OPERATING_MODE_AUTO = 1;
+  OPERATING_MODE_MANUAL = 2;
+  OPERATING_MODE_MAINTENANCE = 3;
+}
+
+message TimeRange {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+}
+
+// ═══════════════════════════════════════════════
+// Water Service
+// ═══════════════════════════════════════════════
+
+service WaterService {
+  rpc GetSystems(GetWaterSystemsRequest) returns (GetWaterSystemsResponse);
+  rpc GetSystem(GetWaterSystemRequest) returns (WaterSystemResponse);
+  rpc ControlPump(ControlPumpRequest) returns (CommandResponse);
+  rpc ControlValve(ControlValveRequest) returns (CommandResponse);
+  rpc SetMode(SetWaterModeRequest) returns (CommandResponse);
+  rpc GetDevices(GetDevicesRequest) returns (GetDevicesResponse);
+}
+
+message GetWaterSystemsRequest {}
+
+message GetWaterSystemsResponse {
+  repeated WaterSystem systems = 1;
+}
+
+message GetWaterSystemRequest {
+  string system_id = 1;
+}
+
+message WaterSystemResponse {
+  WaterSystem system = 1;
+}
+
+message WaterSystem {
+  string id = 1;
+  string name = 2;
+  double tank_level = 3;
+  double flow_rate_in = 4;
+  double flow_rate_out = 5;
+  double pressure = 6;
+  double ph_level = 7;
+  double turbidity = 8;
+  double chlorine_level = 9;
+  string pump_status = 10;
+  OperatingMode operating_mode = 11;
+  google.protobuf.Timestamp updated_at = 12;
+}
+
+message ControlPumpRequest {
+  string system_id = 1;
+  string action = 2; // "start" or "stop"
+}
+
+message ControlValveRequest {
+  string system_id = 1;
+  string valve_id = 2;
+  double position = 3; // 0-100%
+}
+
+message SetWaterModeRequest {
+  string system_id = 1;
+  OperatingMode mode = 2;
+}
+
+// ═══════════════════════════════════════════════
+// Solar Service
+// ═══════════════════════════════════════════════
+
+service SolarService {
+  rpc GetSystems(GetSolarSystemsRequest) returns (GetSolarSystemsResponse);
+  rpc GetSystem(GetSolarSystemRequest) returns (SolarSystemResponse);
+  rpc ControlInverter(ControlInverterRequest) returns (CommandResponse);
+  rpc SetMode(SetSolarModeRequest) returns (CommandResponse);
+  rpc GetDevices(GetDevicesRequest) returns (GetDevicesResponse);
+  rpc GetDailyProduction(GetDailyProductionRequest) returns (DailyProductionResponse);
+}
+
+message GetSolarSystemsRequest {}
+
+message GetSolarSystemsResponse {
+  repeated SolarSystem systems = 1;
+}
+
+message GetSolarSystemRequest {
+  string system_id = 1;
+}
+
+message SolarSystemResponse {
+  SolarSystem system = 1;
+}
+
+message SolarSystem {
+  string id = 1;
+  string name = 2;
+  double total_capacity_kw = 3;
+  double current_output_kw = 4;
+  double irradiance = 5;
+  double panel_temperature = 6;
+  string inverter_status = 7;
+  double grid_voltage = 8;
+  double grid_frequency = 9;
+  double daily_energy_kwh = 10;
+  double total_energy_mwh = 11;
+  double efficiency = 12;
+  OperatingMode operating_mode = 13;
+  google.protobuf.Timestamp updated_at = 14;
+}
+
+message ControlInverterRequest {
+  string system_id = 1;
+  string action = 2; // "enable", "disable", "reset"
+}
+
+message SetSolarModeRequest {
+  string system_id = 1;
+  OperatingMode mode = 2;
+}
+
+message GetDailyProductionRequest {
+  string system_id = 1;
+}
+
+message DailyProductionResponse {
+  string system_id = 1;
+  double daily_energy_kwh = 2;
+  double total_energy_mwh = 3;
+  double current_output_kw = 4;
+  double efficiency = 5;
+}
+
+// ═══════════════════════════════════════════════
+// Alarm Service
+// ═══════════════════════════════════════════════
+
+service AlarmService {
+  rpc GetActiveAlarms(GetActiveAlarmsRequest) returns (GetAlarmsResponse);
+  rpc GetAlarmHistory(GetAlarmHistoryRequest) returns (GetAlarmsResponse);
+  rpc AcknowledgeAlarm(AcknowledgeAlarmRequest) returns (CommandResponse);
+  rpc ClearAlarm(ClearAlarmRequest) returns (CommandResponse);
+  rpc GetAlarmCounts(GetAlarmCountsRequest) returns (AlarmCountsResponse);
+}
+
+message GetActiveAlarmsRequest {
+  string subsystem = 1; // optional filter
+}
+
+message GetAlarmHistoryRequest {
+  string subsystem = 1;
+  TimeRange time_range = 2;
+  int32 limit = 3;
+}
+
+message GetAlarmsResponse {
+  repeated Alarm alarms = 1;
+}
+
+message Alarm {
+  int64 id = 1;
+  string device_id = 2;
+  string subsystem = 3;
+  AlarmSeverity severity = 4;
+  string category = 5;
+  string message = 6;
+  double value = 7;
+  double threshold = 8;
+  string status = 9;
+  google.protobuf.Timestamp occurred_at = 10;
+  google.protobuf.Timestamp acked_at = 11;
+  string acked_by = 12;
+  google.protobuf.Timestamp cleared_at = 13;
+}
+
+message AcknowledgeAlarmRequest {
+  int64 alarm_id = 1;
+}
+
+message ClearAlarmRequest {
+  int64 alarm_id = 1;
+}
+
+message AlarmCountsResponse {
+  int32 critical = 1;
+  int32 warning = 2;
+  int32 info = 3;
+}
+
+message GetAlarmCountsRequest {}
+
+// ═══════════════════════════════════════════════
+// Reading Service (Historical Data)
+// ═══════════════════════════════════════════════
+
+service ReadingService {
+  rpc GetLatest(GetLatestReadingRequest) returns (SensorReadingResponse);
+  rpc GetHistory(GetReadingHistoryRequest) returns (GetReadingsResponse);
+  rpc GetAggregated(GetAggregatedReadingsRequest) returns (GetAggregatedResponse);
+}
+
+message GetLatestReadingRequest {
+  string device_id = 1;
+  string metric = 2;
+}
+
+message SensorReadingResponse {
+  SensorReading reading = 1;
+}
+
+message SensorReading {
+  int64 id = 1;
+  string device_id = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  string metric = 4;
+  double value = 5;
+  string unit = 6;
+  int32 quality = 7;
+}
+
+message GetReadingHistoryRequest {
+  string device_id = 1;
+  string metric = 2;
+  TimeRange time_range = 3;
+  int32 limit = 4;
+}
+
+message GetReadingsResponse {
+  repeated SensorReading readings = 1;
+}
+
+message GetAggregatedReadingsRequest {
+  string device_id = 1;
+  string metric = 2;
+  string interval = 3; // "1 minute", "1 hour", "1 day", etc.
+  TimeRange time_range = 4;
+}
+
+message AggregatedReading {
+  google.protobuf.Timestamp timestamp = 1;
+  double avg_value = 2;
+  double min_value = 3;
+  double max_value = 4;
+  int64 sample_count = 5;
+}
+
+message GetAggregatedResponse {
+  repeated AggregatedReading readings = 1;
+}
+
+// ═══════════════════════════════════════════════
+// Auth Service
+// ═══════════════════════════════════════════════
+
+service AuthService {
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc GetMe(GetMeRequest) returns (UserResponse);
+  rpc Register(RegisterRequest) returns (UserResponse);
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+  User user = 2;
+}
+
+message GetMeRequest {}
+
+message UserResponse {
+  User user = 1;
+}
+
+message User {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+  bool active = 5;
+}
+
+message RegisterRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+  string role = 4;
+}
+
+// ═══════════════════════════════════════════════
+// Shared
+// ═══════════════════════════════════════════════
+
+message CommandResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetDevicesRequest {
+  string subsystem = 1;
+}
+
+message Device {
+  string id = 1;
+  string name = 2;
+  string device_type = 3;
+  string location = 4;
+  string subsystem = 5;
+  DeviceStatus status = 6;
+  google.protobuf.Timestamp last_seen = 7;
+}
+
+message GetDevicesResponse {
+  repeated Device devices = 1;
+}
+
+// ═══════════════════════════════════════════════
+// System Health (includes circuit breaker status)
+// ═══════════════════════════════════════════════
+
+service HealthService {
+  rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
+  rpc GetCircuitBreakers(GetCircuitBreakersRequest) returns (GetCircuitBreakersResponse);
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  string status = 1;
+  string version = 2;
+  map<string, string> components = 3;
+}
+
+message GetCircuitBreakersRequest {}
+
+message CircuitBreakerStatus {
+  string name = 1;
+  string state = 2;
+  int64 total_calls = 3;
+  int64 total_success = 4;
+  int64 total_failure = 5;
+  int64 total_reject = 6;
+}
+
+message GetCircuitBreakersResponse {
+  repeated CircuitBreakerStatus breakers = 1;
+}
