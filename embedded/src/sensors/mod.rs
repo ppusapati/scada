@@ -13,4 +13,7 @@ pub trait SensorArray: Send {
 
     /// Perform self-check on sensors
     fn self_check(&mut self) -> bool;
+
+    /// Get the sensor type identifier
+    fn sensor_type(&self) -> &'static str;
 }

@@ -1,0 +1,317 @@
+(kicad_sch
+  (version 20231120)
+  (generator "eeschema")
+  (generator_version "8.0")
+  (uuid "b1c2d3e4-f567-8901-abcd-ef2345678901")
+  (paper "A3")
+  (title_block
+    (title "Water SCADA RTU - WR-PCB-001")
+    (date "2026-02-28")
+    (rev "1.0")
+    (company "SCADA Systems")
+    (comment 1 "STM32F407VGT6 + ADS1258 + W5500")
+    (comment 2 "8x 4-20mA Water Treatment Sensor Monitoring")
+    (comment 3 "RS-485 Modbus RTU + Ethernet Modbus TCP")
+    (comment 4 "24V DC Input, 3.3V/5V Regulated")
+  )
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; SHEET 1: POWER SUPPLY
+  ;; ══════════════════════════════════════════════════════════
+
+  ;; ── J1: 24V DC Power Input ──
+  (symbol
+    (lib_id "Connector:Conn_01x02_Pin")
+    (at 25.4 38.1 0)
+    (unit 1)
+    (uuid "j1-pwr")
+    (property "Reference" "J1")
+    (property "Value" "24V_DC_IN")
+    (property "Description" "2-pin terminal block, 24V DC input, 5.08mm pitch")
+  )
+
+  ;; ── D1: TVS Protection ──
+  (symbol
+    (lib_id "Diode:SMBJ30A")
+    (at 38.1 43.18 0)
+    (unit 1)
+    (uuid "d1-tvs-wr")
+    (property "Reference" "D1")
+    (property "Value" "SMBJ30A")
+  )
+
+  ;; ── Q1: Reverse Polarity P-MOSFET ──
+  (symbol
+    (lib_id "Transistor_FET:SI2301CDS")
+    (at 50.8 38.1 0)
+    (unit 1)
+    (uuid "q1-rprot-wr")
+    (property "Reference" "Q1")
+    (property "Value" "SI2301CDS")
+  )
+
+  ;; ── U1: LM2596-5.0 ──
+  (symbol
+    (lib_id "Regulator_Switching:LM2596S-5")
+    (at 88.9 38.1 0)
+    (unit 1)
+    (uuid "u1-lm2596-wr")
+    (property "Reference" "U1")
+    (property "Value" "LM2596S-5.0")
+    (property "Footprint" "Package_TO_SOT_SMD:TO-263-5_TabPin3")
+  )
+
+  ;; ── U2: AMS1117-3.3 LDO ──
+  (symbol
+    (lib_id "Regulator_Linear:AMS1117-3.3")
+    (at 139.7 38.1 0)
+    (unit 1)
+    (uuid "u2-ams1117-wr")
+    (property "Reference" "U2")
+    (property "Value" "AMS1117-3.3")
+    (property "Footprint" "Package_TO_SOT_SMD:SOT-223-3_TabPin2")
+  )
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; SHEET 2: MCU - STM32F407VGT6
+  ;; ══════════════════════════════════════════════════════════
+
+  ;; ── U3: STM32F407VGT6 ──
+  (symbol
+    (lib_id "MCU_ST_STM32:STM32F407VGTx")
+    (at 127.0 127.0 0)
+    (unit 1)
+    (uuid "u3-stm32-wr")
+    (property "Reference" "U3")
+    (property "Value" "STM32F407VGT6")
+    (property "Footprint" "Package_QFP:LQFP-100_14x14mm_P0.5mm")
+  )
+
+  ;; ── Pin Assignments ──
+  ;; PORT A:
+  ;;   PA2  = USART2_TX  → SP3485 DI
+  ;;   PA3  = USART2_RX  → SP3485 RO
+  ;;   PA4  = SPI1_NSS   → ADS1258 CS
+  ;;   PA5  = SPI1_SCK   → ADS1258 SCLK
+  ;;   PA6  = SPI1_MISO  → ADS1258 DOUT
+  ;;   PA7  = SPI1_MOSI  → ADS1258 DIN
+  ;;   PA8  = GPIO_OUT   → SP3485 DE/RE
+  ;;   PA13 = SWDIO      → J5 SWD
+  ;;   PA14 = SWCLK      → J5 SWD
+
+  ;; PORT B:
+  ;;   PB0  = GPIO_IN    → ADS1258 DRDY (active low, 10K pull-up)
+  ;;   PB1  = GPIO_OUT   → ADS1258 START
+  ;;   PB2  = GPIO_OUT   → ADS1258 RESET (active low)
+  ;;   PB12 = SPI2_NSS   → W5500 CS
+  ;;   PB13 = SPI2_SCK   → W5500 SCLK
+  ;;   PB14 = SPI2_MISO  → W5500 MISO
+  ;;   PB15 = SPI2_MOSI  → W5500 MOSI
+
+  ;; PORT C:
+  ;;   PC6  = GPIO_OUT   → W5500 RESET (active low)
+  ;;   PC7  = GPIO_IN    → W5500 INT (active low)
+  ;;   PC14 = OSC32_IN   → Y2 32.768 kHz
+  ;;   PC15 = OSC32_OUT  → Y2
+
+  ;; PORT D:
+  ;;   PD12 = GPIO_OUT   → LED Green (heartbeat)
+  ;;   PD13 = GPIO_OUT   → LED Orange (Modbus activity)
+  ;;   PD14 = GPIO_OUT   → LED Red (fault/alarm)
+  ;;   PD15 = GPIO_OUT   → LED Blue (data acquisition)
+
+  ;; PORT H:
+  ;;   PH0  = OSC_IN     → Y1 8 MHz HSE
+  ;;   PH1  = OSC_OUT    → Y1
+
+  ;; ── Crystals ──
+  ;; Y1: 8 MHz HSE (20pF load caps)
+  ;; Y2: 32.768 kHz LSE (6.8pF load caps)
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; SHEET 3: ADS1258 ADC + 4-20mA INPUTS
+  ;; ══════════════════════════════════════════════════════════
+
+  ;; ── U4: ADS1258 24-bit ADC ──
+  (symbol
+    (lib_id "Analog_ADC:ADS1258IPW")
+    (at 152.4 76.2 0)
+    (unit 1)
+    (uuid "u4-ads1258")
+    (property "Reference" "U4")
+    (property "Value" "ADS1258IPW")
+    (property "Description" "24-bit delta-sigma ADC, 16-ch, 23.7kSPS, SPI, TSSOP-38")
+    (property "Footprint" "Package_SO:TSSOP-38_4.4x9.7mm_P0.5mm")
+  )
+  ;; ADS1258 connections:
+  ;;   SCLK    → PA5 (SPI1_SCK)
+  ;;   DIN     → PA7 (SPI1_MOSI)
+  ;;   DOUT    → PA6 (SPI1_MISO)
+  ;;   CS      → PA4 (active low)
+  ;;   DRDY    → PB0 (active low, 10K pull-up)
+  ;;   START   → PB1 (active high = start conversion)
+  ;;   RESET   → PB2 (active low, 10K pull-up)
+  ;;   CLKSEL  → GND (use internal oscillator)
+  ;;
+  ;;   AIN0-AIN7 → 8x 4-20mA input channels
+  ;;   AIN8-AIN15 → NC (disabled via MUXSG1=0x00)
+  ;;
+  ;;   AVDD    → +5V (10uF + 100nF decoupling)
+  ;;   AVSS    → AGND
+  ;;   DVDD    → +3.3V (10uF + 100nF decoupling)
+  ;;   DGND    → DGND
+  ;;   VREFP   → +5V (external reference, 10uF + 100nF bypass)
+  ;;   VREFN   → AGND
+
+  ;; ── 4-20mA Input Conditioning (×8 channels) ──
+  ;;
+  ;; For each channel (CH0-CH7):
+  ;;
+  ;;   4-20mA ──[D_TVS 6.8V]──[R_FILT 100Ω]──┬──[C_FILT 100nF]──AGND
+  ;;              │                              │
+  ;;              │                              ├──[R_SHUNT 250Ω 0.1%]──AGND
+  ;;              │                              │
+  ;;              │                              └──► ADS1258 AINx
+  ;;              │
+  ;;   ──[D_CLAMP to VREF]
+  ;;   ──[D_CLAMP to GND]
+  ;;
+  ;;   Voltage at AINx:
+  ;;     4 mA × 250Ω = 1.000V
+  ;;     20 mA × 250Ω = 5.000V
+  ;;
+  ;;   R_SHUNT tolerance: 0.1% (precision metal film)
+  ;;   R_FILT: 100Ω thin film for EMI filtering
+  ;;   C_FILT: 100nF C0G/NP0 ceramic
+  ;;   D_TVS: SMBJ6.8CA bidirectional
+
+  ;; ── J2: 4-20mA Sensor Input Connector (16-pin terminal block) ──
+  (symbol
+    (lib_id "Connector:Conn_01x16_Pin")
+    (at 63.5 76.2 0)
+    (unit 1)
+    (uuid "j2-420ma")
+    (property "Reference" "J2")
+    (property "Value" "4-20mA_IN")
+    (property "Description" "16-pin terminal block (8 pairs: signal + return)")
+  )
+  ;; J2 Pin Assignment:
+  ;;   1,2:   CH0 Pressure (+, -)
+  ;;   3,4:   CH1 pH (+, -)
+  ;;   5,6:   CH2 Turbidity (+, -)
+  ;;   7,8:   CH3 Chlorine (+, -)
+  ;;   9,10:  CH4 Flow (+, -)
+  ;;   11,12: CH5 Tank Level (+, -)
+  ;;   13,14: CH6 Conductivity (+, -)
+  ;;   15,16: CH7 Dissolved O2 (+, -)
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; SHEET 4: W5500 ETHERNET
+  ;; ══════════════════════════════════════════════════════════
+
+  ;; ── U5: W5500 Ethernet Controller ──
+  (symbol
+    (lib_id "Interface_Ethernet:W5500")
+    (at 152.4 152.4 0)
+    (unit 1)
+    (uuid "u5-w5500")
+    (property "Reference" "U5")
+    (property "Value" "W5500")
+    (property "Description" "Hardwired TCP/IP embedded Ethernet controller, QFN-48")
+    (property "Footprint" "Package_DFN_QFN:QFN-48-1EP_7x7mm_P0.5mm_EP5.15x5.15mm")
+  )
+  ;; W5500 connections:
+  ;;   SCLK  → PB13 (SPI2_SCK)
+  ;;   MISO  → PB14 (SPI2_MISO)
+  ;;   MOSI  → PB15 (SPI2_MOSI)
+  ;;   SCSn  → PB12 (SPI2_NSS, active low)
+  ;;   RSTn  → PC6 (GPIO output, active low)
+  ;;   INTn  → PC7 (GPIO input, active low, 10K pull-up)
+  ;;
+  ;;   AVDD  → +3.3V (ferrite bead isolated, 100nF + 10uF)
+  ;;   DVDD  → +3.3V (100nF + 10uF decoupling)
+  ;;   1V8OUT → NC (internal regulator output, 10uF cap)
+  ;;
+  ;;   TXP, TXN → RJ45 jack magnetics (49.9Ω series each)
+  ;;   RXP, RXN → RJ45 jack magnetics
+  ;;   LINKLED  → J7 LED anode (green, 1K series)
+  ;;   ACTLED   → J7 LED anode (yellow, 1K series)
+  ;;   EXRES1   → 12.4KΩ 1% to GND
+  ;;   TOCAP    → 10uF ceramic to GND
+
+  ;; ── Y3: 25 MHz Crystal for W5500 ──
+  (symbol
+    (lib_id "Device:Crystal_GND24")
+    (at 127.0 152.4 0)
+    (unit 1)
+    (uuid "y3-w5500")
+    (property "Reference" "Y3")
+    (property "Value" "25MHz")
+    (property "Description" "25 MHz crystal for W5500, CL=20pF")
+  )
+
+  ;; ── J7: RJ45 with Integrated Magnetics ──
+  (symbol
+    (lib_id "Connector:RJ45_Shielded")
+    (at 203.2 152.4 0)
+    (unit 1)
+    (uuid "j7-rj45")
+    (property "Reference" "J7")
+    (property "Value" "HR911105A")
+    (property "Description" "RJ45 jack with integrated magnetics and LEDs")
+  )
+  ;; RJ45 connections:
+  ;;   TD+  → 49.9Ω → W5500 TXP
+  ;;   TD-  → 49.9Ω → W5500 TXN
+  ;;   RD+  → W5500 RXP (via magnetics)
+  ;;   RD-  → W5500 RXN (via magnetics)
+  ;;   LED1 → LINK LED (green)
+  ;;   LED2 → ACT LED (yellow)
+  ;;   Shield → Chassis GND (via 1MΩ + 100pF to DGND)
+
+  ;; Default network config:
+  ;;   MAC: 02:50:39:65:00:01
+  ;;   IP: 192.168.1.100
+  ;;   Subnet: 255.255.255.0
+  ;;   Gateway: 192.168.1.1
+  ;;   Modbus TCP port: 502
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; SHEET 5: RS-485 + LEDs
+  ;; ══════════════════════════════════════════════════════════
+
+  ;; ── U6: SP3485 RS-485 Transceiver ──
+  (symbol
+    (lib_id "Interface_UART:SP3485EN")
+    (at 50.8 228.6 0)
+    (unit 1)
+    (uuid "u6-sp3485-wr")
+    (property "Reference" "U6")
+    (property "Value" "SP3485EN")
+    (property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm")
+  )
+  ;; Same connection scheme as Solar SMU:
+  ;;   RO → PA3, RE/DE → PA8, DI → PA2
+  ;;   A/B → J3 terminal, 120Ω term jumper, TVS protection
+
+  ;; ── J3: RS-485 (3-pin terminal) ──
+  ;; ── J4: Termination Jumper (120Ω) ──
+  ;; ── LED1-LED4: Status LEDs ──
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; COMPONENT COUNT SUMMARY
+  ;; ══════════════════════════════════════════════════════════
+  ;;
+  ;; ICs:       U1 (LM2596), U2 (AMS1117), U3 (STM32F407),
+  ;;            U4 (ADS1258), U5 (W5500), U6 (SP3485)
+  ;; Transistor: Q1 (SI2301CDS)
+  ;; Diodes:    D1 (TVS input), D2 (Schottky), D3-D4 (RS-485 TVS),
+  ;;            D5-D12 (8× 4-20mA TVS), D13-D28 (input clamp diodes)
+  ;; Crystals:  Y1 (8MHz), Y2 (32.768kHz), Y3 (25MHz for W5500)
+  ;; Inductor:  L1 (33uH power)
+  ;; Connectors: J1 (power), J2 (4-20mA input), J3 (RS-485),
+  ;;             J4 (term jumper), J5 (SWD), J7 (RJ45)
+  ;; LEDs:      LED1-LED4 + RJ45 LEDs
+  ;; Resistors: ~50 total
+  ;; Capacitors: ~35 total
+)

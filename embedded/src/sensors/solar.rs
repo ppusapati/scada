@@ -123,6 +123,8 @@ impl SensorArray for SolarSensorArray {
         let mut metrics = HashMap::new();
         metrics.insert("irradiance".into(), self.irradiance);
         metrics.insert("panel_temperature".into(), self.panel_temperature);
+        metrics.insert("panel_voltage".into(), self.panel_voltage);
+        metrics.insert("panel_current".into(), self.panel_current);
         metrics.insert("current_output_kw".into(), self.inverter_output_kw);
         metrics.insert("grid_voltage".into(), self.grid_voltage);
         metrics.insert("grid_frequency".into(), self.grid_frequency);
@@ -141,10 +143,16 @@ impl SensorArray for SolarSensorArray {
             self.panel_temperature > -40.0 && self.panel_temperature < 100.0,
             self.grid_voltage > 180.0 && self.grid_voltage < 270.0,
             self.grid_frequency > 48.0 && self.grid_frequency < 52.0,
+            self.panel_voltage >= 0.0 && self.panel_voltage <= 600.0,
+            self.panel_current >= 0.0 && self.panel_current <= 20.0,
         ];
 
         let all_ok = checks.iter().all(|&c| c);
         self.quality = if all_ok { 0 } else { 2 };
         all_ok
+    }
+
+    fn sensor_type(&self) -> &'static str {
+        "solar"
     }
 }

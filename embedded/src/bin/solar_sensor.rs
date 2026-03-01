@@ -72,7 +72,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if let Some(command) = cmd {
                     info!("Received command: {} (ID: {})", command.action, command.command_id);
                     match actuator.execute_command(&command.action, &command.parameters) {
-                        Ok(result) => info!("Command executed: {}", result),
+                        Ok(result) => {
+                            info!("Command executed: {}", result);
+                            // Handle async inverter reset: wait then re-enable
+                            if result == "inverter_reset_pending" {
+                                tokio::time::sleep(Duration::from_secs(2)).await;
+                                match actuator.execute_command("complete_reset", &command.parameters) {
+                                    Ok(r) => info!("Reset completed: {}", r),
+                                    Err(e) => error!("Reset completion failed: {}", e),
+                                }
+                            }
+                        }
                         Err(e) => error!("Command failed: {}", e),
                     }
                 }

@@ -133,10 +133,15 @@ impl SensorArray for WaterSensorArray {
             self.ph_level >= 0.0 && self.ph_level <= 14.0,
             self.turbidity >= 0.0,
             self.chlorine_level >= 0.0,
+            self.temperature >= -10.0 && self.temperature <= 60.0,
         ];
 
         let all_ok = checks.iter().all(|&c| c);
         self.quality = if all_ok { 0 } else { 2 };
         all_ok
+    }
+
+    fn sensor_type(&self) -> &'static str {
+        "water"
     }
 }

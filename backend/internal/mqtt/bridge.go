@@ -98,18 +98,19 @@ func (b *Bridge) handleTelemetry(topic string, payload []byte) {
 		}
 	}
 
-	// Update subsystem state
+	// Update subsystem state — convert map[string]float64 to map[string]interface{}
+	updateMap := make(map[string]interface{}, len(data.Metrics))
+	for k, v := range data.Metrics {
+		updateMap[k] = v
+	}
+
 	switch subsystem {
 	case "water":
-		if err := b.water.UpdateFromMQTT(ctx, deviceID, data.Metrics); err != nil {
+		if err := b.water.UpdateFromMQTT(ctx, deviceID, updateMap); err != nil {
 			fmt.Printf("[Bridge] Failed to update water state: %v\n", err)
 		}
 	case "solar":
-		floatMap := make(map[string]interface{})
-		for k, v := range data.Metrics {
-			floatMap[k] = v
-		}
-		if err := b.solar.UpdateFromMQTT(ctx, deviceID, floatMap); err != nil {
+		if err := b.solar.UpdateFromMQTT(ctx, deviceID, updateMap); err != nil {
 			fmt.Printf("[Bridge] Failed to update solar state: %v\n", err)
 		}
 	}
@@ -204,22 +205,30 @@ func (b *Bridge) publishHeartbeat(ctx context.Context) {
 
 func getUnitForMetric(metric string) string {
 	units := map[string]string{
-		"temperature":    "°C",
-		"pressure":       "bar",
-		"flow_rate":      "L/min",
-		"flow_rate_in":   "L/min",
-		"flow_rate_out":  "L/min",
-		"tank_level":     "%",
-		"ph_level":       "pH",
-		"turbidity":      "NTU",
-		"chlorine_level": "mg/L",
-		"voltage":        "V",
-		"current":        "A",
-		"power":          "kW",
-		"irradiance":     "W/m²",
-		"energy":         "kWh",
-		"frequency":      "Hz",
-		"efficiency":     "%",
+		"temperature":       "°C",
+		"panel_temperature": "°C",
+		"pressure":          "bar",
+		"flow_rate":         "L/min",
+		"flow_rate_in":      "L/min",
+		"flow_rate_out":     "L/min",
+		"tank_level":        "%",
+		"ph_level":          "pH",
+		"turbidity":         "NTU",
+		"chlorine_level":    "mg/L",
+		"voltage":           "V",
+		"panel_voltage":     "V",
+		"grid_voltage":      "V",
+		"current":           "A",
+		"panel_current":     "A",
+		"power":             "kW",
+		"current_output_kw": "kW",
+		"irradiance":        "W/m²",
+		"energy":            "kWh",
+		"daily_energy_kwh":  "kWh",
+		"total_energy_mwh":  "MWh",
+		"frequency":         "Hz",
+		"grid_frequency":    "Hz",
+		"efficiency":        "%",
 	}
 	if u, ok := units[metric]; ok {
 		return u

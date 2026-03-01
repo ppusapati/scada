@@ -1,0 +1,488 @@
+(kicad_sch
+  (version 20231120)
+  (generator "eeschema")
+  (generator_version "8.0")
+  (uuid "a0b1c2d3-e4f5-6789-abcd-ef0123456789")
+  (paper "A3")
+  (title_block
+    (title "Solar SCADA SMU - SS-PCB-001")
+    (date "2026-02-28")
+    (rev "1.0")
+    (company "SCADA Systems")
+    (comment 1 "STM32F407VGT6 + ADS1263 + 2x CD74HC4067")
+    (comment 2 "16 Solar String Voltage/Current Monitoring")
+    (comment 3 "RS-485 Modbus RTU + SD Card Logging")
+    (comment 4 "24V DC Input, 3.3V/5V Regulated")
+  )
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; SHEET 1: POWER SUPPLY
+  ;; ══════════════════════════════════════════════════════════
+
+  ;; ── J1: 24V DC Power Input Connector ──
+  (symbol
+    (lib_id "Connector:Conn_01x02_Pin")
+    (at 25.4 38.1 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "j1-power-input")
+    (property "Reference" "J1"
+      (at 25.4 33.02 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "24V_DC_IN"
+      (at 25.4 35.56 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Description" "2-pin terminal block, 24V DC power input")
+  )
+
+  ;; ── D1: TVS Protection ──
+  (symbol
+    (lib_id "Diode:SMBJ30A")
+    (at 38.1 43.18 0)
+    (unit 1)
+    (uuid "d1-tvs")
+    (property "Reference" "D1")
+    (property "Value" "SMBJ30A")
+    (property "Description" "30V TVS diode, bidirectional, SMB package")
+  )
+
+  ;; ── Q1: Reverse Polarity Protection P-MOSFET ──
+  (symbol
+    (lib_id "Transistor_FET:SI2301CDS")
+    (at 50.8 38.1 0)
+    (unit 1)
+    (uuid "q1-rprot")
+    (property "Reference" "Q1")
+    (property "Value" "SI2301CDS")
+    (property "Description" "P-Channel MOSFET, reverse polarity protection")
+  )
+
+  ;; ── U1: LM2596-5.0 Step-Down Regulator ──
+  (symbol
+    (lib_id "Regulator_Switching:LM2596S-5")
+    (at 88.9 38.1 0)
+    (unit 1)
+    (uuid "u1-lm2596")
+    (property "Reference" "U1")
+    (property "Value" "LM2596S-5.0")
+    (property "Description" "5V/3A step-down switching regulator, TO-263-5")
+    (property "Footprint" "Package_TO_SOT_SMD:TO-263-5_TabPin3")
+  )
+  ;; LM2596 external components:
+  ;; L1: 33uH power inductor (CDRH127/LDNP-330MC)
+  ;; D2: SS34 Schottky diode (40V, 3A)
+  ;; C1: 680uF/35V input electrolytic
+  ;; C2: 220uF/10V output electrolytic
+  ;; C3: 100nF ceramic input bypass
+
+  ;; ── U2: AMS1117-3.3 LDO Regulator ──
+  (symbol
+    (lib_id "Regulator_Linear:AMS1117-3.3")
+    (at 139.7 38.1 0)
+    (unit 1)
+    (uuid "u2-ams1117")
+    (property "Reference" "U2")
+    (property "Value" "AMS1117-3.3")
+    (property "Description" "3.3V/1A LDO regulator, SOT-223")
+    (property "Footprint" "Package_TO_SOT_SMD:SOT-223-3_TabPin2")
+  )
+  ;; AMS1117 external components:
+  ;; C4: 10uF/10V ceramic input
+  ;; C5: 22uF/6.3V ceramic output
+  ;; C6: 100nF ceramic output bypass
+
+  ;; ── Power nets ──
+  ;; +24V → Q1 → LM2596 → +5V → AMS1117 → +3V3
+  ;; GND rail continuous
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; SHEET 2: MCU - STM32F407VGT6
+  ;; ══════════════════════════════════════════════════════════
+
+  ;; ── U3: STM32F407VGT6 ──
+  (symbol
+    (lib_id "MCU_ST_STM32:STM32F407VGTx")
+    (at 127.0 127.0 0)
+    (unit 1)
+    (uuid "u3-stm32")
+    (property "Reference" "U3")
+    (property "Value" "STM32F407VGT6")
+    (property "Description" "ARM Cortex-M4F, 168MHz, 1MB Flash, 192KB SRAM, LQFP-100")
+    (property "Footprint" "Package_QFP:LQFP-100_14x14mm_P0.5mm")
+  )
+
+  ;; ── Pin Assignments (active pins) ──
+  ;; PORT A:
+  ;;   PA0  = NC/Reserved
+  ;;   PA1  = NC/Reserved
+  ;;   PA2  = USART2_TX  → SP3485 DI (RS-485)
+  ;;   PA3  = USART2_RX  → SP3485 RO (RS-485)
+  ;;   PA4  = SPI1_NSS   → ADS1263 CS (active low)
+  ;;   PA5  = SPI1_SCK   → ADS1263 SCLK
+  ;;   PA6  = SPI1_MISO  → ADS1263 DOUT
+  ;;   PA7  = SPI1_MOSI  → ADS1263 DIN
+  ;;   PA8  = GPIO_OUT   → SP3485 DE/RE (RS-485 direction)
+  ;;   PA9  = NC/Reserved
+  ;;   PA10 = NC/Reserved
+  ;;   PA11 = NC/Reserved (USB_DM if needed)
+  ;;   PA12 = NC/Reserved (USB_DP if needed)
+  ;;   PA13 = SWDIO      → J5 SWD header
+  ;;   PA14 = SWCLK      → J5 SWD header
+  ;;   PA15 = GPIO_OUT   → SD_CS (SD card chip select)
+
+  ;; PORT B:
+  ;;   PB0  = GPIO_IN    → ADS1263 DRDY (data ready, active low)
+  ;;   PB1  = GPIO_OUT   → ADS1263 RESET (active low)
+  ;;   PB2  = BOOT1      → 10K to GND
+  ;;   PB3  = SPI3_SCK   → SD card CLK
+  ;;   PB4  = SPI3_MISO  → SD card MISO (DAT0)
+  ;;   PB5  = SPI3_MOSI  → SD card MOSI (CMD)
+  ;;   PB6  = I2C1_SCL   → TMP117 SCL (4.7K pull-up)
+  ;;   PB7  = I2C1_SDA   → TMP117 SDA (4.7K pull-up)
+  ;;   PB8-PB15 = NC/Reserved
+
+  ;; PORT C:
+  ;;   PC0  = GPIO_OUT   → MUX_A S0
+  ;;   PC1  = GPIO_OUT   → MUX_A S1
+  ;;   PC2  = GPIO_OUT   → MUX_A S2
+  ;;   PC3  = GPIO_OUT   → MUX_A S3
+  ;;   PC4  = GPIO_OUT   → MUX_A EN (active low)
+  ;;   PC5  = GPIO_OUT   → MUX_B S0
+  ;;   PC6  = GPIO_OUT   → MUX_B S1
+  ;;   PC7  = GPIO_OUT   → MUX_B S2
+  ;;   PC8  = GPIO_OUT   → MUX_B S3
+  ;;   PC9  = GPIO_OUT   → MUX_B EN (active low)
+  ;;   PC10-PC12 = NC/Reserved
+  ;;   PC13 = NC/Reserved
+  ;;   PC14 = OSC32_IN   → Y2 32.768 kHz crystal
+  ;;   PC15 = OSC32_OUT  → Y2 32.768 kHz crystal
+
+  ;; PORT D:
+  ;;   PD0-PD1 = NC/Reserved
+  ;;   PD2  = GPIO_IN    → SD_DETECT (card detect, active low)
+  ;;   PD3-PD11 = NC/Reserved
+  ;;   PD12 = GPIO_OUT   → LED_GREEN  (heartbeat, 1K series)
+  ;;   PD13 = GPIO_OUT   → LED_ORANGE (acquisition, 1K series)
+  ;;   PD14 = GPIO_OUT   → LED_RED    (fault/alarm, 1K series)
+  ;;   PD15 = GPIO_OUT   → LED_BLUE   (SD activity, 1K series)
+
+  ;; PORT H:
+  ;;   PH0  = OSC_IN     → Y1 8 MHz HSE crystal
+  ;;   PH1  = OSC_OUT    → Y1 8 MHz HSE crystal
+
+  ;; ── Y1: 8 MHz HSE Crystal ──
+  (symbol
+    (lib_id "Device:Crystal_GND24")
+    (at 96.52 114.3 0)
+    (unit 1)
+    (uuid "y1-hse")
+    (property "Reference" "Y1")
+    (property "Value" "8MHz")
+    (property "Description" "8 MHz crystal, HC49/SMD, CL=20pF")
+  )
+  ;; C7, C8: 20pF load capacitors (NP0/C0G)
+
+  ;; ── Y2: 32.768 kHz LSE Crystal ──
+  (symbol
+    (lib_id "Device:Crystal")
+    (at 96.52 139.7 0)
+    (unit 1)
+    (uuid "y2-lse")
+    (property "Reference" "Y2")
+    (property "Value" "32.768kHz")
+    (property "Description" "32.768 kHz crystal, CL=6.8pF")
+  )
+  ;; C9, C10: 6.8pF load capacitors
+
+  ;; ── Decoupling Capacitors ──
+  ;; C11-C17: 100nF ceramic on each VDD pin (7 total for LQFP-100)
+  ;; C18: 4.7uF ceramic bulk on VDD
+  ;; C19: 1uF ceramic on VDDA
+  ;; C20: 100nF ceramic on VDDA
+  ;; C21: 10nF ceramic on VBAT (with 100nF)
+
+  ;; ── J5: SWD Debug Header (2x5 1.27mm) ──
+  (symbol
+    (lib_id "Connector:Conn_ARM_JTAG_SWD_10")
+    (at 38.1 127.0 0)
+    (unit 1)
+    (uuid "j5-swd")
+    (property "Reference" "J5")
+    (property "Value" "SWD_10PIN")
+    (property "Description" "10-pin SWD/JTAG debug header, 1.27mm pitch")
+  )
+  ;; Pin 1: VCC (3.3V)
+  ;; Pin 2: SWDIO (PA13)
+  ;; Pin 3: GND
+  ;; Pin 4: SWCLK (PA14)
+  ;; Pin 5: GND
+  ;; Pin 6: SWO (PB3 - shared with SPI3, optional)
+  ;; Pin 7: NC
+  ;; Pin 8: NC
+  ;; Pin 9: GND
+  ;; Pin 10: NRST
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; SHEET 3: ADS1263 ADC + DUAL MUX
+  ;; ══════════════════════════════════════════════════════════
+
+  ;; ── U4: ADS1263 32-bit ADC ──
+  (symbol
+    (lib_id "Analog_ADC:ADS1263")
+    (at 127.0 50.8 0)
+    (unit 1)
+    (uuid "u4-ads1263")
+    (property "Reference" "U4")
+    (property "Value" "ADS1263IPW")
+    (property "Description" "32-bit delta-sigma ADC, 38.4kSPS, 10-ch, SPI, TSSOP-28")
+    (property "Footprint" "Package_SO:TSSOP-28_4.4x9.7mm_P0.65mm")
+  )
+  ;; ADS1263 Pin Connections:
+  ;;   SCLK    → PA5 (SPI1_SCK)
+  ;;   DIN     → PA7 (SPI1_MOSI)
+  ;;   DOUT    → PA6 (SPI1_MISO)
+  ;;   CS      → PA4 (GPIO, active low)
+  ;;   DRDY    → PB0 (GPIO input, 10K pull-up to 3.3V)
+  ;;   RESET   → PB1 (GPIO output, 10K pull-up to 3.3V)
+  ;;   START   → 3.3V (continuous conversion)
+  ;;
+  ;;   AIN0    → MUX_A common output (string voltages)
+  ;;   AIN1    → MUX_B common output (string currents)
+  ;;   AIN2    → Bus voltage divider output
+  ;;   AIN3    → Bus current sensor output
+  ;;   AIN4    → Irradiance sensor (pyranometer)
+  ;;   AIN5    → Module temperature RTD
+  ;;   AINCOM  → Analog ground (AGND)
+  ;;
+  ;;   AVDD    → +5V (100nF + 10uF decoupling)
+  ;;   AVSS    → AGND
+  ;;   DVDD    → +3.3V (100nF + 10uF decoupling)
+  ;;   DGND    → DGND
+  ;;   IOVDD   → +3.3V (100nF decoupling)
+  ;;   BYPASS  → 1uF ceramic to AGND
+  ;;   VREFP   → Internal 2.5V ref (10uF + 100nF bypass)
+  ;;   VREFN   → AGND
+
+  ;; ── U5: CD74HC4067 MUX A (String Voltages) ──
+  (symbol
+    (lib_id "Analog_Switch:CD74HC4067SM96")
+    (at 63.5 50.8 0)
+    (unit 1)
+    (uuid "u5-muxa")
+    (property "Reference" "U5")
+    (property "Value" "CD74HC4067")
+    (property "Description" "16-channel analog MUX, SOIC-24 — String Voltages")
+    (property "Footprint" "Package_SO:SOIC-24W_7.5x15.4mm_P1.27mm")
+  )
+  ;; MUX A connections:
+  ;;   S0   → PC0     S1   → PC1     S2   → PC2     S3   → PC3
+  ;;   EN   → PC4 (active low)
+  ;;   COM  → ADS1263 AIN0 (via 100Ω series + 100nF filter)
+  ;;   I0-I15 → String 1-16 voltage divider outputs
+  ;;   VCC  → +3.3V (100nF decoupling)
+  ;;   GND  → AGND
+
+  ;; ── U6: CD74HC4067 MUX B (String Currents) ──
+  (symbol
+    (lib_id "Analog_Switch:CD74HC4067SM96")
+    (at 63.5 114.3 0)
+    (unit 1)
+    (uuid "u6-muxb")
+    (property "Reference" "U6")
+    (property "Value" "CD74HC4067")
+    (property "Description" "16-channel analog MUX, SOIC-24 — String Currents")
+    (property "Footprint" "Package_SO:SOIC-24W_7.5x15.4mm_P1.27mm")
+  )
+  ;; MUX B connections:
+  ;;   S0   → PC5     S1   → PC6     S2   → PC7     S3   → PC8
+  ;;   EN   → PC9 (active low)
+  ;;   COM  → ADS1263 AIN1 (via 100Ω series + 100nF filter)
+  ;;   I0-I15 → String 1-16 current shunt outputs
+
+  ;; ── String Input Connectors (J2: 16-pair terminal block) ──
+  ;; Each string pair: V+ and I_shunt
+  ;; Voltage path: V+ → [1MΩ R1] → node → [2.5kΩ R2] → GND
+  ;;                                   └→ [TVS 5.6V] → GND
+  ;;                                   └→ MUX_A input
+  ;; Current path: I_shunt → [100Ω filter] → [TVS] → MUX_B input
+
+  ;; ── Direct ADC Input Conditioning ──
+  ;; AIN2 (Bus Voltage):
+  ;;   Bus+ → [1MΩ] → node → [1.66kΩ] → GND (ratio 601:1)
+  ;;                     └→ [100nF] → AGND
+  ;;                     └→ ADS1263 AIN2
+  ;;
+  ;; AIN3 (Bus Current):
+  ;;   Hall sensor output → [100Ω] → [100nF] → ADS1263 AIN3
+  ;;
+  ;; AIN4 (Irradiance):
+  ;;   Pyranometer 0-2.5V → [100Ω] → [100nF] → ADS1263 AIN4
+  ;;
+  ;; AIN5 (Module Temp RTD):
+  ;;   PT100 (4-wire) → excitation 1mA → ADS1263 AIN5
+  ;;   V = I_exc × R, R ≈ 100 + 0.385 × T
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; SHEET 4: RS-485 + SD CARD + I2C
+  ;; ══════════════════════════════════════════════════════════
+
+  ;; ── U7: SP3485 RS-485 Transceiver ──
+  (symbol
+    (lib_id "Interface_UART:SP3485EN")
+    (at 50.8 203.2 0)
+    (unit 1)
+    (uuid "u7-sp3485")
+    (property "Reference" "U7")
+    (property "Value" "SP3485EN")
+    (property "Description" "3.3V RS-485 transceiver, half-duplex, SOIC-8")
+    (property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm")
+  )
+  ;; SP3485 connections:
+  ;;   RO  → PA3 (USART2_RX)
+  ;;   RE  → PA8 (GPIO, active low = receive)
+  ;;   DE  → PA8 (GPIO, active high = transmit, shared with RE)
+  ;;   DI  → PA2 (USART2_TX)
+  ;;   A   → J3 pin 1 (RS-485 A/+)
+  ;;   B   → J3 pin 2 (RS-485 B/-)
+  ;;   VCC → +3.3V (100nF decoupling)
+  ;;   GND → GND
+
+  ;; RS-485 bus protection:
+  ;;   D3, D4: SMBJ6.0A TVS on A and B lines
+  ;;   R_TERM: 120Ω termination (jumper J4 selectable)
+  ;;   R_BIAS_A: 470Ω from A to VCC (failsafe high)
+  ;;   R_BIAS_B: 470Ω from B to GND (failsafe low)
+
+  ;; ── J3: RS-485 Connector (3-pin terminal block) ──
+  (symbol
+    (lib_id "Connector:Conn_01x03_Pin")
+    (at 88.9 203.2 0)
+    (unit 1)
+    (uuid "j3-rs485")
+    (property "Reference" "J3")
+    (property "Value" "RS485_BUS")
+    (property "Description" "3-pin terminal block: A(+), B(-), GND")
+  )
+
+  ;; ── J6: MicroSD Card Slot ──
+  (symbol
+    (lib_id "Connector:Micro_SD_Card_Det")
+    (at 50.8 254.0 0)
+    (unit 1)
+    (uuid "j6-sd")
+    (property "Reference" "J6")
+    (property "Value" "MICRO_SD")
+    (property "Description" "MicroSD card slot with card detect")
+  )
+  ;; SD card connections (SPI mode):
+  ;;   CLK  → PB3 (SPI3_SCK)
+  ;;   CMD  → PB5 (SPI3_MOSI)
+  ;;   DAT0 → PB4 (SPI3_MISO) (10K pull-up)
+  ;;   DAT3 → PA15 (CS, active low) (10K pull-up)
+  ;;   CD   → PD2 (card detect, active low)
+  ;;   VDD  → +3.3V (10uF + 100nF decoupling)
+
+  ;; ── U8: TMP117 Temperature Sensor ──
+  (symbol
+    (lib_id "Sensor_Temperature:TMP117")
+    (at 50.8 304.8 0)
+    (unit 1)
+    (uuid "u8-tmp117")
+    (property "Reference" "U8")
+    (property "Value" "TMP117AIDRVR")
+    (property "Description" "±0.1°C digital temperature sensor, I2C, SOT-6")
+    (property "Footprint" "Package_TO_SOT_SMD:SOT-23-6")
+  )
+  ;; TMP117 connections:
+  ;;   SCL   → PB6 (I2C1_SCL) — 4.7K pull-up to 3.3V
+  ;;   SDA   → PB7 (I2C1_SDA) — 4.7K pull-up to 3.3V
+  ;;   ALERT → NC (optional interrupt)
+  ;;   ADD0  → GND (I2C address = 0x48)
+  ;;   V+    → +3.3V (100nF decoupling)
+  ;;   GND   → GND
+
+  ;; ── LED Indicators ──
+  ;; LED1 (Green):  PD12 → 1K → LED → GND  (heartbeat)
+  ;; LED2 (Orange): PD13 → 1K → LED → GND  (acquisition active)
+  ;; LED3 (Red):    PD14 → 1K → LED → GND  (fault/alarm)
+  ;; LED4 (Blue):   PD15 → 1K → LED → GND  (SD card activity)
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; GLOBAL LABELS / POWER FLAGS
+  ;; ══════════════════════════════════════════════════════════
+
+  (global_label "+24V" (shape input) (at 30 38 0) (uuid "gl-24v"))
+  (global_label "+5V" (shape power_out) (at 120 38 0) (uuid "gl-5v"))
+  (global_label "+3V3" (shape power_out) (at 165 38 0) (uuid "gl-3v3"))
+  (global_label "GND" (shape passive) (at 127 180 270) (uuid "gl-gnd"))
+  (global_label "AGND" (shape passive) (at 127 55 270) (uuid "gl-agnd"))
+
+  (global_label "SPI1_SCK" (shape bidirectional) (at 100 120 0) (uuid "gl-spi1sck"))
+  (global_label "SPI1_MISO" (shape input) (at 100 122 0) (uuid "gl-spi1miso"))
+  (global_label "SPI1_MOSI" (shape output) (at 100 124 0) (uuid "gl-spi1mosi"))
+  (global_label "ADS_CS" (shape output) (at 100 126 0) (uuid "gl-adscs"))
+  (global_label "ADS_DRDY" (shape input) (at 100 128 0) (uuid "gl-adsdrdy"))
+  (global_label "ADS_RST" (shape output) (at 100 130 0) (uuid "gl-adsrst"))
+
+  (global_label "MUX_A_S0" (shape output) (at 100 135 0) (uuid "gl-muxas0"))
+  (global_label "MUX_A_S1" (shape output) (at 100 137 0) (uuid "gl-muxas1"))
+  (global_label "MUX_A_S2" (shape output) (at 100 139 0) (uuid "gl-muxas2"))
+  (global_label "MUX_A_S3" (shape output) (at 100 141 0) (uuid "gl-muxas3"))
+  (global_label "MUX_A_EN" (shape output) (at 100 143 0) (uuid "gl-muxaen"))
+
+  (global_label "MUX_B_S0" (shape output) (at 100 148 0) (uuid "gl-muxbs0"))
+  (global_label "MUX_B_S1" (shape output) (at 100 150 0) (uuid "gl-muxbs1"))
+  (global_label "MUX_B_S2" (shape output) (at 100 152 0) (uuid "gl-muxbs2"))
+  (global_label "MUX_B_S3" (shape output) (at 100 154 0) (uuid "gl-muxbs3"))
+  (global_label "MUX_B_EN" (shape output) (at 100 156 0) (uuid "gl-muxben"))
+
+  (global_label "USART2_TX" (shape output) (at 100 162 0) (uuid "gl-utx"))
+  (global_label "USART2_RX" (shape input) (at 100 164 0) (uuid "gl-urx"))
+  (global_label "RS485_DE" (shape output) (at 100 166 0) (uuid "gl-de"))
+
+  (global_label "SPI3_SCK" (shape bidirectional) (at 100 172 0) (uuid "gl-spi3sck"))
+  (global_label "SPI3_MISO" (shape input) (at 100 174 0) (uuid "gl-spi3miso"))
+  (global_label "SPI3_MOSI" (shape output) (at 100 176 0) (uuid "gl-spi3mosi"))
+  (global_label "SD_CS" (shape output) (at 100 178 0) (uuid "gl-sdcs"))
+  (global_label "SD_DET" (shape input) (at 100 180 0) (uuid "gl-sddet"))
+
+  (global_label "I2C1_SCL" (shape bidirectional) (at 100 186 0) (uuid "gl-scl"))
+  (global_label "I2C1_SDA" (shape bidirectional) (at 100 188 0) (uuid "gl-sda"))
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; NET DEFINITIONS
+  ;; ══════════════════════════════════════════════════════════
+
+  ;; Power nets: +24V, +5V, +3V3, GND, AGND
+  ;; SPI1: SPI1_SCK, SPI1_MISO, SPI1_MOSI, ADS_CS, ADS_DRDY, ADS_RST
+  ;; SPI3: SPI3_SCK, SPI3_MISO, SPI3_MOSI, SD_CS, SD_DET
+  ;; I2C1: I2C1_SCL, I2C1_SDA
+  ;; USART2: USART2_TX, USART2_RX, RS485_DE
+  ;; MUX: MUX_A_S0-S3, MUX_A_EN, MUX_B_S0-S3, MUX_B_EN
+  ;; ADC: AIN0, AIN1, AIN2, AIN3, AIN4, AIN5, AINCOM
+  ;; LED: LED_G, LED_O, LED_R, LED_B
+  ;; RS-485: RS485_A, RS485_B
+
+  ;; ══════════════════════════════════════════════════════════
+  ;; COMPONENT COUNT SUMMARY
+  ;; ══════════════════════════════════════════════════════════
+  ;;
+  ;; ICs:       U1 (LM2596), U2 (AMS1117), U3 (STM32F407),
+  ;;            U4 (ADS1263), U5 (MUX A), U6 (MUX B),
+  ;;            U7 (SP3485), U8 (TMP117)
+  ;; Transistor: Q1 (SI2301CDS)
+  ;; Diodes:    D1 (TVS), D2 (Schottky), D3-D4 (RS-485 TVS),
+  ;;            D5-D36 (32× input TVS)
+  ;; Crystals:  Y1 (8MHz), Y2 (32.768kHz)
+  ;; Inductors: L1 (33uH power)
+  ;; Connectors: J1 (power), J2 (16-pair string input), J3 (RS-485),
+  ;;             J4 (term jumper), J5 (SWD), J6 (MicroSD)
+  ;; LEDs:      LED1-LED4 (green/orange/red/blue)
+  ;; Resistors: ~80 total (dividers, pull-ups, shunts, series, LED)
+  ;; Capacitors: ~40 total (decoupling, filter, bulk)
+)

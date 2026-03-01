@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -188,16 +189,5 @@ func topicMatches(pattern, topic string) bool {
 }
 
 func splitTopic(topic string) []string {
-	parts := []string{}
-	current := ""
-	for _, ch := range topic {
-		if ch == '/' {
-			parts = append(parts, current)
-			current = ""
-		} else {
-			current += string(ch)
-		}
-	}
-	parts = append(parts, current)
-	return parts
+	return strings.Split(topic, "/")
 }

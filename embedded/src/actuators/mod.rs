@@ -106,11 +106,17 @@ impl Actuator for SolarActuator {
                 Ok("inverter_disabled".into())
             }
             "reset_inverter" => {
-                log::info!("[Actuator] Inverter RESET");
+                log::info!("[Actuator] Inverter RESET - disabling");
                 self.inverter_enabled = false;
-                tokio::task::block_in_place(|| std::thread::sleep(std::time::Duration::from_secs(2)));
+                // Signal that inverter needs a delayed re-enable
+                // The caller should await a delay and then call enable_inverter
+                // We don't block the async runtime with thread::sleep
+                Ok("inverter_reset_pending".into())
+            }
+            "complete_reset" => {
                 self.inverter_enabled = true;
-                Ok("inverter_reset".into())
+                log::info!("[Actuator] Inverter RESET - re-enabled");
+                Ok("inverter_reset_complete".into())
             }
             "set_tracker_angle" => {
                 let angle: f64 = params

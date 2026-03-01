@@ -1,0 +1,15 @@
+# Cargo configuration for STM32F407VGT6 (Cortex-M4F with FPU)
+
+[target.thumbv7em-none-eabihf]
+runner = "probe-rs run --chip STM32F407VGTx"
+
+rustflags = [
+    "-C", "link-arg=-Tlink.x",         # Embassy linker script
+    "-C", "link-arg=-Tdefmt.x",        # defmt logging support
+]
+
+[build]
+target = "thumbv7em-none-eabihf"        # Cortex-M4F with hardware FPU
+
+[env]
+DEFMT_LOG = "info"                       # Default log level

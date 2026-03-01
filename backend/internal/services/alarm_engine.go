@@ -79,22 +79,43 @@ func (e *AlarmEngine) Evaluate(ctx context.Context, deviceID, subsystem, metric 
 			continue
 		}
 
-		triggered := e.checkCondition(rule, value)
+		triggered := e.checkCondition(rule, deviceID, value)
 		if triggered {
 			e.fireAlarm(ctx, deviceID, rule, value)
 		}
 	}
 }
 
-func (e *AlarmEngine) checkCondition(rule AlarmRule, value float64) bool {
+func (e *AlarmEngine) checkCondition(rule AlarmRule, deviceID string, value float64) bool {
+	key := rule.ID + ":" + deviceID
+
+	e.lastFiredMu.Lock()
+	_, wasTriggered := e.lastFired[key]
+	e.lastFiredMu.Unlock()
+
+	// Apply hysteresis: if this alarm was previously triggered and is within cooldown,
+	// require the value to exceed threshold + hysteresis to re-trigger.
+	// This prevents alarm flapping when the value oscillates near the threshold.
 	switch rule.Condition {
 	case "gt":
+		if wasTriggered {
+			return value > rule.Threshold+rule.Hysteresis
+		}
 		return value > rule.Threshold
 	case "lt":
+		if wasTriggered {
+			return value < rule.Threshold-rule.Hysteresis
+		}
 		return value < rule.Threshold
 	case "gte":
+		if wasTriggered {
+			return value >= rule.Threshold+rule.Hysteresis
+		}
 		return value >= rule.Threshold
 	case "lte":
+		if wasTriggered {
+			return value <= rule.Threshold-rule.Hysteresis
+		}
 		return value <= rule.Threshold
 	case "eq":
 		return value == rule.Threshold

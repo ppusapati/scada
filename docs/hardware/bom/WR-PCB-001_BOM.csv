@@ -1,0 +1,74 @@
+Reference,Quantity,Value,Description,Manufacturer,MPN,Package,Supplier,Notes
+U1,1,LM2596S-5.0,"5V/3A step-down switching regulator",Texas Instruments,LM2596S-5.0/NOPB,TO-263-5,Mouser/DigiKey,Primary DC-DC converter
+U2,1,AMS1117-3.3,"3.3V/1A LDO linear regulator",Advanced Monolithic Systems,AMS1117-3.3,SOT-223-3,Mouser/DigiKey,Secondary 3.3V regulator
+U3,1,STM32F407VGT6,"ARM Cortex-M4F MCU 168MHz 1MB Flash 192KB SRAM",STMicroelectronics,STM32F407VGT6,LQFP-100,Mouser/DigiKey,Main microcontroller
+U4,1,ADS1258IPHPR,"24-bit delta-sigma ADC 16-ch 23.7kSPS SPI",Texas Instruments,ADS1258IPHPR,TSSOP-38,Mouser/DigiKey,Precision ADC for 4-20mA
+U5,1,W5500,"Hardwired TCP/IP embedded Ethernet controller",WIZnet,W5500,QFN-48,Mouser/DigiKey,Ethernet Modbus TCP
+U6,1,SP3485EN,"3.3V RS-485 half-duplex transceiver",MaxLinear,SP3485EN-L/TR,SOIC-8,Mouser/DigiKey,RS-485 Modbus RTU
+Q1,1,SI2301CDS,"P-channel MOSFET -20V -2.8A",Vishay,SI2301CDS-T1-GE3,SOT-23,Mouser/DigiKey,Reverse polarity protection
+D1,1,SMBJ30A,"30V TVS diode bidirectional",Littelfuse,SMBJ30A,SMB,Mouser/DigiKey,24V input surge protection
+D2,1,SS34,"40V 3A Schottky diode",ON Semiconductor,SS34,SMA,Mouser/DigiKey,LM2596 freewheeling diode
+D3,1,SMBJ6.5A,"6.5V TVS diode RS-485 A line",Littelfuse,SMBJ6.5A,SMB,Mouser/DigiKey,RS-485 A line protection
+D4,1,SMBJ6.5A,"6.5V TVS diode RS-485 B line",Littelfuse,SMBJ6.5A,SMB,Mouser/DigiKey,RS-485 B line protection
+D5-D12,8,SM6T6V8A,"6.8V TVS bidirectional 4-20mA input protection",STMicroelectronics,SM6T6V8A,SMB,Mouser/DigiKey,8x per-channel ESD/surge protection
+D13-D20,8,BAT54,"Schottky diode overvoltage clamp to +5V Vref",Nexperia,BAT54,SOT-23,Mouser/DigiKey,8x upper clamp diodes
+D21-D28,8,BAT54,"Schottky diode undervoltage clamp to GND",Nexperia,BAT54,SOT-23,Mouser/DigiKey,8x lower clamp diodes
+Y1,1,8MHz,"HSE crystal HC49/SMD CL=20pF",Abracon,ABM3B-8.000MHZ-10,HC49/SMD,Mouser/DigiKey,MCU system clock
+Y2,1,32.768kHz,"LSE crystal CL=6.8pF",Abracon,ABS07-32.768KHZ-T,2.0x1.2mm,Mouser/DigiKey,RTC clock
+Y3,1,25MHz,"W5500 crystal CL=20pF",Abracon,ABM3B-25.000MHZ-10,HC49/SMD,Mouser/DigiKey,Ethernet controller clock
+L1,1,33uH,"Power inductor 3A shielded",Bourns,SRR1260A-330M,12.5x12.5mm,Mouser/DigiKey,LM2596 output inductor
+J1,1,24V_DC_IN,"2-pin terminal block 5.08mm pitch",Phoenix Contact,1757019,5.08mm,Mouser/DigiKey,24V DC power input
+J2,1,4-20mA_IN,"16-pin terminal block 8 pairs signal+return",Phoenix Contact,1757248,3.81mm,Mouser/DigiKey,8x 4-20mA sensor inputs
+J3,1,RS485_BUS,"3-pin terminal block 5.08mm pitch A/B/GND",Phoenix Contact,1757022,5.08mm,Mouser/DigiKey,RS-485 field wiring
+J4,1,TERM_JUMPER,"2-pin header 2.54mm for 120ohm termination",Generic,--,2.54mm,Generic,RS-485 termination enable
+J5,1,SWD_10PIN,"2x5 SWD debug header 1.27mm pitch",Samtec,FTSH-105-01-L-DV-K,1.27mm,Mouser/DigiKey,SWD programming/debug
+J7,1,HR911105A,"RJ45 jack with integrated magnetics and LEDs",Hanrun,HR911105A,RJ45,Mouser/DigiKey,Ethernet connector
+LED1,1,Green,"0805 LED green heartbeat",Wurth,150080GS75000,0805,Mouser/DigiKey,System OK heartbeat
+LED2,1,Orange,"0805 LED orange Modbus activity",Wurth,150080YS75000,0805,Mouser/DigiKey,Modbus TX activity
+LED3,1,Red,"0805 LED red fault/alarm",Wurth,150080RS75000,0805,Mouser/DigiKey,Fault/alarm indicator
+LED4,1,Blue,"0805 LED blue Ethernet link",Wurth,150080BS75000,0805,Mouser/DigiKey,Ethernet link active
+R_SHUNT,8,250R 0.1%,"Precision metal film 4-20mA shunt",Vishay,TNPW0805250RBEEN,0805,Mouser/DigiKey,4-20mA current-to-voltage conversion
+R_FILT,8,100R,"1% thin film EMI filter series",Yageo,RC0805FR-07100RL,0805,Mouser/DigiKey,Input filter series resistors
+R_LED,4,1K,"LED current limiting resistors",Yageo,RC0805FR-071KL,0805,Mouser/DigiKey,LED series resistors
+R_PU_DRDY,1,10K,"Pull-up for ADS1258 DRDY",Yageo,RC0805FR-0710KL,0805,Mouser/DigiKey,DRDY pull-up
+R_PU_START,1,10K,"Pull-up for ADS1258 START (via PB1)",Yageo,RC0805FR-0710KL,0805,Mouser/DigiKey,START line management
+R_PU_RST,1,10K,"Pull-up for ADS1258 RESET",Yageo,RC0805FR-0710KL,0805,Mouser/DigiKey,RESET pull-up
+R_PU_W5500_RST,1,10K,"Pull-up for W5500 RSTn",Yageo,RC0805FR-0710KL,0805,Mouser/DigiKey,Ethernet reset pull-up
+R_PU_W5500_INT,1,10K,"Pull-up for W5500 INTn",Yageo,RC0805FR-0710KL,0805,Mouser/DigiKey,Ethernet interrupt pull-up
+R_BIAS_A,1,470R,"RS-485 A line failsafe bias to VCC",Yageo,RC0805FR-07470RL,0805,Mouser/DigiKey,Failsafe bias pull-up
+R_BIAS_B,1,470R,"RS-485 B line failsafe bias to GND",Yageo,RC0805FR-07470RL,0805,Mouser/DigiKey,Failsafe bias pull-down
+R_TERM,1,120R,"RS-485 bus termination",Yageo,RC0805FR-07120RL,0805,Mouser/DigiKey,Line termination
+R_BOOT0,1,10K,"BOOT0 pull-down resistor",Yageo,RC0805FR-0710KL,0805,Mouser/DigiKey,Force flash boot
+R_NRST,1,10K,"NRST pull-up resistor",Yageo,RC0805FR-0710KL,0805,Mouser/DigiKey,Reset pull-up
+R_SPI1,6,33R,"SPI1 series damping resistors",Yageo,RC0805FR-0733RL,0805,Mouser/DigiKey,ADS1258 SPI signal integrity
+R_SPI2,6,33R,"SPI2 series damping resistors",Yageo,RC0805FR-0733RL,0805,Mouser/DigiKey,W5500 SPI signal integrity
+R_TX,2,49.9R,"Ethernet TX series impedance matching",Yageo,RC0805FR-0749R9L,0805,Mouser/DigiKey,W5500 TX line matching
+R_EXRES,1,12.4K 1%,"W5500 EXRES1 bias resistor",Yageo,RC0805FR-0712K4L,0805,Mouser/DigiKey,W5500 external bias
+C_IN_BULK,1,100uF/50V,"Input bulk electrolytic capacitor",Panasonic,EEU-FR1H101B,6.3x7.7mm,Mouser/DigiKey,24V input bulk
+C_OUT_BULK,1,220uF/10V,"5V output bulk electrolytic capacitor",Panasonic,EEU-FR1A221B,6.3x7.7mm,Mouser/DigiKey,5V output bulk
+C_LDO_IN,1,10uF/10V,"AMS1117 input capacitor ceramic",Samsung,CL21A106KPFNNNE,0805,Mouser/DigiKey,LDO input decoupling
+C_LDO_OUT,1,10uF/10V,"AMS1117 output capacitor ceramic",Samsung,CL21A106KPFNNNE,0805,Mouser/DigiKey,LDO output decoupling
+C_BYPASS,7,100nF,"VDD pin bypass capacitors ceramic",Samsung,CL21B104KBCNNNC,0805,Mouser/DigiKey,MCU VDD decoupling (one per pin)
+C_VDDA,1,1uF,"VDDA decoupling ceramic",Samsung,CL21B105KAFNNNE,0805,Mouser/DigiKey,Analog supply decoupling
+C_VDDA2,1,100nF,"VDDA high-freq bypass ceramic",Samsung,CL21B104KBCNNNC,0805,Mouser/DigiKey,Analog HF bypass
+C_BULK_VDD,1,4.7uF,"VDD bulk decoupling ceramic",Samsung,CL21A475KAQNNNE,0805,Mouser/DigiKey,Digital supply bulk
+C_HSE,2,22pF,"HSE crystal load capacitors NP0/C0G",Kemet,C0805C220J5GACTU,0805,Mouser/DigiKey,8 MHz crystal load
+C_LSE,2,6.8pF,"LSE crystal load capacitors NP0/C0G",Kemet,C0805C689C5GACTU,0805,Mouser/DigiKey,32.768 kHz crystal load
+C_W5500_XTAL,2,22pF,"W5500 25MHz crystal load caps NP0/C0G",Kemet,C0805C220J5GACTU,0805,Mouser/DigiKey,25 MHz crystal load
+C_ADC_AV,1,10uF,"ADS1258 AVDD decoupling",Samsung,CL21A106KPFNNNE,0805,Mouser/DigiKey,ADC analog supply
+C_ADC_AV2,1,100nF,"ADS1258 AVDD HF bypass",Samsung,CL21B104KBCNNNC,0805,Mouser/DigiKey,ADC analog HF bypass
+C_ADC_DV,1,10uF,"ADS1258 DVDD decoupling",Samsung,CL21A106KPFNNNE,0805,Mouser/DigiKey,ADC digital supply
+C_ADC_DV2,1,100nF,"ADS1258 DVDD HF bypass",Samsung,CL21B104KBCNNNC,0805,Mouser/DigiKey,ADC digital HF bypass
+C_ADC_REF,1,10uF,"ADS1258 VREFP bypass",Samsung,CL21A106KPFNNNE,0805,Mouser/DigiKey,External reference bypass
+C_ADC_REF2,1,100nF,"ADS1258 VREFP HF bypass",Samsung,CL21B104KBCNNNC,0805,Mouser/DigiKey,Reference HF bypass
+C_FILT,8,100nF C0G,"Input filter capacitors for 4-20mA",Kemet,C0805C104J5GACTU,0805,Mouser/DigiKey,EMI filter shunt (8 channels)
+C_SP3485,1,100nF,"SP3485 VCC decoupling",Samsung,CL21B104KBCNNNC,0805,Mouser/DigiKey,RS-485 IC decoupling
+C_W5500_DV,2,100nF,"W5500 DVDD decoupling",Samsung,CL21B104KBCNNNC,0805,Mouser/DigiKey,W5500 digital supply
+C_W5500_AV,2,100nF,"W5500 AVDD decoupling (FB2 isolated)",Samsung,CL21B104KBCNNNC,0805,Mouser/DigiKey,W5500 analog supply
+C_W5500_BK,2,10uF,"W5500 bulk decoupling AVDD+DVDD",Samsung,CL21A106KPFNNNE,0805,Mouser/DigiKey,W5500 bulk caps
+C_W5500_1V8,1,10uF,"W5500 1.8V internal regulator output",Samsung,CL21A106KPFNNNE,0805,Mouser/DigiKey,Internal 1.8V output cap
+C_W5500_TOCAP,1,10uF,"W5500 TOCAP pin capacitor",Samsung,CL21A106KPFNNNE,0805,Mouser/DigiKey,Timeout capacitor
+C_NRST,1,100nF,"NRST filter capacitor",Samsung,CL21B104KBCNNNC,0805,Mouser/DigiKey,Reset RC filter
+C_IN_CER,1,100nF,"Input ceramic bypass",Samsung,CL21B104KBCNNNC,0805,Mouser/DigiKey,24V input HF bypass
+FB1,1,600R@100MHz,"Ferrite bead input EMI",Murata,BLM21PG601SN1D,0805,Mouser/DigiKey,Input EMI filter
+FB2,1,600R@100MHz,"Ferrite bead W5500 analog supply isolation",Murata,BLM21PG601SN1D,0805,Mouser/DigiKey,W5500 AVDD isolation
