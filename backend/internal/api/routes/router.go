@@ -18,6 +18,7 @@ func NewRouter(
 	solarHandler *handlers.SolarHandler,
 	alarmHandler *handlers.AlarmHandler,
 	readingHandler *handlers.ReadingHandler,
+	ddsHandler *handlers.DDSHandler,
 	authMW *middleware.AuthMiddleware,
 	wsHub *ws.Hub,
 ) http.Handler {
@@ -105,6 +106,12 @@ func NewRouter(
 			r.Get("/device/{deviceId}/latest", readingHandler.GetLatest)
 			r.Get("/device/{deviceId}/history", readingHandler.GetHistory)
 			r.Get("/device/{deviceId}/aggregated", readingHandler.GetAggregated)
+		})
+
+		// ── DDS (Data Distribution Service) ──
+		r.Route("/api/v1/dds", func(r chi.Router) {
+			r.Get("/status", ddsHandler.GetStatus)
+			r.Get("/participants", ddsHandler.GetParticipants)
 		})
 	})
 

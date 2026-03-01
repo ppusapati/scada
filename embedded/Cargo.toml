@@ -2,9 +2,9 @@
 name = "scada-embedded"
 version = "0.1.0"
 edition = "2021"
-description = "SCADA embedded firmware for STM32F407VGT6 - Water & Solar IoT"
+description = "SCADA embedded firmware for STM32F407VGT6 / STM32MP157 - Water & Solar IoT"
 
-# ─── Target: ARM Cortex-M4F (STM32F407VGT6) ───
+# ── Target: ARM Cortex-M4F (STM32F407VGT6) ──
 # Build: cargo build --release --target thumbv7em-none-eabihf
 
 [dependencies]
@@ -14,7 +14,7 @@ embassy-time = { version = "0.4", features = ["tick-hz-32_768"] }
 embassy-sync = "0.6"
 embassy-futures = "0.1"
 
-# STM32F407 HAL via Embassy
+# STM32F407 HAL via Embassy (default target)
 embassy-stm32 = { version = "0.2", features = [
     "stm32f407vg",          # Our exact MCU
     "memory-x",             # Auto linker script
@@ -49,9 +49,38 @@ libm = "0.2"                               # Math functions for no_std
 
 [features]
 default = ["water-node"]
+
+# ── Node type selection ──
 water-node = []
 solar-node = []
-simulator = ["dep:rand", "dep:tokio", "dep:rumqttc", "dep:serde_json", "dep:chrono", "dep:env_logger", "dep:log", "dep:toml", "dep:uuid"]
+
+# ── Hardware target features ──
+# STM32F407VGT6 (Cortex-M4F) -- default, already in dependencies
+stm32f407 = []
+
+# STM32MP157 M4 core (Cortex-M4F coprocessor)
+# When this feature is enabled, RPMsg transport is available for DDS-XRCE
+stm32mp157-m4 = []
+
+# ── Protocol features ──
+# DDS-XRCE support: enables dds_xrce module and dds_publish task
+dds = []
+
+# Modbus RTU/TCP support: enables modbus module and modbus_task
+modbus = []
+
+# ── Simulator (desktop) build ──
+simulator = [
+    "dep:rand",
+    "dep:tokio",
+    "dep:rumqttc",
+    "dep:serde_json",
+    "dep:chrono",
+    "dep:env_logger",
+    "dep:log",
+    "dep:toml",
+    "dep:uuid",
+]
 
 [dependencies.rand]
 version = "0.8"

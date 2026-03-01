@@ -1,0 +1,380 @@
+/*
+ * stm32mp157c-scada.dts — Device Tree Overlay for SCADA DDS System
+ *
+ * This overlay configures the STM32MP157C peripherals for the SCADA
+ * dual-core (A7+M4) application. It:
+ *
+ *   1. Reserves memory regions for OpenAMP/RPMsg shared memory
+ *   2. Configures the M4 remoteproc node for co-processor management
+ *   3. Sets up SPI1 for ADS1263/ADS1258 ADC (M4 ownership via ETZPC)
+ *   4. Configures I2C1 for TMP117 temperature sensor (M4 ownership)
+ *   5. Sets up USART2 for RS-485 Modbus RTU (M4 ownership)
+ *   6. Configures Ethernet for PTP IEEE 1588 timestamping (A7 ownership)
+ *   7. Sets GPIO pin assignments for MUX control and status LEDs
+ *   8. Configures the IPCC for inter-processor communication
+ *
+ * Peripheral assignment (ETZPC / RCC secure):
+ *   M4 owns: SPI1, I2C1, USART2, TIM2 (timing), GPIOs for MUX/LED
+ *   A7 owns: ETH1, USART3 (debug), SD/MMC, USB
+ *   Shared:  IPCC, MCUSRAM2 (OpenAMP shared memory)
+ *
+ * Apply this overlay on top of stm32mp157c-dk2.dts or your custom board DTS.
+ */
+
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "st,stm32mp157c-scada", "st,stm32mp157";
+
+    /* ================================================================
+     * Memory Reservations for OpenAMP / RPMsg
+     * ================================================================
+     *
+     * MCUSRAM2 (0x10020000 - 0x1003FFFF, 128KB) is used as shared memory
+     * between the A7 and M4 for RPMsg/OpenAMP communication.
+     *
+     * Layout:
+     *   0x10020000 - 0x1002FFFF: VirtIO ring buffers (vring0 + vring1)
+     *   0x10030000 - 0x1003FEFF: RPMsg data buffers (64 x 512 bytes)
+     *   0x1003FF00 - 0x1003FFFF: PTP sync status shared structure
+     */
+    fragment@0 {
+        target-path = "/";
+        __overlay__ {
+            reserved-memory {
+                #address-cells = <1>;
+                #size-cells = <1>;
+                ranges;
+
+                /* M4 firmware execution memory (RETRAM + MCUSRAM1) */
+                m4_fw_memory: m4-fw@00000000 {
+                    compatible = "shared-dma-pool";
+                    reg = <0x00000000 0x00030000>; /* 192KB: 48K RETRAM + 128K MCUSRAM1 */
+                    no-map;
+                };
+
+                /* OpenAMP shared memory (MCUSRAM2) */
+                vdev0buffer: vdev0buffer@10020000 {
+                    compatible = "shared-dma-pool";
+                    reg = <0x10020000 0x00020000>; /* 128KB MCUSRAM2 */
+                    no-map;
+                };
+
+                /* VirtIO vring0: M4 -> A7 (TX from M4 perspective) */
+                vdev0vring0: vdev0vring0@10020000 {
+                    reg = <0x10020000 0x00001000>; /* 4KB */
+                    no-map;
+                };
+
+                /* VirtIO vring1: A7 -> M4 (RX from M4 perspective) */
+                vdev0vring1: vdev0vring1@10021000 {
+                    reg = <0x10021000 0x00001000>; /* 4KB */
+                    no-map;
+                };
+            };
+        };
+    };
+
+    /* ================================================================
+     * IPCC — Inter-Processor Communication Controller
+     * ================================================================
+     *
+     * The IPCC provides hardware mailbox interrupts between A7 and M4.
+     * Used by OpenAMP/RPMsg to signal data availability in shared memory.
+     * Channel 0: RPMsg/VirtIO notifications
+     * Channel 1: Reserved for future use (e.g., crash dump notification)
+     */
+    fragment@1 {
+        target = <&ipcc>;
+        __overlay__ {
+            status = "okay";
+        };
+    };
+
+    /* ================================================================
+     * M4 Remoteproc — Co-Processor Management
+     * ================================================================
+     *
+     * The remoteproc subsystem loads firmware onto the M4, manages its
+     * lifecycle (start/stop/crash recovery), and creates the RPMsg
+     * character device (/dev/ttyRPMSG0) for userspace communication.
+     */
+    fragment@2 {
+        target-path = "/";
+        __overlay__ {
+            m4_rproc: m4@0 {
+                compatible = "st,stm32mp1-m4";
+                #address-cells = <1>;
+                #size-cells = <1>;
+                ranges;
+
+                /* M4 firmware memory regions */
+                reg = <0x00000000 0x00030000>,  /* RETRAM + MCUSRAM1 */
+                      <0x10020000 0x00020000>;  /* MCUSRAM2 (shared) */
+                reg-names = "m4_fw", "vdev0buffer";
+
+                /* Reset and clock control */
+                resets = <&rcc MCU_R>;
+                reset-names = "mcu_rst";
+
+                /* IPCC for mailbox interrupts */
+                mboxes = <&ipcc 0>, <&ipcc 1>;
+                mbox-names = "vq0", "vq1";
+
+                /* Firmware filename in /lib/firmware/ */
+                st,syscfg-holdboot = <&rcc 0x10C 0x1>;
+                st,auto-boot;
+
+                /* Memory regions */
+                memory-region = <&vdev0buffer>,
+                                <&vdev0vring0>,
+                                <&vdev0vring1>,
+                                <&m4_fw_memory>;
+
+                /* RPMsg device */
+                m4_system_rsc_table: m4-system-rsc-table {
+                    compatible = "st,stm32mp1-m4-rsc-table";
+                };
+            };
+        };
+    };
+
+    /* ================================================================
+     * SPI1 — ADS1263 / ADS1258 ADC Interface (M4 Ownership)
+     * ================================================================
+     *
+     * SPI1 connects to the high-precision ADC:
+     *   - Solar variant: ADS1263 (32-bit, voltage/current through MUX)
+     *   - Water variant: ADS1258 (24-bit, 8x 4-20mA inputs)
+     *
+     * Pin mapping:
+     *   PA5  = SPI1_SCK   (AF5)
+     *   PA6  = SPI1_MISO  (AF5)
+     *   PA7  = SPI1_MOSI  (AF5)
+     *   PA4  = SPI1_NSS   (GPIO, active low CS)
+     *   PB0  = ADC_DRDY   (GPIO input, active low)
+     *   PB1  = ADC_RESET  (GPIO output, active low)
+     *   PB2  = ADC_START  (GPIO output, ADS1258 only)
+     *
+     * SPI Mode 1 (CPOL=0, CPHA=1), max clock 8 MHz for ADS1263.
+     * Assigned to M4 via ETZPC (secure peripheral access).
+     */
+    fragment@3 {
+        target = <&spi1>;
+        __overlay__ {
+            pinctrl-names = "default";
+            pinctrl-0 = <&spi1_pins_mx>;
+            status = "okay";
+            /* M4 ownership — Linux should not access this SPI */
+            st,stm32mp1-m4-allowed;
+
+            cs-gpios = <&gpioa 4 0>; /* PA4 active low */
+
+            adc@0 {
+                compatible = "ti,ads1263";
+                reg = <0>;
+                spi-max-frequency = <8000000>;
+                spi-cpol;
+                /* DRDY and RESET managed by M4 firmware GPIO */
+            };
+        };
+    };
+
+    /* ================================================================
+     * I2C1 — TMP117 Temperature Sensor (M4 Ownership)
+     * ================================================================
+     *
+     * I2C1 connects to the TMP117 high-accuracy temperature sensor
+     * used for ambient/enclosure temperature monitoring.
+     *
+     * Pin mapping:
+     *   PB6 = I2C1_SCL (AF4)
+     *   PB7 = I2C1_SDA (AF4)
+     *
+     * TMP117 I2C address: 0x48 (ADD0 = GND)
+     * Clock: 400 kHz (Fast mode)
+     */
+    fragment@4 {
+        target = <&i2c1>;
+        __overlay__ {
+            pinctrl-names = "default";
+            pinctrl-0 = <&i2c1_pins_mx>;
+            status = "okay";
+            clock-frequency = <400000>;
+            st,stm32mp1-m4-allowed;
+
+            tmp117@48 {
+                compatible = "ti,tmp117";
+                reg = <0x48>;
+            };
+        };
+    };
+
+    /* ================================================================
+     * USART2 — RS-485 Modbus RTU (M4 Ownership)
+     * ================================================================
+     *
+     * USART2 provides the RS-485 half-duplex serial interface for
+     * Modbus RTU slave communication with legacy field devices.
+     *
+     * Pin mapping:
+     *   PA2 = USART2_TX  (AF7)
+     *   PA3 = USART2_RX  (AF7)
+     *   PA1 = RS485_DE   (GPIO output, direction enable)
+     *
+     * Default baud rate: 9600 (configurable via Modbus holding register)
+     * Format: 8N1 (8 data bits, no parity, 1 stop bit)
+     */
+    fragment@5 {
+        target = <&usart2>;
+        __overlay__ {
+            pinctrl-names = "default";
+            pinctrl-0 = <&usart2_pins_mx>;
+            status = "okay";
+            st,stm32mp1-m4-allowed;
+        };
+    };
+
+    /* ================================================================
+     * Ethernet — PTP IEEE 1588 Timestamping (A7 Ownership)
+     * ================================================================
+     *
+     * The STM32MP157 Ethernet MAC supports IEEE 1588v2 hardware
+     * timestamping for Precision Time Protocol. The A7 runs ptp4l
+     * and phc2sys to synchronize the Linux system clock.
+     *
+     * PTP timestamp registers are also readable by the M4 core
+     * via direct register access for sub-microsecond event timing.
+     *
+     * Pin mapping (RGMII):
+     *   PA1  = ETH_REF_CLK
+     *   PA2  = ETH_MDIO
+     *   PC1  = ETH_MDC
+     *   PA7  = ETH_CRS_DV
+     *   PC4  = ETH_RXD0
+     *   PC5  = ETH_RXD1
+     *   PB11 = ETH_RMII_TX_EN
+     *   PB12 = ETH_RMII_TXD0
+     *   PB13 = ETH_RMII_TXD1
+     */
+    fragment@6 {
+        target = <&ethernet0>;
+        __overlay__ {
+            status = "okay";
+            pinctrl-names = "default", "sleep";
+            pinctrl-0 = <&ethernet0_rgmii_pins_a>;
+            pinctrl-1 = <&ethernet0_rgmii_sleep_pins_a>;
+            phy-mode = "rgmii-id";
+            max-speed = <1000>;
+
+            /* Enable PTP hardware timestamping */
+            snps,ptp-ref-clk-sel;
+
+            mdio0 {
+                #address-cells = <1>;
+                #size-cells = <0>;
+                compatible = "snps,dwmac-mdio";
+
+                phy0: ethernet-phy@0 {
+                    reg = <0>;
+                    /* Enable PTP on the PHY if supported */
+                };
+            };
+        };
+    };
+
+    /* ================================================================
+     * GPIO Configuration — MUX Control, LEDs, RS-485 DE
+     * ================================================================
+     *
+     * GPIO pins used by the M4 firmware for:
+     *   - CD74HC4067 MUX A select (PG0-PG3) + enable (PG4)
+     *   - CD74HC4067 MUX B select (PG5-PG8) + enable (PG9)
+     *   - Status LEDs (PD12-PD15)
+     *   - RS-485 direction enable (PA1)
+     *   - ADC control (PB0=DRDY, PB1=RESET, PB2=START)
+     *
+     * These GPIOs are assigned to M4 via ETZPC.
+     */
+    fragment@7 {
+        target-path = "/";
+        __overlay__ {
+            scada-gpios {
+                compatible = "st,stm32mp1-m4-gpio";
+
+                /* MUX A control pins (solar variant) */
+                mux-a-s0-gpios = <&gpiog 0 0>;
+                mux-a-s1-gpios = <&gpiog 1 0>;
+                mux-a-s2-gpios = <&gpiog 2 0>;
+                mux-a-s3-gpios = <&gpiog 3 0>;
+                mux-a-en-gpios = <&gpiog 4 0>;
+
+                /* MUX B control pins (solar variant) */
+                mux-b-s0-gpios = <&gpiog 5 0>;
+                mux-b-s1-gpios = <&gpiog 6 0>;
+                mux-b-s2-gpios = <&gpiog 7 0>;
+                mux-b-s3-gpios = <&gpiog 8 0>;
+                mux-b-en-gpios = <&gpiog 9 0>;
+
+                /* Status LEDs */
+                led-heartbeat-gpios = <&gpiod 12 0>;  /* Green */
+                led-fault-gpios     = <&gpiod 13 0>;  /* Red */
+                led-tx-gpios        = <&gpiod 14 0>;  /* Blue */
+                led-link-gpios      = <&gpiod 15 0>;  /* Yellow */
+
+                /* ADC control */
+                adc-drdy-gpios  = <&gpiob 0 0>;  /* Input, active low */
+                adc-reset-gpios = <&gpiob 1 0>;  /* Output, active low */
+                adc-start-gpios = <&gpiob 2 0>;  /* Output (ADS1258) */
+
+                /* RS-485 direction */
+                rs485-de-gpios = <&gpioa 1 0>;  /* Output */
+            };
+        };
+    };
+
+    /* ================================================================
+     * Pin Multiplexing Definitions
+     * ================================================================ */
+    fragment@8 {
+        target = <&pinctrl>;
+        __overlay__ {
+            spi1_pins_mx: spi1-0 {
+                pins1 {
+                    pinmux = <STM32_PINMUX('A', 5, AF5)>,  /* SCK */
+                             <STM32_PINMUX('A', 7, AF5)>;   /* MOSI */
+                    drive-push-pull;
+                    slew-rate = <1>;
+                };
+                pins2 {
+                    pinmux = <STM32_PINMUX('A', 6, AF5)>;   /* MISO */
+                    bias-disable;
+                };
+            };
+
+            i2c1_pins_mx: i2c1-0 {
+                pins {
+                    pinmux = <STM32_PINMUX('B', 6, AF4)>,  /* SCL */
+                             <STM32_PINMUX('B', 7, AF4)>;   /* SDA */
+                    bias-disable;
+                    drive-open-drain;
+                    slew-rate = <0>;
+                };
+            };
+
+            usart2_pins_mx: usart2-0 {
+                pins1 {
+                    pinmux = <STM32_PINMUX('A', 2, AF7)>;   /* TX */
+                    bias-disable;
+                    drive-push-pull;
+                    slew-rate = <0>;
+                };
+                pins2 {
+                    pinmux = <STM32_PINMUX('A', 3, AF7)>;   /* RX */
+                    bias-disable;
+                };
+            };
+        };
+    };
+};

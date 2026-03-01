@@ -14,6 +14,7 @@ import (
 	chimw "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+	"github.com/rs/zerolog"
 
 	"scada-system/infrastructure/circuitbreaker"
 	"scada-system/internal/api/handlers"
@@ -21,6 +22,7 @@ import (
 	"scada-system/internal/api/routes"
 	"scada-system/internal/config"
 	"scada-system/internal/db"
+	"scada-system/internal/dds"
 	mqttclient "scada-system/internal/mqtt"
 	"scada-system/internal/services"
 	"scada-system/internal/websocket"
@@ -29,6 +31,10 @@ import (
 func main() {
 	godotenv.Load()
 	cfg := config.Load()
+
+	// Structured logger for DDS and other components
+	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}).
+		With().Timestamp().Logger()
 
 	// ═══════════════════════════════════════════════
 	// Infrastructure Layer
@@ -52,7 +58,7 @@ func main() {
 		HalfOpenMaxCalls: 3,
 		SuccessThreshold: 2,
 		OnStateChange: func(name string, from, to circuitbreaker.State) {
-			fmt.Printf("[CircuitBreaker] %s: %s → %s\n", name, from, to)
+			fmt.Printf("[CircuitBreaker] %s: %s -> %s\n", name, from, to)
 		},
 	})
 	cbRegistry.Register("database", dbCB)
@@ -64,10 +70,26 @@ func main() {
 		HalfOpenMaxCalls: 2,
 		SuccessThreshold: 1,
 		OnStateChange: func(name string, from, to circuitbreaker.State) {
-			fmt.Printf("[CircuitBreaker] %s: %s → %s\n", name, from, to)
+			fmt.Printf("[CircuitBreaker] %s: %s -> %s\n", name, from, to)
 		},
 	})
 	cbRegistry.Register("mqtt", mqttCB)
+
+	ddsCB := circuitbreaker.New(circuitbreaker.Config{
+		Name:             "dds",
+		MaxFailures:      5,
+		ResetTimeout:     20 * time.Second,
+		HalfOpenMaxCalls: 3,
+		SuccessThreshold: 2,
+		OnStateChange: func(name string, from, to circuitbreaker.State) {
+			logger.Info().
+				Str("breaker", name).
+				Str("from", from.String()).
+				Str("to", to.String()).
+				Msg("DDS circuit breaker state change")
+		},
+	})
+	cbRegistry.Register("dds", ddsCB)
 
 	// MQTT
 	mqttClient := mqttclient.NewClient(cfg.MQTT)
@@ -106,6 +128,67 @@ func main() {
 		fmt.Printf("[Bridge] Warning: %v\n", err)
 	}
 
+	// ═══════════════════════════════════════════════
+	// DDS (Data Distribution Service) Layer
+	// ═══════════════════════════════════════════════
+
+	// DDS Discovery Service (SPDP + SEDP)
+	ddsDiscovery := dds.NewDiscoveryService(
+		uint32(cfg.DDS.DomainID),
+		"scada-backend",
+		cfg.DDS.MulticastAddr,
+		cfg.DDS.Interface,
+		logger,
+	)
+
+	// DDS Subscriber (receives telemetry/alarms/heartbeats from embedded devices)
+	ddsSubscriber := dds.NewSubscriber(
+		cfg.DDS,
+		ddsDiscovery,
+		ddsCB,
+		readingSvc,
+		deviceSvc,
+		waterSvc,
+		solarSvc,
+		alarmSvc,
+		wsHub,
+		logger,
+	)
+
+	// DDS Publisher (sends commands/config to embedded devices)
+	ddsPublisher := dds.NewPublisher(
+		cfg.DDS,
+		ddsDiscovery,
+		ddsCB,
+		logger,
+	)
+
+	// Start DDS components
+	if cfg.DDS.Enabled {
+		if err := ddsDiscovery.Start(ctx); err != nil {
+			logger.Warn().Err(err).Msg("DDS discovery failed to start")
+		} else {
+			logger.Info().Msg("DDS discovery service started")
+		}
+
+		if err := ddsSubscriber.Start(ctx); err != nil {
+			logger.Warn().Err(err).Msg("DDS subscriber failed to start")
+			if cfg.DDS.FallbackMQTT {
+				logger.Info().Msg("DDS unavailable, falling back to MQTT-only mode")
+			}
+		} else {
+			logger.Info().Msg("DDS subscriber started (hybrid mode with MQTT)")
+		}
+
+		if err := ddsPublisher.Start(ctx); err != nil {
+			logger.Warn().Err(err).Msg("DDS publisher failed to start")
+		} else {
+			logger.Info().Msg("DDS publisher started")
+		}
+	} else {
+		logger.Info().Msg("DDS is disabled in configuration")
+	}
+
 	// Auth
 	authMW := middleware.NewAuthMiddleware(cfg.JWT.Secret)
 
@@ -119,8 +202,9 @@ func main() {
 	alarmHandler := handlers.NewAlarmHandler(alarmSvc)
 	readingHandler := handlers.NewReadingHandler(readingSvc)
 	reportHandler := handlers.NewReportHandler(reportSvc)
+	ddsHandler := handlers.NewDDSHandler(ddsSubscriber, ddsPublisher, ddsDiscovery)
 
-	restRouter := routes.NewRouter(authHandler, waterHandler, solarHandler, alarmHandler, readingHandler, authMW, wsHub)
+	restRouter := routes.NewRouter(authHandler, waterHandler, solarHandler, alarmHandler, readingHandler, ddsHandler, authMW, wsHub)
 
 	// Root router
 	root := chi.NewRouter()
@@ -186,17 +270,29 @@ func main() {
 		fmt.Println("\n[Server] Shutting down...")
 		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer shutdownCancel()
+
+		// Shutdown DDS
+		ddsSubscriber.Stop()
+		ddsPublisher.Stop()
+		ddsDiscovery.Stop()
+
 		mqttClient.Disconnect()
 		srv.Shutdown(shutdownCtx)
 	}()
 
+	ddsStatus := "disabled"
+	if cfg.DDS.Enabled {
+		ddsStatus = fmt.Sprintf("domain %d, %s", cfg.DDS.DomainID, cfg.DDS.MulticastAddr)
+	}
+
 	fmt.Printf("\n╔══════════════════════════════════════════════════╗\n")
-	fmt.Printf("║   SCADA System Backend v2.0                      ║\n")
+	fmt.Printf("║   SCADA System Backend v2.1                      ║\n")
 	fmt.Printf("║   REST API:      http://%s/api/v1        ║\n", addr)
 	fmt.Printf("║   ConnectRPC:    http://%s/scada.v1.*    ║\n", addr)
 	fmt.Printf("║   WebSocket:     ws://%s/ws              ║\n", addr)
+	fmt.Printf("║   DDS:           %-29s  ║\n", ddsStatus)
 	fmt.Printf("║   Circuit Breakers: %d registered                ║\n", len(cbRegistry.GetAll()))
-	fmt.Printf("║   Architecture:  Clean Architecture              ║\n")
+	fmt.Printf("║   Architecture:  Clean Architecture + DDS        ║\n")
 	fmt.Printf("╚══════════════════════════════════════════════════╝\n\n")
 
 	if err := srv.ListenAndServe(); err != http.ErrServerClosed {

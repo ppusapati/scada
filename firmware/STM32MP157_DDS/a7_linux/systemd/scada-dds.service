@@ -1,0 +1,140 @@
+# scada-dds.service — SCADA DDS Gateway Service
+#
+# This systemd service manages the SCADA DDS gateway application on the
+# STM32MP157 Cortex-A7 Linux core. It:
+#   1. Waits for the M4 co-processor to be available (remoteproc)
+#   2. Ensures the network interface is up (for DDS multicast and PTP)
+#   3. Starts the DDS gateway with appropriate configuration
+#   4. Manages graceful shutdown on SIGTERM (stops DDS, PTP, then M4)
+#
+# The service runs as root because it needs:
+#   - Port 502 for Modbus TCP (privileged port)
+#   - /dev/mem or /dev/ttyRPMSG0 for M4 communication
+#   - PTP hardware clock access
+#   - remoteproc sysfs for M4 lifecycle management
+#
+# Install: systemctl enable scada-dds.service
+# Status:  systemctl status scada-dds.service
+# Logs:    journalctl -u scada-dds -f
+
+[Unit]
+Description=SCADA DDS Gateway Application
+Documentation=https://github.com/scada-system/scada-dds
+
+# Wait for critical system services
+After=network-online.target
+After=systemd-modules-load.service
+After=sys-class-remoteproc-remoteproc0.device
+
+# We need networking for DDS multicast and PTP
+Wants=network-online.target
+
+# We need remoteproc for M4 communication
+Wants=sys-class-remoteproc-remoteproc0.device
+
+# If PTP is running independently, coordinate with it
+After=ptp4l.service
+After=phc2sys.service
+
+# Start before any dependent services
+Before=modbus-gateway.target
+
+[Service]
+Type=notify
+NotifyAccess=main
+
+# Binary and arguments
+ExecStartPre=/bin/sh -c 'echo "SCADA DDS Gateway starting (variant: ${SCADA_DEVICE_TYPE:-solar_smu})"'
+
+# Ensure M4 co-processor is loaded and running before we start
+ExecStartPre=/bin/sh -c '\
+    REMOTEPROC=/sys/class/remoteproc/remoteproc0; \
+    if [ -f "$REMOTEPROC/state" ]; then \
+        STATE=$(cat "$REMOTEPROC/state"); \
+        if [ "$STATE" != "running" ]; then \
+            echo "Starting M4 co-processor..."; \
+            echo "start" > "$REMOTEPROC/state" 2>/dev/null || true; \
+            sleep 3; \
+        fi; \
+    fi'
+
+# Wait for RPMsg device to appear (M4 creates the endpoint)
+ExecStartPre=/bin/sh -c '\
+    TIMEOUT=30; \
+    while [ $TIMEOUT -gt 0 ] && [ ! -c /dev/ttyRPMSG0 ]; do \
+        echo "Waiting for /dev/ttyRPMSG0 ($TIMEOUT s remaining)..."; \
+        sleep 1; \
+        TIMEOUT=$((TIMEOUT - 1)); \
+    done; \
+    if [ ! -c /dev/ttyRPMSG0 ]; then \
+        echo "WARNING: /dev/ttyRPMSG0 not available, continuing anyway"; \
+    fi'
+
+# Main application
+ExecStart=/usr/bin/scada-dds \
+    --config /etc/scada/scada.toml \
+    --log-level info
+
+# Graceful shutdown: send SIGTERM, wait for DDS cleanup
+ExecStop=/bin/kill -SIGTERM $MAINPID
+
+# Stop M4 after the gateway shuts down (optional, controlled by config)
+ExecStopPost=/bin/sh -c '\
+    if [ "${SCADA_STOP_M4_ON_EXIT:-0}" = "1" ]; then \
+        REMOTEPROC=/sys/class/remoteproc/remoteproc0; \
+        if [ -f "$REMOTEPROC/state" ]; then \
+            echo "Stopping M4 co-processor..."; \
+            echo "stop" > "$REMOTEPROC/state" 2>/dev/null || true; \
+        fi; \
+    fi'
+
+# Process management
+Restart=on-failure
+RestartSec=10
+StartLimitBurst=5
+StartLimitIntervalSec=300
+
+# Shutdown timeout — allow time for DDS discovery cleanup and M4 shutdown
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+# Watchdog — the application sends sd_notify WATCHDOG=1 periodically
+WatchdogSec=60
+
+# Resource limits
+LimitNOFILE=4096
+LimitMEMLOCK=infinity
+
+# Security hardening
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=false
+
+# Required read-write paths
+ReadWritePaths=/var/log/scada
+ReadWritePaths=/var/lib/scada
+ReadWritePaths=/sys/class/remoteproc
+ReadWritePaths=/lib/firmware
+
+# Device access for M4 communication and PTP
+DeviceAllow=/dev/ttyRPMSG0 rw
+DeviceAllow=/dev/mem rw
+DeviceAllow=/dev/ptp0 rw
+DeviceAllow=/dev/ptp1 rw
+
+# Capabilities
+AmbientCapabilities=CAP_NET_BIND_SERVICE CAP_SYS_RAWIO CAP_NET_ADMIN
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_SYS_RAWIO CAP_NET_ADMIN CAP_SYS_TIME
+
+# Environment
+Environment=RUST_LOG=scada_dds=info
+Environment=RUST_BACKTRACE=1
+
+# Syslog identifier for journald
+SyslogIdentifier=scada-dds
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

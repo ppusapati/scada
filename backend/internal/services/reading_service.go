@@ -2,14 +2,29 @@ package services
 
 import (
 	"context"
+	"sync/atomic"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"scada-system/internal/db/models"
 )
 
+// DataSource identifies where a reading originated
+type DataSource string
+
+const (
+	DataSourceMQTT DataSource = "mqtt"
+	DataSourceDDS  DataSource = "dds"
+	DataSourceAPI  DataSource = "api"
+)
+
 type ReadingService struct {
 	pool *pgxpool.Pool
+
+	// Metrics per data source
+	mqttInserts atomic.Int64
+	ddsInserts  atomic.Int64
+	apiInserts  atomic.Int64
 }
 
 func NewReadingService(pool *pgxpool.Pool) *ReadingService {
@@ -22,6 +37,43 @@ func (s *ReadingService) Insert(ctx context.Context, r *models.SensorReading) er
 		VALUES ($1, $2, $3, $4, $5, $6)`,
 		r.DeviceID, r.Timestamp, r.Metric, r.Value, r.Unit, r.Quality)
 	return err
+}
+
+// InsertFromSource inserts a reading and tracks which data path it arrived on
+// (MQTT, DDS, or API). This enables hybrid-mode monitoring where both MQTT and
+// DDS can feed data into the system.
+func (s *ReadingService) InsertFromSource(ctx context.Context, r *models.SensorReading, source DataSource) error {
+	err := s.Insert(ctx, r)
+	if err == nil {
+		switch source {
+		case DataSourceMQTT:
+			s.mqttInserts.Add(1)
+		case DataSourceDDS:
+			s.ddsInserts.Add(1)
+		case DataSourceAPI:
+			s.apiInserts.Add(1)
+		}
+	}
+	return err
+}
+
+// InsertBatchFromSource inserts multiple readings and tracks the data source
+func (s *ReadingService) InsertBatchFromSource(ctx context.Context, readings []models.SensorReading, source DataSource) error {
+	for i := range readings {
+		if err := s.InsertFromSource(ctx, &readings[i], source); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// GetSourceMetrics returns the count of readings received from each data source
+func (s *ReadingService) GetSourceMetrics() map[string]int64 {
+	return map[string]int64{
+		"mqtt": s.mqttInserts.Load(),
+		"dds":  s.ddsInserts.Load(),
+		"api":  s.apiInserts.Load(),
+	}
 }
 
 func (s *ReadingService) InsertBatch(ctx context.Context, readings []models.SensorReading) error {

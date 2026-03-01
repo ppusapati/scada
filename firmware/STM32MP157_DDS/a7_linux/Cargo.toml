@@ -1,0 +1,64 @@
+[package]
+name = "scada-dds"
+version = "1.0.0"
+edition = "2021"
+description = "STM32MP157 Cortex-A7 DDS application — SCADA data gateway"
+authors = ["P9e Microsystems Pvt Ltd"]
+
+# Target: ARM Cortex-A7 (Linux, std Rust)
+# Cross-compile: cargo build --release --target armv7-unknown-linux-gnueabihf
+# Deploy: Install to /usr/bin/scada-dds on STM32MP157 Linux rootfs
+
+[[bin]]
+name = "scada-dds"
+path = "src/main.rs"
+
+[dependencies]
+# DDS middleware
+rustdds = "0.9"
+
+# Async runtime
+tokio = { version = "1.36", features = ["full"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Configuration
+toml = "0.8"
+clap = { version = "4.5", features = ["derive"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Linux system interfaces
+nix = { version = "0.29", features = ["fs", "ioctl", "signal", "term"] }
+
+# Byte manipulation
+bytes = "1.6"
+byteorder = "1.5"
+
+# HTTP client for OTA
+reqwest = { version = "0.12", features = ["rustls-tls"], default-features = false }
+
+# CRC for firmware validation
+crc32fast = "1.4"
+
+# Graceful shutdown
+tokio-util = "0.7"
+signal-hook = "0.3"
+signal-hook-tokio = { version = "0.3", features = ["futures-v0_3"] }
+
+# Modbus TCP
+tokio-modbus = "0.14"
+
+# Misc
+anyhow = "1.0"
+thiserror = "1.0"
+chrono = "0.4"
+
+[profile.release]
+opt-level = 2
+lto = true
+strip = true

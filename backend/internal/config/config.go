@@ -9,7 +9,16 @@ type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
 	MQTT     MQTTConfig
+	DDS      DDSConfig
 	JWT      JWTConfig
+}
+
+type DDSConfig struct {
+	Enabled       bool
+	DomainID      int
+	MulticastAddr string
+	Interface     string // network interface for multicast (e.g. "eth0")
+	FallbackMQTT  bool   // fall back to MQTT when DDS is unavailable
 }
 
 type ServerConfig struct {
@@ -60,6 +69,13 @@ func Load() *Config {
 			Username: getEnv("MQTT_USERNAME", ""),
 			Password: getEnv("MQTT_PASSWORD", ""),
 		},
+		DDS: DDSConfig{
+			Enabled:       getEnvBool("DDS_ENABLED", true),
+			DomainID:      getEnvInt("DDS_DOMAIN_ID", 0),
+			MulticastAddr: getEnv("DDS_MULTICAST_ADDR", "239.255.0.1"),
+			Interface:     getEnv("DDS_INTERFACE", ""),
+			FallbackMQTT:  getEnvBool("DDS_FALLBACK_MQTT", true),
+		},
 		JWT: JWTConfig{
 			Secret:     getEnv("JWT_SECRET", "change-me-in-production"),
 			Expiration: getEnvInt("JWT_EXPIRATION", 24),
@@ -84,6 +100,18 @@ func getEnvInt(key string, fallback int) int {
 	if val := os.Getenv(key); val != "" {
 		if i, err := strconv.Atoi(val); err == nil {
 			return i
+		}
+	}
+	return fallback
+}
+
+func getEnvBool(key string, fallback bool) bool {
+	if val := os.Getenv(key); val != "" {
+		switch val {
+		case "true", "1", "yes", "on":
+			return true
+		case "false", "0", "no", "off":
+			return false
 		}
 	}
 	return fallback
