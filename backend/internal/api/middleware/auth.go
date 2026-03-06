@@ -48,20 +48,27 @@ func (m *AuthMiddleware) GenerateToken(userID, username, role string, expHours i
 
 func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			http.Error(w, `{"error":"missing authorization header"}`, http.StatusUnauthorized)
-			return
-		}
+		var tokenStr string
 
-		parts := strings.SplitN(authHeader, " ", 2)
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			http.Error(w, `{"error":"invalid authorization format"}`, http.StatusUnauthorized)
+		// Check Authorization header first
+		authHeader := r.Header.Get("Authorization")
+		if authHeader != "" {
+			parts := strings.SplitN(authHeader, " ", 2)
+			if len(parts) != 2 || parts[0] != "Bearer" {
+				http.Error(w, `{"error":"invalid authorization format"}`, http.StatusUnauthorized)
+				return
+			}
+			tokenStr = parts[1]
+		} else if qToken := r.URL.Query().Get("token"); qToken != "" {
+			// Fall back to query param for WebSocket connections
+			tokenStr = qToken
+		} else {
+			http.Error(w, `{"error":"missing authorization"}`, http.StatusUnauthorized)
 			return
 		}
 
 		claims := &Claims{}
-		token, err := jwt.ParseWithClaims(parts[1], claims, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			return m.secret, nil
 		})
 		if err != nil || !token.Valid {

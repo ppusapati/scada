@@ -10,11 +10,20 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+var allowedOrigins = map[string]bool{
+	"http://localhost:5173": true,
+	"http://localhost:3000": true,
+}
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		return true // Configure properly in production
+		origin := r.Header.Get("Origin")
+		if origin == "" {
+			return true
+		}
+		return allowedOrigins[origin]
 	},
 }
 
@@ -36,7 +45,7 @@ type client struct {
 	send         chan []byte
 	hub          *Hub
 	subscription Subscription
-	mu           sync.Mutex
+	mu           sync.RWMutex
 }
 
 type Hub struct {
@@ -195,8 +204,8 @@ func (c *client) writePump() {
 }
 
 func (c *client) matchesSubscription(msg Message) bool {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+	c.mu.RLock()
+	defer c.mu.RUnlock()
 
 	sub := c.subscription
 

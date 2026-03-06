@@ -28,3 +28,6 @@ deploy/docker/mqttlog/
 # Env files
 .env
 *.env.local
+
+# Kubernetes secrets (use sealed-secrets or external secrets operator)
+deploy/k8s/secrets.yaml

@@ -45,15 +45,15 @@ func NewRouter(
 		w.Write([]byte(`{"status":"ok","service":"scada-backend"}`))
 	})
 
-	// Public routes
-	r.Post("/api/v1/auth/login", authHandler.Login)
-
-	// WebSocket endpoint (auth via query param token)
-	r.Get("/ws", wsHub.HandleWebSocket)
+	// Public routes (rate limited)
+	r.With(chimw.Throttle(10)).Post("/api/v1/auth/login", authHandler.Login)
 
 	// Protected API routes
 	r.Group(func(r chi.Router) {
 		r.Use(authMW.Authenticate)
+
+		// WebSocket endpoint (auth via query param token)
+		r.Get("/ws", wsHub.HandleWebSocket)
 
 		// User management
 		r.Get("/api/v1/auth/me", authHandler.Me)

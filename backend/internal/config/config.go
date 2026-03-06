@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 )
@@ -48,7 +49,17 @@ type JWTConfig struct {
 	Expiration int // hours
 }
 
-func Load() *Config {
+func Load() (*Config, error) {
+	dbPassword := requireEnv("DB_PASSWORD")
+	jwtSecret := requireEnv("JWT_SECRET")
+
+	if dbPassword == "" {
+		return nil, fmt.Errorf("DB_PASSWORD environment variable is required")
+	}
+	if jwtSecret == "" {
+		return nil, fmt.Errorf("JWT_SECRET environment variable is required")
+	}
+
 	return &Config{
 		Server: ServerConfig{
 			Host: getEnv("SERVER_HOST", "0.0.0.0"),
@@ -58,9 +69,9 @@ func Load() *Config {
 			Host:     getEnv("DB_HOST", "localhost"),
 			Port:     getEnvInt("DB_PORT", 5432),
 			User:     getEnv("DB_USER", "scada"),
-			Password: getEnv("DB_PASSWORD", "scada_secret"),
+			Password: dbPassword,
 			DBName:   getEnv("DB_NAME", "scada_db"),
-			SSLMode:  getEnv("DB_SSLMODE", "disable"),
+			SSLMode:  getEnv("DB_SSLMODE", "require"),
 		},
 		MQTT: MQTTConfig{
 			Broker:   getEnv("MQTT_BROKER", "localhost"),
@@ -77,10 +88,14 @@ func Load() *Config {
 			FallbackMQTT:  getEnvBool("DDS_FALLBACK_MQTT", true),
 		},
 		JWT: JWTConfig{
-			Secret:     getEnv("JWT_SECRET", "change-me-in-production"),
+			Secret:     jwtSecret,
 			Expiration: getEnvInt("JWT_EXPIRATION", 24),
 		},
-	}
+	}, nil
+}
+
+func requireEnv(key string) string {
+	return os.Getenv(key)
 }
 
 func (d *DatabaseConfig) DSN() string {

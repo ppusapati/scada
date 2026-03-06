@@ -5,6 +5,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"scada-system/internal/db/models"
 )
@@ -77,10 +78,18 @@ func (s *ReadingService) GetSourceMetrics() map[string]int64 {
 }
 
 func (s *ReadingService) InsertBatch(ctx context.Context, readings []models.SensorReading) error {
-	batch := &pgxpool.Pool{}
-	_ = batch // use pgx batch for production
+	batch := &pgx.Batch{}
 	for _, r := range readings {
-		if err := s.Insert(ctx, &r); err != nil {
+		batch.Queue(
+			`INSERT INTO sensor_readings (device_id, timestamp, metric, value, unit, quality)
+			VALUES ($1, $2, $3, $4, $5, $6)`,
+			r.DeviceID, r.Timestamp, r.Metric, r.Value, r.Unit, r.Quality,
+		)
+	}
+	br := s.pool.SendBatch(ctx, batch)
+	defer br.Close()
+	for range readings {
+		if _, err := br.Exec(); err != nil {
 			return err
 		}
 	}

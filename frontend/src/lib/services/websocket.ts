@@ -119,8 +119,9 @@ let instance: ScadaWebSocket | null = null;
 
 export function getWebSocket(): ScadaWebSocket {
 	if (!instance) {
+		const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 		const wsUrl = typeof window !== 'undefined'
-			? `ws://${window.location.host}/ws`
+			? `${protocol}//${window.location.host}/ws`
 			: 'ws://localhost:8080/ws';
 		instance = new ScadaWebSocket(wsUrl);
 	}

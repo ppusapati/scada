@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_DB: scada_db
       POSTGRES_USER: scada
-      POSTGRES_PASSWORD: scada_secret
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
     ports:
       - "5432:5432"
     volumes:
@@ -49,13 +49,13 @@ services:
       DB_HOST: postgres
       DB_PORT: "5432"
       DB_USER: scada
-      DB_PASSWORD: scada_secret
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
       DB_NAME: scada_db
       DB_SSLMODE: disable
       MQTT_BROKER: mosquitto
       MQTT_PORT: "1883"
       MQTT_CLIENT_ID: scada-backend
-      JWT_SECRET: change-this-to-a-secure-random-string
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
     ports:
       - "8080:8080"
     depends_on:

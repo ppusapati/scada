@@ -50,6 +50,11 @@ func (h *SolarHandler) ControlInverter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.Action != "enable" && req.Action != "disable" && req.Action != "reset" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "action must be 'enable', 'disable', or 'reset'"})
+		return
+	}
+
 	userID := middleware.GetUserID(r.Context())
 
 	cmd := mqtt.CommandData{
@@ -79,8 +84,13 @@ func (h *SolarHandler) SetMode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.Mode != "auto" && req.Mode != "manual" && req.Mode != "maintenance" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "mode must be 'auto', 'manual', or 'maintenance'"})
+		return
+	}
+
 	if err := h.solar.SetOperatingMode(r.Context(), id, req.Mode); err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to update mode"})
 		return
 	}
 

@@ -11,8 +11,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	chimw "github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
 
@@ -30,7 +28,10 @@ import (
 
 func main() {
 	godotenv.Load()
-	cfg := config.Load()
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
 
 	// Structured logger for DDS and other components
 	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}).
@@ -120,10 +121,9 @@ func main() {
 
 	// Alarm Engine (evaluates sensor data against rules)
 	alarmEngine := services.NewAlarmEngine(database.Pool, alarmSvc, wsHub)
-	_ = alarmEngine // Used by the MQTT bridge for real-time evaluation
 
 	// MQTT Bridge
-	bridge := mqttclient.NewBridge(mqttClient, readingSvc, deviceSvc, waterSvc, solarSvc, alarmSvc, wsHub)
+	bridge := mqttclient.NewBridge(mqttClient, readingSvc, deviceSvc, waterSvc, solarSvc, alarmSvc, alarmEngine, wsHub)
 	if err := bridge.Start(ctx); err != nil {
 		fmt.Printf("[Bridge] Warning: %v\n", err)
 	}
@@ -206,16 +206,8 @@ func main() {
 
 	restRouter := routes.NewRouter(authHandler, waterHandler, solarHandler, alarmHandler, readingHandler, ddsHandler, authMW, wsHub)
 
-	// Root router
+	// Root router (middleware is registered in routes.NewRouter to avoid duplication)
 	root := chi.NewRouter()
-	root.Use(chimw.Logger, chimw.Recoverer, chimw.RequestID)
-	root.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:3000"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "Connect-Protocol-Version"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: true,
-	}))
 
 	// REST API
 	root.Mount("/", restRouter)

@@ -14,13 +14,14 @@ import (
 
 // Bridge connects MQTT messages to the database and WebSocket hub
 type Bridge struct {
-	mqtt       *Client
-	readings   *services.ReadingService
-	devices    *services.DeviceService
-	water      *services.WaterService
-	solar      *services.SolarService
-	alarms     *services.AlarmService
-	wsHub      *websocket.Hub
+	mqtt        *Client
+	readings    *services.ReadingService
+	devices     *services.DeviceService
+	water       *services.WaterService
+	solar       *services.SolarService
+	alarms      *services.AlarmService
+	alarmEngine *services.AlarmEngine
+	wsHub       *websocket.Hub
 }
 
 func NewBridge(
@@ -30,16 +31,18 @@ func NewBridge(
 	water *services.WaterService,
 	solar *services.SolarService,
 	alarms *services.AlarmService,
+	alarmEngine *services.AlarmEngine,
 	wsHub *websocket.Hub,
 ) *Bridge {
 	return &Bridge{
-		mqtt:     mqttClient,
-		readings: readings,
-		devices:  devices,
-		water:    water,
-		solar:    solar,
-		alarms:   alarms,
-		wsHub:    wsHub,
+		mqtt:        mqttClient,
+		readings:    readings,
+		devices:     devices,
+		water:       water,
+		solar:       solar,
+		alarms:      alarms,
+		alarmEngine: alarmEngine,
+		wsHub:       wsHub,
 	}
 }
 
@@ -112,6 +115,13 @@ func (b *Bridge) handleTelemetry(topic string, payload []byte) {
 	case "solar":
 		if err := b.solar.UpdateFromMQTT(ctx, deviceID, updateMap); err != nil {
 			fmt.Printf("[Bridge] Failed to update solar state: %v\n", err)
+		}
+	}
+
+	// Evaluate alarm rules against incoming metrics
+	if b.alarmEngine != nil {
+		for metric, value := range data.Metrics {
+			b.alarmEngine.Evaluate(ctx, deviceID, subsystem, metric, value)
 		}
 	}
 

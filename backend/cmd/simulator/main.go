@@ -70,7 +70,10 @@ func main() {
 	// Subscribe to commands
 	client.Subscribe(fmt.Sprintf("scada/water/%s/command", waterDeviceID), 1, func(c pahomqtt.Client, m pahomqtt.Message) {
 		var cmd map[string]interface{}
-		json.Unmarshal(m.Payload(), &cmd)
+		if err := json.Unmarshal(m.Payload(), &cmd); err != nil {
+			fmt.Printf("[CMD] Failed to parse water command: %v\n", err)
+			return
+		}
 		action := fmt.Sprintf("%v", cmd["action"])
 		fmt.Printf("[CMD] Water: %s\n", action)
 		switch action {
@@ -83,7 +86,10 @@ func main() {
 
 	client.Subscribe(fmt.Sprintf("scada/solar/%s/command", solarDeviceID), 1, func(c pahomqtt.Client, m pahomqtt.Message) {
 		var cmd map[string]interface{}
-		json.Unmarshal(m.Payload(), &cmd)
+		if err := json.Unmarshal(m.Payload(), &cmd); err != nil {
+			fmt.Printf("[CMD] Failed to parse solar command: %v\n", err)
+			return
+		}
 		action := fmt.Sprintf("%v", cmd["action"])
 		fmt.Printf("[CMD] Solar: %s\n", action)
 	})
@@ -236,22 +242,30 @@ func (s *SolarState) Step() map[string]float64 {
 }
 
 func publishTelemetry(client pahomqtt.Client, subsystem, deviceID string, metrics map[string]float64) {
-	payload, _ := json.Marshal(map[string]interface{}{
+	payload, err := json.Marshal(map[string]interface{}{
 		"device_id": deviceID,
 		"timestamp": time.Now().Format(time.RFC3339),
 		"metrics":   metrics,
 		"quality":   0,
 	})
+	if err != nil {
+		fmt.Printf("[Sim] Failed to marshal telemetry: %v\n", err)
+		return
+	}
 	topic := fmt.Sprintf("scada/%s/%s/telemetry", subsystem, deviceID)
 	client.Publish(topic, 1, false, payload)
 }
 
 func publishStatus(client pahomqtt.Client, subsystem, deviceID, status string) {
-	payload, _ := json.Marshal(map[string]interface{}{
+	payload, err := json.Marshal(map[string]interface{}{
 		"device_id": deviceID,
 		"status":    status,
 		"timestamp": time.Now().Format(time.RFC3339),
 	})
+	if err != nil {
+		fmt.Printf("[Sim] Failed to marshal status: %v\n", err)
+		return
+	}
 	topic := fmt.Sprintf("scada/%s/%s/status", subsystem, deviceID)
 	client.Publish(topic, 1, true, payload)
 }

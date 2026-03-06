@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -24,7 +25,7 @@ func NewWaterHandler(water *services.WaterService, devices *services.DeviceServi
 func (h *WaterHandler) GetAllSystems(w http.ResponseWriter, r *http.Request) {
 	systems, err := h.water.GetAll(r.Context())
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 		return
 	}
 	writeJSON(w, http.StatusOK, systems)
@@ -104,7 +105,7 @@ func (h *WaterHandler) ControlValve(w http.ResponseWriter, r *http.Request) {
 		Action: "set_valve",
 		Parameters: map[string]string{
 			"valve_id": req.ValveID,
-			"position": json.Number(json.Number(string(rune(int(req.Position))))).String(),
+			"position": strconv.FormatFloat(req.Position, 'f', -1, 64),
 		},
 		IssuedBy: userID,
 		IssuedAt: time.Now(),
@@ -128,8 +129,13 @@ func (h *WaterHandler) SetMode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.Mode != "auto" && req.Mode != "manual" && req.Mode != "maintenance" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "mode must be 'auto', 'manual', or 'maintenance'"})
+		return
+	}
+
 	if err := h.water.SetOperatingMode(r.Context(), id, req.Mode); err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 		return
 	}
 
@@ -139,7 +145,7 @@ func (h *WaterHandler) SetMode(w http.ResponseWriter, r *http.Request) {
 func (h *WaterHandler) GetDevices(w http.ResponseWriter, r *http.Request) {
 	devices, err := h.devices.GetAll(r.Context(), "water")
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 		return
 	}
 	writeJSON(w, http.StatusOK, devices)
