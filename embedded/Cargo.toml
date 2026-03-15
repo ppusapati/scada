@@ -1,30 +1,85 @@
 [package]
 name = "scada-embedded"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
-description = "SCADA system embedded firmware for water and solar IoT sensors"
+description = "SCADA system embedded firmware for STM32H743 PLC-grade data logger"
 
+# ============================================================
+# Simulator dependencies (runs on host for testing)
+# ============================================================
 [dependencies]
-rumqttc = "0.24"
+rumqttc = { version = "0.24", optional = true }
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-tokio = { version = "1.0", features = ["full"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+tokio = { version = "1.0", features = ["full"], optional = true }
 log = "0.4"
-env_logger = "0.11"
-chrono = { version = "0.4", features = ["serde"] }
-toml = "0.8"
-uuid = { version = "1.0", features = ["v4"] }
-rand = "0.8"
+env_logger = { version = "0.11", optional = true }
+chrono = { version = "0.4", features = ["serde"], optional = true }
+toml = { version = "0.8", optional = true }
+uuid = { version = "1.0", features = ["v4"], optional = true }
+rand = { version = "0.8", optional = true }
+heapless = "0.8"
+
+# ============================================================
+# STM32H743 embedded dependencies (no_std)
+# ============================================================
+embassy-stm32 = { version = "0.1", features = ["stm32h743vi", "time-driver-any", "exti"], optional = true }
+embassy-executor = { version = "0.6", features = ["arch-cortex-m", "executor-thread", "integrated-timers"], optional = true }
+embassy-time = { version = "0.3", optional = true }
+embassy-sync = { version = "0.6", optional = true }
+embassy-net = { version = "0.4", features = ["tcp", "udp", "dhcpv4", "dns"], optional = true }
+embassy-net-wiznet = { version = "0.1", features = ["w5500"], optional = true }
+embassy-futures = { version = "0.1", optional = true }
+embedded-hal = { version = "1.0", optional = true }
+embedded-hal-async = { version = "1.0", optional = true }
+embedded-io-async = { version = "0.6", optional = true }
+cortex-m = { version = "0.7", features = ["critical-section-single-core"], optional = true }
+cortex-m-rt = { version = "0.7", optional = true }
+defmt = { version = "0.3", optional = true }
+defmt-rtt = { version = "0.4", optional = true }
+panic-probe = { version = "0.3", features = ["print-defmt"], optional = true }
+static_cell = { version = "2.1", optional = true }
+portable-atomic = { version = "1.0", features = ["critical-section"], optional = true }
 
 [features]
 default = ["simulator"]
-simulator = []
-hardware = []
 
+# Host simulator mode (existing behavior, runs on PC)
+simulator = [
+    "dep:rumqttc", "dep:tokio", "dep:env_logger", "dep:chrono",
+    "dep:toml", "dep:uuid", "dep:rand"
+]
+
+# STM32H743 hardware target (no_std, Embassy async)
+stm32h743 = [
+    "dep:embassy-stm32", "dep:embassy-executor", "dep:embassy-time",
+    "dep:embassy-sync", "dep:embassy-net", "dep:embassy-net-wiznet",
+    "dep:embassy-futures",
+    "dep:embedded-hal", "dep:embedded-hal-async", "dep:embedded-io-async",
+    "dep:cortex-m", "dep:cortex-m-rt",
+    "dep:defmt", "dep:defmt-rtt", "dep:panic-probe",
+    "dep:static_cell", "dep:portable-atomic"
+]
+
+# ============================================================
+# Binary targets
+# ============================================================
 [[bin]]
 name = "water-sensor"
 path = "src/bin/water_sensor.rs"
+required-features = ["simulator"]
 
 [[bin]]
 name = "solar-sensor"
 path = "src/bin/solar_sensor.rs"
+required-features = ["simulator"]
+
+[[bin]]
+name = "datalogger"
+path = "src/bin/datalogger.rs"
+required-features = ["stm32h743"]
+
+[profile.release]
+opt-level = "s"
+lto = true
+debug = 2

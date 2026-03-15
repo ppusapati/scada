@@ -1,0 +1,17 @@
+# Build configuration for STM32H743 target
+# Use: cargo build --features stm32h743 --no-default-features --release
+
+[target.thumbv7em-none-eabihf]
+runner = "probe-rs run --chip STM32H743VITx"
+rustflags = [
+    "-C", "link-arg=-Tlink.x",
+    "-C", "link-arg=-Tdefmt.x",
+]
+
+[build]
+# Default target for `cargo build` (when building for hardware)
+# Comment out when building simulator on host
+# target = "thumbv7em-none-eabihf"
+
+[env]
+DEFMT_LOG = "info"
