@@ -4,7 +4,7 @@
 //! SPI slave interface - no second MCU needed.
 //!
 //! Hardware: SPI2 (PB13=SCK, PB14=MISO, PB15=MOSI, PB12=CS)
-//! Control:  PB1=CHIP_EN, PB2=RST_N, PD10=IRQ_N
+//! Control:  PB1=CHIP_EN, PC0=RST_N, PD10=IRQ_N
 
 use embassy_stm32::gpio::{Input, Level, Output, Pull, Speed};
 use embassy_time::{Duration, Timer};

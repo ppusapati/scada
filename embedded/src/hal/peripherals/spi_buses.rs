@@ -2,8 +2,11 @@
 //!
 //! SPI1 (LoRa SX1276):    PA5=SCK, PA6=MISO, PB5=MOSI, PA4=CS
 //! SPI2 (WiFi ATWINC1500): PB13=SCK, PB14=MISO, PB15=MOSI, PB12=CS
-//! SPI3 (Flash W25Q64JV):  PC10=SCK, PC11=MISO, PC12=MOSI, PA15=CS
+//! SPI3 (Flash W25Q64JV):  PB3=SCK, PB4=MISO, PB2=MOSI, PA15=CS
+//!   (PC10-PC12 freed for SDMMC1 4-bit SD card)
 //! SPI4 (Ethernet W5500):  PE2=SCK, PE5=MISO, PE6=MOSI, PE4=CS
+//!
+//! SDMMC1 (microSD 4-bit): PC12=CLK, PD2=CMD, PC8=D0, PC9=D1, PC10=D2, PC11=D3
 
 use embassy_stm32::spi::{self, Spi};
 use embassy_stm32::time::Hertz;

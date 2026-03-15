@@ -7,6 +7,7 @@
 
 pub mod w25q64_flash;
 pub mod microsd;
+pub mod sd_logger;
 pub mod eeprom;
 
 /// Storage error types

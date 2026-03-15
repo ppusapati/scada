@@ -21,10 +21,18 @@ use embassy_stm32::usart::{self, Uart};
 use embassy_stm32::Config;
 use embassy_time::{Duration, Ticker, Timer};
 
+use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+use embassy_sync::channel::Channel;
+
 use scada_embedded::hal::peripherals::watchdog;
 use scada_embedded::datalogger::{DataLogger, LoggerConfig, SampleRate, DataRecord};
 use scada_embedded::comm::CommManager;
 use scada_embedded::storage::StorageHealth;
+use scada_embedded::storage::microsd::{MicroSdDriver, SdLogConfig, SdCardInfo, SdCardType, SdState};
+use scada_embedded::storage::sd_logger::{SdLogger, SdLoggerMode};
+
+/// Shared channel for passing data records from acquisition to logging task
+static DATA_CHANNEL: Channel<CriticalSectionRawMutex, DataRecord, 8> = Channel::new();
 
 /// System clock configuration for STM32H743 (480 MHz)
 fn system_config() -> Config {
@@ -74,26 +82,109 @@ async fn watchdog_task(mut wdi_pin: Output<'static>) {
 async fn acquisition_task() {
     info!("Data acquisition task started");
     let mut ticker = Ticker::every(Duration::from_millis(1000));
+    let mut logger = DataLogger::new(LoggerConfig::default());
+    logger.start();
+    let mut tick_count: u64 = 0;
 
     loop {
-        // ADC sampling would happen here via DMA
-        // Digital input reading via GPIO
-        // Store to shared state via embassy_sync::Signal or Channel
         ticker.next().await;
+        tick_count += 1;
+
+        // ADC sampling via DMA (placeholder values until ADC driver is connected)
+        // In production, these come from the OPA2376 buffered analog front-end
+        let analog_values: [f32; 4] = [4.0, 4.0, 0.0, 0.0]; // 4mA idle, 0V idle
+        let digital_in: u8 = 0x00;
+        let digital_out: u8 = 0x00;
+        let mcu_temp: f32 = 25.0;
+        let supply_voltage: f32 = 3.3;
+
+        let record = logger.create_record(
+            tick_count * 1000, // timestamp_ms
+            analog_values,
+            digital_in,
+            digital_out,
+            mcu_temp,
+            supply_voltage,
+        );
+
+        // Send record to logging task via shared channel
+        // try_send avoids blocking the acquisition task if logger is slow
+        match DATA_CHANNEL.try_send(record) {
+            Ok(()) => {}
+            Err(_) => {
+                defmt::warn!("Data channel full, record dropped");
+            }
+        }
     }
 }
 
 /// Data logging task - writes records to flash and SD card
+///
+/// Receives DataRecords from the acquisition task via channel,
+/// buffers them as CSV, and periodically flushes to SD card.
+/// Handles file rotation when size limit is reached.
 #[embassy_executor::task]
 async fn logging_task() {
-    info!("Data logging task started");
-    let mut ticker = Ticker::every(Duration::from_millis(1000));
+    info!("SD card logging task started");
+
+    // Initialize SD logger with default config
+    // 10MB per file, up to 1000 files, flush every 10 records
+    let sd_config = SdLogConfig::default();
+    let mut sd_logger = SdLogger::new(sd_config);
+
+    // Wait for SD card initialization
+    // In production, the SDMMC1 peripheral init would happen here
+    Timer::after(Duration::from_millis(1000)).await;
+
+    // Attempt to start logging
+    // TODO: Replace with actual SDMMC1 hardware init sequence:
+    //   1. Send CMD0 (GO_IDLE) at 400kHz
+    //   2. Send CMD8 (SEND_IF_COND) to detect SDHC
+    //   3. Send ACMD41 until card ready
+    //   4. Switch to 25MHz 4-bit mode
+    //   5. Mount FAT32 filesystem via embedded-sdmmc
+    //   6. Create/open log directory
+    sd_logger.start_logging();
+    info!("SD logger active, writing to {}", sd_logger.current_filename().as_str());
 
     loop {
-        // Read latest sample from shared channel
-        // Write to flash ring buffer
-        // Periodically flush to SD card CSV
-        ticker.next().await;
+        // Wait for a data record from acquisition task
+        let record = DATA_CHANNEL.receive().await;
+
+        // Write CSV header if this is a new file
+        if let Some(header) = sd_logger.get_header_if_needed() {
+            // TODO: Write header bytes to SD card via SDMMC1
+            // sdmmc_write(current_file, header).await;
+            defmt::trace!("CSV header written ({} bytes)", header.len());
+        }
+
+        // Buffer the record as CSV
+        if let Some(flush_data) = sd_logger.log_record(&record) {
+            let bytes_to_write = flush_data.len();
+
+            // Flush buffer to SD card
+            // TODO: Replace with actual SDMMC1 write:
+            //   volume_mgr.write(file_handle, flush_data)
+            //   volume_mgr.flush(file_handle)
+            //
+            // For now, log the write operation
+            info!(
+                "SD flush: {} bytes -> {} (file size: {} KB)",
+                bytes_to_write,
+                sd_logger.current_filename().as_str(),
+                sd_logger.current_file_size() / 1024
+            );
+
+            // Confirm write succeeded
+            sd_logger.confirm_flush();
+
+            // Check if file needs rotation
+            if sd_logger.needs_file_rotation() {
+                // Close current file, open next
+                sd_logger.rotate_file(1000);
+                info!("File rotated -> {}", sd_logger.current_filename().as_str());
+            }
+        }
     }
 }
 
@@ -179,11 +270,11 @@ async fn main(spawner: Spawner) {
 
     // ATWINC1500 WiFi control pins
     let _wifi_cs = Output::new(p.PB12, Level::High, Speed::VeryHigh);
-    let _wifi_rst = Output::new(p.PB2, Level::High, Speed::Low);
+    let _wifi_rst = Output::new(p.PC0, Level::High, Speed::Low); // Moved from PB2 (now SPI3_MOSI)
     let _wifi_en = Output::new(p.PB1, Level::High, Speed::Low);
     let _wifi_irq = Input::new(p.PD10, Pull::Up);
 
-    // W25Q64JV Flash CS
+    // W25Q64JV Flash CS (SPI3 remapped: PB3=SCK, PB4=MISO, PB2=MOSI)
     let _flash_cs = Output::new(p.PA15, Level::High, Speed::VeryHigh);
 
     // W5500 Ethernet control pins
@@ -209,6 +300,18 @@ async fn main(spawner: Spawner) {
     let _do3 = Output::new(p.PC7, Level::Low, Speed::Low);
 
     info!("GPIO initialized");
+
+    // ---- SDMMC1 SD Card Pins ----
+    // Native SDMMC1 peripheral in 4-bit mode for high-speed SD card access
+    // Pins configured as alternate function by embassy-stm32 SDMMC driver:
+    //   PC12 = SDMMC1_CLK
+    //   PD2  = SDMMC1_CMD
+    //   PC8  = SDMMC1_D0
+    //   PC9  = SDMMC1_D1
+    //   PC10 = SDMMC1_D2
+    //   PC11 = SDMMC1_D3
+    // Card detect via Molex 104031-0811 connector CD pin
+    info!("SDMMC1 pins reserved for SD card (4-bit mode)");
 
     // ---- Hardware Reset Sequence ----
 

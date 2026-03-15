@@ -40,6 +40,7 @@ defmt-rtt = { version = "0.4", optional = true }
 panic-probe = { version = "0.3", features = ["print-defmt"], optional = true }
 static_cell = { version = "2.1", optional = true }
 portable-atomic = { version = "1.0", features = ["critical-section"], optional = true }
+embedded-sdmmc = { version = "0.8", default-features = false, optional = true }
 
 [features]
 default = ["simulator"]
@@ -58,7 +59,8 @@ stm32h743 = [
     "dep:embedded-hal", "dep:embedded-hal-async", "dep:embedded-io-async",
     "dep:cortex-m", "dep:cortex-m-rt",
     "dep:defmt", "dep:defmt-rtt", "dep:panic-probe",
-    "dep:static_cell", "dep:portable-atomic"
+    "dep:static_cell", "dep:portable-atomic",
+    "dep:embedded-sdmmc"
 ]
 
 # ============================================================
