@@ -483,6 +483,155 @@
   )
 
   ;; ============================================================
+  ;; UART DEBUG CONSOLE HEADER (J12)
+  ;; 4-pin 2.54mm header: VCC(3.3V), TX(PA9), RX(PA10), GND
+  ;; USART1 at 115200 baud for debug/diagnostic output
+  ;; Compatible with standard FTDI USB-UART cables
+  ;; ============================================================
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x04")
+    (at 254.0 101.6)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "MCU-0090-J12")
+    (property "Reference" "J12"
+      (at 254.0 92.71 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "UART Debug Console"
+      (at 254.0 95.25 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
+      (at 254.0 101.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "PinHeader_1x04_P2.54mm"
+      (at 254.0 101.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Generic"
+      (at 254.0 101.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid "J12-pin1-uuid") (name "VCC_3V3"))
+    (pin "2" (uuid "J12-pin2-uuid") (name "USART1_TX (PA9)"))
+    (pin "3" (uuid "J12-pin3-uuid") (name "USART1_RX (PA10)"))
+    (pin "4" (uuid "J12-pin4-uuid") (name "GND"))
+  )
+
+  ;; ESD protection on UART debug header
+  (symbol (lib_id "Device:R") (at 248.92 101.6) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "MCU-0091-R14")
+    (property "Reference" "R14" (at 246.38 100.33 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "33R" (at 248.92 104.14 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 248.92 101.6 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0733RL" (at 248.92 101.6 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 248.92 101.6 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:R") (at 248.92 107.95) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "MCU-0092-R15")
+    (property "Reference" "R15" (at 246.38 106.68 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "33R" (at 248.92 110.49 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 248.92 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0733RL" (at 248.92 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 248.92 107.95 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; BOOT0 SELECT HEADER (J13)
+  ;; 1x3 2.54mm jumper: GND-BOOT0-3V3
+  ;; Center pin to BOOT0, jumper to GND=normal flash boot,
+  ;; jumper to 3V3=DFU bootloader mode (USB/UART programming)
+  ;; ============================================================
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x03")
+    (at 254.0 120.65)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "MCU-0095-J13")
+    (property "Reference" "J13"
+      (at 254.0 113.03 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "BOOT0 Select"
+      (at 254.0 115.57 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
+      (at 254.0 120.65 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "PinHeader_1x03_P2.54mm"
+      (at 254.0 120.65 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Generic"
+      (at 254.0 120.65 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid "J13-pin1-uuid") (name "GND (Normal Boot)"))
+    (pin "2" (uuid "J13-pin2-uuid") (name "BOOT0"))
+    (pin "3" (uuid "J13-pin3-uuid") (name "VCC_3V3 (DFU Mode)"))
+  )
+
+  ;; BOOT0 pull-down (default normal boot even without jumper)
+  (symbol (lib_id "Device:R") (at 248.92 120.65) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "MCU-0096-R16")
+    (property "Reference" "R16" (at 246.38 119.38 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 248.92 123.19 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 248.92 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 248.92 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 248.92 120.65 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; TAG-CONNECT TC2050-IDC PROGRAMMING PADS (J14)
+  ;; 10-pin pogo-pin footprint for production/factory programming
+  ;; Same SWD signals as J10 but with space-efficient pads
+  ;; No connector cost per board - just PCB pads
+  ;; ============================================================
+  (symbol
+    (lib_id "Connector:Tag-Connect_TC2050-IDC")
+    (at 254.0 143.51)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "MCU-0100-J14")
+    (property "Reference" "J14"
+      (at 254.0 130.81 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "TC2050-IDC SWD"
+      (at 254.0 133.35 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Connector:Tag-Connect_TC2050-IDC-FP_2x05_P1.27mm_Vertical"
+      (at 254.0 143.51 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "TC2050-IDC"
+      (at 254.0 143.51 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Tag-Connect"
+      (at 254.0 143.51 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; ============================================================
   ;; STATUS LEDs
   ;; ============================================================
   (symbol (lib_id "Device:LED") (at 215.9 158.75) (unit 1)
@@ -527,7 +676,7 @@
   ;; ============================================================
   ;; PIN ASSIGNMENTS (documented as text annotation)
   ;; ============================================================
-  (text "STM32H743VIT6 PIN ASSIGNMENTS (Rev 1.1 - SPI-based architecture):\n\n=== COMMUNICATION PERIPHERALS ===\nSPI1/LoRa SX1276: PA5(SCK), PA6(MISO), PB5(MOSI), PA4(NSS_LORA), PC13(DIO0_IRQ), PC2(RST)\nSPI2/WiFi ATWINC1500: PB13(SCK), PB14(MISO), PB15(MOSI), PB12(NSS_WIFI), PB1(CHIP_EN), PB2(RST_N), PD10(IRQ_N)\nSPI3/Flash W25Q64JV: PC10(SCK), PC11(MISO), PC12(MOSI), PA15(NSS_FLASH)\nSPI4/Ethernet W5500: PE2(SCK), PE5(MISO), PE6(MOSI), PE4(NSS_ETH), PE3(RST_N), PB0(INT_N)\nUART4/GSM SIM7600: PA0(TX), PC11(RX), PC3(PWR_KEY), PD11(STATUS)\nUART7/BLE RN4870: PE8(TX), PE7(RX), PD12(RST_N_BLE), PD13(STATUS_BLE)\nFDCAN1: PD0(RX), PD1(TX)\nUSART2/RS485: PD5(TX), PD6(RX), PD4(DE/RE)\n\n=== STORAGE ===\nSDMMC1: PC8(D0), PC9(D1), PC10(D2), PC11(D3), PC12(CLK), PD2(CMD)\nI2C1/EEPROM: PB6(SCL), PB7(SDA)\n\n=== ANALOG / DIGITAL I/O ===\nADC1: PA0-PA3 (4 channels, 16-bit)\nDI GPIO: PD3, PD7, PE0, PE1, PE9-PE12 (8x digital inputs via optocouplers)\nDO GPIO: PE13-PE15, PD14 (4x relay driver outputs)\n\n=== SYSTEM ===\nUSB_OTG_FS: PA11(DM), PA12(DP)\nSWD: PA13(SWDIO), PA14(SWCLK)\nBOOT0: PB0 (pulled low via resistor)\nNRST: Reset with RC filter + TPS3823 WDT output\nHSE: PH0(OSC_IN), PH1(OSC_OUT) - 25MHz\nLSE: PC14(OSC32_IN), PC15(OSC32_OUT) - 32.768kHz\nWDT_KICK: PB8 (TPS3823 WDI input)\n\nNOTE: RMII pins freed (PA1,PA2,PA7,PB11,PC1,PC4,PC5) by using W5500 SPI Ethernet"
+  (text "STM32H743VIT6 PIN ASSIGNMENTS (Rev 1.2 - SPI-based architecture):\n\n=== COMMUNICATION PERIPHERALS ===\nSPI1/LoRa SX1276: PA5(SCK), PA6(MISO), PB5(MOSI), PA4(NSS_LORA), PC13(DIO0_IRQ), PC2(RST)\nSPI2/WiFi ATWINC1500: PB13(SCK), PB14(MISO), PB15(MOSI), PB12(NSS_WIFI), PB1(CHIP_EN), PC0(RST_N), PD10(IRQ_N)\nSPI3/Flash W25Q64JV: PB3(SCK), PB4(MISO), PB2(MOSI), PA15(NSS_FLASH) [REMAPPED from PC10-12 for SDMMC1]\nSPI4/Ethernet W5500: PE2(SCK), PE5(MISO), PE6(MOSI), PE4(NSS_ETH), PE3(RST_N), PB0(INT_N)\nUSART1/Debug Console: PA9(TX), PA10(RX) -> J12 header (115200 baud)\nUART4/GSM SIM7600: PA0(TX), PC11(RX), PC3(PWR_KEY), PD11(STATUS)\nUART7/BLE RN4870: PE8(TX), PE7(RX), PD12(RST_N_BLE), PD13(STATUS_BLE)\nFDCAN1: PD0(RX), PD1(TX)\nUSART2/RS485: PD5(TX), PD6(RX), PD4(DE/RE)\n\n=== STORAGE ===\nSDMMC1 (4-bit): PC8(D0), PC9(D1), PC10(D2), PC11(D3), PC12(CLK), PD2(CMD)\nI2C1/EEPROM: PB6(SCL), PB7(SDA)\n\n=== ANALOG / DIGITAL I/O ===\nADC1: PA0-PA3 (4 channels, 16-bit)\nDI GPIO: PD3, PD7, PE0, PE1, PE9-PE12 (8x digital inputs via optocouplers)\nDO GPIO: PE13-PE15, PD14 (4x relay driver outputs)\n\n=== SYSTEM ===\nUSB_OTG_FS: PA11(DM), PA12(DP)\nSWD: PA13(SWDIO), PA14(SWCLK)\nBOOT0: Dedicated pin, jumper J13 (GND=flash boot, 3V3=DFU mode), R16 10k pull-down default\nNRST: Reset with RC filter + TPS3823 WDT output\nHSE: PH0(OSC_IN), PH1(OSC_OUT) - 25MHz\nLSE: PC14(OSC32_IN), PC15(OSC32_OUT) - 32.768kHz\nWDT_KICK: PB8 (TPS3823 WDI input)\n\n=== PROGRAMMING INTERFACES ===\nJ10: 10-pin ARM SWD header (Samtec FTSH-105-01-L-DV-K, 1.27mm pitch)\nJ11: USB-C connector (USB_OTG_FS for DFU programming)\nJ12: UART debug console header (4-pin 2.54mm: VCC/TX/RX/GND, USART1 PA9/PA10)\nJ13: BOOT0 select jumper (3-pin: GND-BOOT0-3V3, default=flash boot)\nJ14: Tag-Connect TC2050-IDC pads (production programming, same SWD signals as J10)\n\nNOTE: RMII pins freed (PA1,PA2,PA7,PB11,PC1,PC4,PC5) by using W5500 SPI Ethernet\nNOTE: SPI3 remapped from PC10-12 to PB3/PB4/PB2 to free PC8-12 for SDMMC1 4-bit SD card"
     (exclude_from_sim no)
     (at 25.4 25.4 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))

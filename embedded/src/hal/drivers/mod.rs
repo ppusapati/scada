@@ -10,3 +10,4 @@ pub mod rn4870_ble;
 pub mod sim7600_gsm;
 pub mod rs485_modbus;
 pub mod canfd;
+pub mod debug_console;

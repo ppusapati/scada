@@ -30,6 +30,7 @@ use scada_embedded::comm::CommManager;
 use scada_embedded::storage::StorageHealth;
 use scada_embedded::storage::microsd::{MicroSdDriver, SdLogConfig, SdCardInfo, SdCardType, SdState};
 use scada_embedded::storage::sd_logger::{SdLogger, SdLoggerMode};
+use scada_embedded::hal::drivers::debug_console::{DebugConsole, DebugConsoleConfig, LogLevel};
 
 /// Shared channel for passing data records from acquisition to logging task
 static DATA_CHANNEL: Channel<CriticalSectionRawMutex, DataRecord, 8> = Channel::new();
@@ -231,6 +232,42 @@ async fn ble_task() {
     }
 }
 
+/// Debug console task - outputs diagnostics on USART1 (J12 header)
+/// Sends boot banner, then periodic status reports at configured interval
+#[embassy_executor::task]
+async fn debug_console_task() {
+    info!("Debug console task started (USART1 PA9/PA10, 115200 baud)");
+
+    let mut console = DebugConsole::new(DebugConsoleConfig::default());
+
+    // Send boot banner
+    // TODO: Replace with actual USART1 write:
+    //   uart1_tx.write_all(DebugConsole::boot_banner().as_bytes()).await;
+    let banner = DebugConsole::boot_banner();
+    info!("Debug banner: {} bytes queued", banner.len());
+
+    let status_secs = console.status_interval_secs();
+    let mut ticker = Ticker::every(Duration::from_secs(status_secs as u64));
+
+    loop {
+        ticker.next().await;
+
+        // Format and send periodic status report
+        // TODO: Read actual sensor values from shared state
+        let report = console.format_status_report(
+            0, // TODO: actual timestamp
+            &[4.0, 4.0, 0.0, 0.0],
+            0x00, 0x00,
+            25.0, 3.3,
+            true, 0,
+        );
+
+        // TODO: Replace with actual USART1 write:
+        //   uart1_tx.write_all(report.as_bytes()).await;
+        defmt::trace!("Console status: {} bytes", report.len());
+    }
+}
+
 /// System monitor task - temperature, voltage, diagnostics
 #[embassy_executor::task]
 async fn system_monitor_task() {
@@ -333,6 +370,7 @@ async fn main(spawner: Spawner) {
     spawner.must_spawn(modbus_task());
     spawner.must_spawn(ble_task());
     spawner.must_spawn(system_monitor_task());
+    spawner.must_spawn(debug_console_task());
 
     info!("All tasks spawned, system running");
 
