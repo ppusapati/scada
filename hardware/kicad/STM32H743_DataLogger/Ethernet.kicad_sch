@@ -5,21 +5,25 @@
   (uuid "a1b2c3d4-0006-4000-8000-000000000006")
   (paper "A4")
   (title_block
-    (title "Ethernet 10/100 - LAN8742A RMII PHY")
+    (title "Ethernet 10/100 - W5500 SPI Ethernet Controller")
     (date "2026-03-15")
-    (rev "1.0")
+    (rev "1.1")
     (company "SCADA Systems")
-    (comment 1 "LAN8742A-CZ-TR Ethernet PHY with RMII interface")
+    (comment 1 "W5500 Hardwired TCP/IP + MAC + PHY, SPI interface")
     (comment 2 "RJ45 with integrated magnetics and LEDs")
   )
 
   ;; ============================================================
-  ;; ETHERNET PHY - LAN8742A-CZ-TR
-  ;; RMII interface to STM32H743
-  ;; 25MHz clock from HSE (shared with MCU)
+  ;; ETHERNET CONTROLLER - W5500 (WIZnet)
+  ;; Hardwired TCP/IP stack (TCP, UDP, IPv4, ICMP, ARP, IGMP, PPPoE)
+  ;; Integrated 10/100 Ethernet MAC + PHY
+  ;; SPI interface up to 80MHz
+  ;; 8 simultaneous sockets, 32KB TX/RX buffer
+  ;; Industrial temp: -40°C to +85°C
+  ;; SPI4 interface to STM32H743 (PE2=SCK, PE5=MISO, PE6=MOSI, PE4=CS)
   ;; ============================================================
   (symbol
-    (lib_id "Interface_Ethernet:LAN8742A-CZ-TR")
+    (lib_id "Interface_Ethernet:W5500")
     (at 101.6 88.9)
     (unit 1)
     (exclude_from_sim no)
@@ -28,36 +32,103 @@
     (dnp no)
     (uuid "ETH-0001-U50")
     (property "Reference" "U50"
+      (at 101.6 60.96 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "W5500"
       (at 101.6 63.5 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "LAN8742A-CZ-TR"
-      (at 101.6 66.04 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "Package_DFN_QFN:QFN-24-1EP_4x4mm_P0.5mm_EP2.6x2.6mm"
+    (property "Footprint" "Package_DFN_QFN:QFN-48-1EP_7x7mm_P0.5mm_EP5.6x5.6mm"
       (at 101.6 88.9 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://ww1.microchip.com/downloads/en/DeviceDoc/8742A.pdf"
+    (property "Datasheet" "https://docs.wiznet.io/Product/iEthernet/W5500/datasheet"
       (at 101.6 88.9 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "MPN" "LAN8742A-CZ-TR"
+    (property "MPN" "W5500"
       (at 101.6 88.9 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer" "Microchip"
+    (property "Manufacturer" "WIZnet"
       (at 101.6 88.9 0)
       (effects (font (size 1.27 1.27)) hide)
     )
   )
 
-  ;; PHY decoupling capacitors
+  ;; ============================================================
+  ;; W5500 CRYSTAL - 25MHz (dedicated, not shared with MCU)
+  ;; ============================================================
+  (symbol
+    (lib_id "Device:Crystal")
+    (at 69.85 101.6)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "ETH-0002-Y3")
+    (property "Reference" "Y3"
+      (at 69.85 95.25 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "25MHz"
+      (at 69.85 97.79 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Crystal:Crystal_SMD_3215-4Pin_3.2x1.5mm"
+      (at 69.85 101.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "ABM8-25.000MHZ-B2-T"
+      (at 69.85 101.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Abracon"
+      (at 69.85 101.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; Crystal load capacitors (18pF per W5500 datasheet)
+  (symbol (lib_id "Device:C") (at 63.5 107.95) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0002B-C83")
+    (property "Reference" "C83" (at 66.04 106.68 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "18pF" (at 63.5 110.49 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 63.5 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM1555C1H180JA01D" (at 63.5 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 63.5 107.95 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C") (at 76.2 107.95) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0002C-C84")
+    (property "Reference" "C84" (at 78.74 106.68 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "18pF" (at 76.2 110.49 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 76.2 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM1555C1H180JA01D" (at 76.2 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 76.2 107.95 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; W5500 POWER DECOUPLING
+  ;; VCC 3.3V: 100nF x3 + 10uF bulk
+  ;; AVDD 1.8V (internal regulator): 10uF + 100nF on 1V8OUT pin
+  ;; ============================================================
+  (symbol (lib_id "Device:C") (at 63.5 76.2) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0003-C80")
+    (property "Reference" "C80" (at 66.04 74.93 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 63.5 78.74 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 63.5 76.2 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 63.5 76.2 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 63.5 76.2 0) (effects (font (size 1.27 1.27)) hide))
+  )
   (symbol (lib_id "Device:C") (at 69.85 76.2) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
-    (uuid "ETH-0002-C80")
-    (property "Reference" "C80" (at 72.39 74.93 0) (effects (font (size 1.27 1.27))))
+    (uuid "ETH-0004-C81")
+    (property "Reference" "C81" (at 72.39 74.93 0) (effects (font (size 1.27 1.27))))
     (property "Value" "100nF" (at 69.85 78.74 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 69.85 76.2 0) (effects (font (size 1.27 1.27)) hide))
     (property "MPN" "GRM155R71C104KA88D" (at 69.85 76.2 0) (effects (font (size 1.27 1.27)) hide))
@@ -65,8 +136,8 @@
   )
   (symbol (lib_id "Device:C") (at 76.2 76.2) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
-    (uuid "ETH-0003-C81")
-    (property "Reference" "C81" (at 78.74 74.93 0) (effects (font (size 1.27 1.27))))
+    (uuid "ETH-0005-C82")
+    (property "Reference" "C82" (at 78.74 74.93 0) (effects (font (size 1.27 1.27))))
     (property "Value" "100nF" (at 76.2 78.74 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 76.2 76.2 0) (effects (font (size 1.27 1.27)) hide))
     (property "MPN" "GRM155R71C104KA88D" (at 76.2 76.2 0) (effects (font (size 1.27 1.27)) hide))
@@ -74,12 +145,108 @@
   )
   (symbol (lib_id "Device:C") (at 82.55 76.2) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
-    (uuid "ETH-0004-C82")
-    (property "Reference" "C82" (at 85.09 74.93 0) (effects (font (size 1.27 1.27))))
+    (uuid "ETH-0006-C82B")
+    (property "Reference" "C82B" (at 85.09 74.93 0) (effects (font (size 1.27 1.27))))
     (property "Value" "10uF" (at 82.55 78.74 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (at 82.55 76.2 0) (effects (font (size 1.27 1.27)) hide))
     (property "MPN" "GRM21BR61A106ME51L" (at 82.55 76.2 0) (effects (font (size 1.27 1.27)) hide))
     (property "Manufacturer" "Murata" (at 82.55 76.2 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; 1.8V internal regulator output decoupling (1V8OUT pin)
+  (symbol (lib_id "Device:C") (at 63.5 85.09) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0007-C85")
+    (property "Reference" "C85" (at 66.04 83.82 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10uF" (at 63.5 87.63 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (at 63.5 85.09 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM21BR61A106ME51L" (at 63.5 85.09 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 63.5 85.09 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C") (at 69.85 85.09) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0008-C86")
+    (property "Reference" "C86" (at 72.39 83.82 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 69.85 87.63 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 69.85 85.09 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 69.85 85.09 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 69.85 85.09 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; W5500 SPI ACTIVE-LOW CS ACTIVE MANAGEMENT
+  ;; Pull-up on SCS_N to keep W5500 deselected during MCU boot
+  ;; ============================================================
+  (symbol (lib_id "Device:R") (at 63.5 69.85) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0009-R53")
+    (property "Reference" "R53" (at 66.04 69.85 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 63.5 72.39 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 63.5 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 63.5 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 63.5 69.85 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; W5500 RESET_N pull-up + connection to MCU GPIO for controlled reset
+  (symbol (lib_id "Device:R") (at 69.85 69.85) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0010-R54")
+    (property "Reference" "R54" (at 72.39 69.85 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 69.85 72.39 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 69.85 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 69.85 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 69.85 69.85 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; W5500 INT_N pull-up (active-low interrupt to MCU)
+  (symbol (lib_id "Device:R") (at 76.2 69.85) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0010B-R55")
+    (property "Reference" "R55" (at 78.74 69.85 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 76.2 72.39 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 76.2 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 76.2 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 76.2 69.85 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; TX PAIR FERRITE BEADS (EMI suppression per W5500 reference design)
+  ;; ============================================================
+  (symbol (lib_id "Device:Ferrite_Bead") (at 139.7 82.55) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0011-FB1")
+    (property "Reference" "FB1" (at 142.24 82.55 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "BLM18PG121SN1D" (at 139.7 85.09 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Inductor_SMD:L_0603_1608Metric" (at 139.7 82.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "BLM18PG121SN1D" (at 139.7 82.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 139.7 82.55 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:Ferrite_Bead") (at 139.7 88.9) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0012-FB2")
+    (property "Reference" "FB2" (at 142.24 88.9 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "BLM18PG121SN1D" (at 139.7 91.44 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Inductor_SMD:L_0603_1608Metric" (at 139.7 88.9 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "BLM18PG121SN1D" (at 139.7 88.9 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 139.7 88.9 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:Ferrite_Bead") (at 139.7 95.25) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0013-FB3")
+    (property "Reference" "FB3" (at 142.24 95.25 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "BLM18PG121SN1D" (at 139.7 97.79 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Inductor_SMD:L_0603_1608Metric" (at 139.7 95.25 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "BLM18PG121SN1D" (at 139.7 95.25 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 139.7 95.25 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:Ferrite_Bead") (at 139.7 101.6) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0014-FB4")
+    (property "Reference" "FB4" (at 142.24 101.6 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "BLM18PG121SN1D" (at 139.7 104.14 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Inductor_SMD:L_0603_1608Metric" (at 139.7 101.6 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "BLM18PG121SN1D" (at 139.7 101.6 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 139.7 101.6 0) (effects (font (size 1.27 1.27)) hide))
   )
 
   ;; ============================================================
@@ -94,7 +261,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "ETH-0010-J60")
+    (uuid "ETH-0020-J60")
     (property "Reference" "J60"
       (at 177.8 69.85 0)
       (effects (font (size 1.27 1.27)))
@@ -121,52 +288,21 @@
     )
   )
 
-  ;; Series termination resistors for TX pairs (49.9 ohm per datasheet)
-  (symbol (lib_id "Device:R") (at 139.7 82.55) (unit 1)
-    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
-    (uuid "ETH-0011-R50")
-    (property "Reference" "R50" (at 142.24 82.55 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "49.9R" (at 139.7 85.09 0) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 139.7 82.55 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "RC0402FR-0749R9L" (at 139.7 82.55 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Manufacturer" "Yageo" (at 139.7 82.55 0) (effects (font (size 1.27 1.27)) hide))
-  )
-  (symbol (lib_id "Device:R") (at 139.7 95.25) (unit 1)
-    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
-    (uuid "ETH-0012-R51")
-    (property "Reference" "R51" (at 142.24 95.25 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "49.9R" (at 139.7 97.79 0) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 139.7 95.25 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "RC0402FR-0749R9L" (at 139.7 95.25 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Manufacturer" "Yageo" (at 139.7 95.25 0) (effects (font (size 1.27 1.27)) hide))
-  )
-
   ;; ESD protection on Ethernet lines
-  (symbol (lib_id "Device:D_TVS") (at 152.4 101.6) (unit 1)
+  (symbol (lib_id "Device:D_TVS") (at 152.4 107.95) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
-    (uuid "ETH-0013-D30")
-    (property "Reference" "D30" (at 152.4 96.52 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "PESD5V0S2BT" (at 152.4 99.06 0) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "Diode_SMD:D_SOT-23_ANK" (at 152.4 101.6 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "PESD5V0S2BT,215" (at 152.4 101.6 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Manufacturer" "Nexperia" (at 152.4 101.6 0) (effects (font (size 1.27 1.27)) hide))
-  )
-
-  ;; PHY NRST pull-up
-  (symbol (lib_id "Device:R") (at 69.85 88.9) (unit 1)
-    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
-    (uuid "ETH-0014-R52")
-    (property "Reference" "R52" (at 72.39 88.9 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "10k" (at 69.85 91.44 0) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 69.85 88.9 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "RC0402FR-0710KL" (at 69.85 88.9 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Manufacturer" "Yageo" (at 69.85 88.9 0) (effects (font (size 1.27 1.27)) hide))
+    (uuid "ETH-0021-D30")
+    (property "Reference" "D30" (at 152.4 102.87 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "PESD5V0S2BT" (at 152.4 105.41 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Diode_SMD:D_SOT-23_ANK" (at 152.4 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "PESD5V0S2BT,215" (at 152.4 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Nexperia" (at 152.4 107.95 0) (effects (font (size 1.27 1.27)) hide))
   )
 
   ;; ============================================================
   ;; TEXT ANNOTATIONS
   ;; ============================================================
-  (text "ETHERNET 10/100 DESIGN\n\nPHY: LAN8742A-CZ-TR (QFN-24)\n- RMII interface to STM32H743\n- 25MHz REF_CLK from HSE crystal\n- Internal 1.2V regulator\n- Auto-MDIX support\n- IEEE 802.3 / 802.3u compliant\n\nMagnetics: J0011D21BNL (RJ45 + integrated magnetics)\n- 10/100 Base-TX\n- Link/Activity LEDs integrated\n- Shielded connector\n\nESD: PESD5V0S2BT on all data lines\nTermination: 49.9R series on TX+/TX-"
+  (text "ETHERNET 10/100 DESIGN (Rev 1.1 - W5500)\n\nController: W5500 (WIZnet) - QFN-48\n- Hardwired TCP/IP stack (no lwIP needed!)\n- Integrated 10/100 MAC + PHY\n- SPI interface up to 80MHz (SPI4 on STM32)\n- 8 simultaneous hardware sockets\n- 32KB internal TX/RX buffer\n- Industrial temp: -40 to +85C\n- Own 25MHz crystal (independent of MCU HSE)\n\nAdvantages over LAN8742A (PHY-only):\n- Only 4 SPI pins vs 11 RMII pins\n- TCP/IP offloaded from MCU (no lwIP)\n- Simpler firmware, more deterministic\n- Sufficient for Modbus TCP, MQTT, HTTP\n\nMagnetics: J0011D21BNL (RJ45 + integrated magnetics)\nEMI: Ferrite beads (BLM18PG121SN1D) on all TX/RX pairs\nESD: PESD5V0S2BT on data lines\n\nSPI4 Pin Assignment:\n- PE2: SPI4_SCK\n- PE5: SPI4_MISO\n- PE6: SPI4_MOSI\n- PE4: W5500_CS_N\n- PE3: W5500_RST_N\n- PB0: W5500_INT_N"
     (exclude_from_sim no)
     (at 25.4 25.4 0)
     (effects (font (size 1.524 1.524)) (justify left bottom))

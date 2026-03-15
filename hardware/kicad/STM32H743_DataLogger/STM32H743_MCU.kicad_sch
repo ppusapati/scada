@@ -7,10 +7,10 @@
   (title_block
     (title "STM32H743VIT6 MCU - Core System")
     (date "2026-03-15")
-    (rev "1.0")
+    (rev "1.1")
     (company "SCADA Systems")
     (comment 1 "ARM Cortex-M7 480MHz, 2MB Flash, 1MB RAM")
-    (comment 2 "LQFP-100 package")
+    (comment 2 "LQFP-100 package, SPI-based peripherals (W5500/ATWINC1500/SX1276/RN4870)")
   )
 
   ;; ============================================================
@@ -527,7 +527,7 @@
   ;; ============================================================
   ;; PIN ASSIGNMENTS (documented as text annotation)
   ;; ============================================================
-  (text "STM32H743VIT6 PIN ASSIGNMENTS:\n\nETH RMII: PA1(REF_CLK), PA2(MDIO), PA7(CRS_DV), PB11(TX_EN), PB12(TXD0), PB13(TXD1), PC1(MDC), PC4(RXD0), PC5(RXD1)\nFDCAN1: PD0(RX), PD1(TX)\nUSART2/RS485: PD5(TX), PD6(RX), PD4(DE/RE)\nUART4/GSM: PA0(TX), PA1 alt -> PC11(RX)\nSPI1/LoRa: PA5(SCK), PA6(MISO), PA7 alt -> PB5(MOSI), PA4(NSS)\nSPI3/Flash: PC10(SCK), PC11(MISO), PC12(MOSI), PA15(NSS)\nSDMMC1: PC8(D0), PC9(D1), PC10(D2), PC11(D3), PC12(CLK), PD2(CMD)\nUSB_OTG_FS: PA11(DM), PA12(DP)\nI2C1/EEPROM: PB6(SCL), PB7(SDA)\nADC1: PA0-PA3 (4 channels, 16-bit)\nSPI2/BLE-WiFi: PB13(SCK), PB14(MISO), PB15(MOSI), PB12(NSS)\nUART7/ESP32: PE8(TX), PE7(RX)\nSWD: PA13(SWDIO), PA14(SWCLK)\nBOOT0: PB0 (pulled low)\nNRST: Reset with RC filter\nHSE: PH0(OSC_IN), PH1(OSC_OUT) - 25MHz\nLSE: PC14(OSC32_IN), PC15(OSC32_OUT) - 32.768kHz"
+  (text "STM32H743VIT6 PIN ASSIGNMENTS (Rev 1.1 - SPI-based architecture):\n\n=== COMMUNICATION PERIPHERALS ===\nSPI1/LoRa SX1276: PA5(SCK), PA6(MISO), PB5(MOSI), PA4(NSS_LORA), PC13(DIO0_IRQ), PC2(RST)\nSPI2/WiFi ATWINC1500: PB13(SCK), PB14(MISO), PB15(MOSI), PB12(NSS_WIFI), PB1(CHIP_EN), PB2(RST_N), PD10(IRQ_N)\nSPI3/Flash W25Q64JV: PC10(SCK), PC11(MISO), PC12(MOSI), PA15(NSS_FLASH)\nSPI4/Ethernet W5500: PE2(SCK), PE5(MISO), PE6(MOSI), PE4(NSS_ETH), PE3(RST_N), PB0(INT_N)\nUART4/GSM SIM7600: PA0(TX), PC11(RX), PC3(PWR_KEY), PD11(STATUS)\nUART7/BLE RN4870: PE8(TX), PE7(RX), PD12(RST_N_BLE), PD13(STATUS_BLE)\nFDCAN1: PD0(RX), PD1(TX)\nUSART2/RS485: PD5(TX), PD6(RX), PD4(DE/RE)\n\n=== STORAGE ===\nSDMMC1: PC8(D0), PC9(D1), PC10(D2), PC11(D3), PC12(CLK), PD2(CMD)\nI2C1/EEPROM: PB6(SCL), PB7(SDA)\n\n=== ANALOG / DIGITAL I/O ===\nADC1: PA0-PA3 (4 channels, 16-bit)\nDI GPIO: PD3, PD7, PE0, PE1, PE9-PE12 (8x digital inputs via optocouplers)\nDO GPIO: PE13-PE15, PD14 (4x relay driver outputs)\n\n=== SYSTEM ===\nUSB_OTG_FS: PA11(DM), PA12(DP)\nSWD: PA13(SWDIO), PA14(SWCLK)\nBOOT0: PB0 (pulled low via resistor)\nNRST: Reset with RC filter + TPS3823 WDT output\nHSE: PH0(OSC_IN), PH1(OSC_OUT) - 25MHz\nLSE: PC14(OSC32_IN), PC15(OSC32_OUT) - 32.768kHz\nWDT_KICK: PB8 (TPS3823 WDI input)\n\nNOTE: RMII pins freed (PA1,PA2,PA7,PB11,PC1,PC4,PC5) by using W5500 SPI Ethernet"
     (exclude_from_sim no)
     (at 25.4 25.4 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))

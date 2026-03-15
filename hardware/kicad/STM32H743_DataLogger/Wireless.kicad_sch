@@ -5,17 +5,17 @@
   (uuid "a1b2c3d4-0007-4000-8000-000000000007")
   (paper "A3")
   (title_block
-    (title "Wireless Communications - LoRa, BLE, WiFi, GSM")
+    (title "Wireless Communications - LoRa, WiFi, BLE, GSM")
     (date "2026-03-15")
-    (rev "1.0")
+    (rev "1.1")
     (company "SCADA Systems")
-    (comment 1 "LoRa: SX1276 (SPI1) | BLE+WiFi: ESP32-C3 (UART7/SPI2)")
+    (comment 1 "LoRa: RFM95W (SPI1) | WiFi: ATWINC1500 (SPI2) | BLE: RN4870 (UART7)")
     (comment 2 "GSM/LTE: SIM7600G-H (UART4) with SIM card holder")
   )
 
   ;; ============================================================
-  ;; LoRa MODULE - SX1276 (Semtech)
-  ;; SPI interface to STM32H743 (SPI1)
+  ;; LoRa MODULE - RFM95W (SX1276, Semtech)
+  ;; SPI1 interface to STM32H743
   ;; 868/915MHz ISM band, up to +20dBm TX
   ;; Range: up to 15km LOS
   ;; ============================================================
@@ -32,23 +32,23 @@
       (at 76.2 44.45 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "RFM95W-915S2"
+    (property "Value" "SX1276IMLTRT"
       (at 76.2 46.99 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "RF_Module:HOPERF_RFM9XW_SMD"
+    (property "Footprint" "Package_DFN_QFN:QFN-28-1EP_4x4mm_P0.4mm_EP2.4x2.4mm"
       (at 76.2 63.5 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.hoperf.com/data/upload/portal/20190801/RFM95W-V2.0.pdf"
+    (property "Datasheet" "https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/2R000000HUhK/X.UMx2dcrUMPH6cxdRPy7Bk9gS2hzpgSWnCCbMTME"
       (at 76.2 63.5 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "MPN" "RFM95W-915S2"
+    (property "MPN" "SX1276IMLTRT"
       (at 76.2 63.5 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer" "HopeRF"
+    (property "Manufacturer" "Semtech"
       (at 76.2 63.5 0)
       (effects (font (size 1.27 1.27)) hide)
     )
@@ -85,7 +85,20 @@
     (property "Manufacturer" "Murata" (at 57.15 57.15 0) (effects (font (size 1.27 1.27)) hide))
   )
 
-  ;; LoRa antenna matching network (pi-network, values depend on antenna)
+  ;; SX1276 TCXO - 32MHz temperature compensated crystal oscillator
+  ;; Required for bare SX1276 IC (not included in module)
+  (symbol (lib_id "Device:Crystal") (at 50.8 69.85) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0005A-Y4")
+    (property "Reference" "Y4" (at 50.8 63.5 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "32MHz TCXO" (at 50.8 66.04 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Crystal:Crystal_SMD_2016-4Pin_2.0x1.6mm" (at 50.8 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "7A-32.000MAAJ-T" (at 50.8 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "TXC" (at 50.8 69.85 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; SX1276 RF matching network (pi-network for 50 ohm antenna match)
+  ;; Values per Semtech AN1200.32 reference design
   (symbol (lib_id "Device:L") (at 101.6 50.8) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
     (uuid "WL-0005-L10")
@@ -95,15 +108,47 @@
     (property "MPN" "LQW15AN5N6B80D" (at 101.6 50.8 0) (effects (font (size 1.27 1.27)) hide))
     (property "Manufacturer" "Murata" (at 101.6 50.8 0) (effects (font (size 1.27 1.27)) hide))
   )
+  ;; Pi-network shunt caps
+  (symbol (lib_id "Device:C") (at 95.25 57.15) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0005B-C90B")
+    (property "Reference" "C90B" (at 97.79 55.88 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "5.6pF C0G" (at 95.25 59.69 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 95.25 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM1555C1H5R6BA01D" (at 95.25 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 95.25 57.15 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C") (at 107.95 57.15) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0005C-C90C")
+    (property "Reference" "C90C" (at 110.49 55.88 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "6.8pF C0G" (at 107.95 59.69 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 107.95 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM1555C1H6R8BA01D" (at 107.95 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 107.95 57.15 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; LoRa chip select pull-up (inactive high when MCU boots)
+  (symbol (lib_id "Device:R") (at 50.8 50.8) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0006-R60")
+    (property "Reference" "R60" (at 53.34 50.8 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 50.8 53.34 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 50.8 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 50.8 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 50.8 50.8 0) (effects (font (size 1.27 1.27)) hide))
+  )
 
   ;; ============================================================
-  ;; BLE + WiFi MODULE - ESP32-C3-MINI-1
-  ;; WiFi 802.11 b/g/n + BLE 5.0
-  ;; UART7 for AT commands, SPI2 for high-speed data
+  ;; WiFi MODULE - ATWINC1500-MR210PB
+  ;; Microchip WiFi 802.11 b/g/n, SPI interface
+  ;; Built-in TCP/IP stack, TLS 1.2
+  ;; Industrial temp: -40°C to +85°C
+  ;; SPI2 interface to STM32H743
   ;; ============================================================
   (symbol
-    (lib_id "RF_Module:ESP32-C3-MINI-1")
-    (at 76.2 139.7)
+    (lib_id "RF_WiFi:ATWINC1500-MR210PB")
+    (at 76.2 133.35)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
@@ -111,78 +156,210 @@
     (dnp no)
     (uuid "WL-0010-U61")
     (property "Reference" "U61"
+      (at 76.2 111.76 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "ATWINC1500-MR210PB1952"
       (at 76.2 114.3 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "ESP32-C3-MINI-1-N4"
-      (at 76.2 116.84 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "RF_Module:ESP32-C3-MINI-1"
-      (at 76.2 139.7 0)
+    (property "Footprint" "RF_Module:Microchip_ATWINC15x0-MR210xB"
+      (at 76.2 133.35 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.espressif.com/sites/default/files/documentation/esp32-c3-mini-1_datasheet_en.pdf"
-      (at 76.2 139.7 0)
+    (property "Datasheet" "https://ww1.microchip.com/downloads/en/DeviceDoc/ATWINC15x0-MR210xB-IEEE-802.11-b-g-n-SmartConnect-IoT-Module-DS70005304E.pdf"
+      (at 76.2 133.35 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "MPN" "ESP32-C3-MINI-1-N4"
-      (at 76.2 139.7 0)
+    (property "MPN" "ATWINC1500-MR210PB1952"
+      (at 76.2 133.35 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer" "Espressif"
-      (at 76.2 139.7 0)
+    (property "Manufacturer" "Microchip"
+      (at 76.2 133.35 0)
       (effects (font (size 1.27 1.27)) hide)
     )
   )
 
-  ;; ESP32 decoupling
-  (symbol (lib_id "Device:C") (at 50.8 127.0) (unit 1)
+  ;; ATWINC1500 decoupling (VBAT_3V3 supply)
+  (symbol (lib_id "Device:C") (at 44.45 120.65) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
     (uuid "WL-0011-C92")
-    (property "Reference" "C92" (at 53.34 125.73 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "10uF" (at 50.8 129.54 0) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (at 50.8 127.0 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "GRM21BR61A106ME51L" (at 50.8 127.0 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Manufacturer" "Murata" (at 50.8 127.0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "C92" (at 46.99 119.38 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10uF" (at 44.45 123.19 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (at 44.45 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM21BR61A106ME51L" (at 44.45 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 44.45 120.65 0) (effects (font (size 1.27 1.27)) hide))
   )
-  (symbol (lib_id "Device:C") (at 57.15 127.0) (unit 1)
+  (symbol (lib_id "Device:C") (at 50.8 120.65) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
     (uuid "WL-0012-C93")
-    (property "Reference" "C93" (at 59.69 125.73 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "100nF" (at 57.15 129.54 0) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 57.15 127.0 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "GRM155R71C104KA88D" (at 57.15 127.0 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Manufacturer" "Murata" (at 57.15 127.0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "C93" (at 53.34 119.38 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 50.8 123.19 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 50.8 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 50.8 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 50.8 120.65 0) (effects (font (size 1.27 1.27)) hide))
   )
-
-  ;; ESP32 EN pull-up and auto-reset circuit
-  (symbol (lib_id "Device:R") (at 50.8 120.65) (unit 1)
+  (symbol (lib_id "Device:C") (at 57.15 120.65) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
-    (uuid "WL-0013-R60")
-    (property "Reference" "R60" (at 53.34 120.65 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "10k" (at 50.8 123.19 0) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 50.8 120.65 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "RC0402FR-0710KL" (at 50.8 120.65 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Manufacturer" "Yageo" (at 50.8 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (uuid "WL-0012B-C93B")
+    (property "Reference" "C93B" (at 59.69 119.38 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 57.15 123.19 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 57.15 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 57.15 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 57.15 120.65 0) (effects (font (size 1.27 1.27)) hide))
   )
 
-  ;; WiFi/BLE antenna connector (u.FL/IPEX)
+  ;; ATWINC1500 CHIP_EN pull-up (enable by default)
+  (symbol (lib_id "Device:R") (at 44.45 114.3) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0013-R61")
+    (property "Reference" "R61" (at 46.99 114.3 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 44.45 116.84 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 44.45 114.3 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 44.45 114.3 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 44.45 114.3 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ATWINC1500 RESET_N pull-up + RC filter
+  (symbol (lib_id "Device:R") (at 50.8 114.3) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0014-R62")
+    (property "Reference" "R62" (at 53.34 114.3 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 50.8 116.84 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 50.8 114.3 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 50.8 114.3 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 50.8 114.3 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C") (at 57.15 114.3) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0015-C94A")
+    (property "Reference" "C94A" (at 59.69 113.03 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 57.15 116.84 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 57.15 114.3 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 57.15 114.3 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 57.15 114.3 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ATWINC1500 SPI CS pull-up (inactive high)
+  (symbol (lib_id "Device:R") (at 44.45 127.0) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0016-R63")
+    (property "Reference" "R63" (at 46.99 127.0 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 44.45 129.54 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 44.45 127.0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 44.45 127.0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 44.45 127.0 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; WiFi antenna connector (u.FL)
   (symbol (lib_id "Connector:Conn_Coaxial") (at 114.3 120.65) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
-    (uuid "WL-0014-J71")
+    (uuid "WL-0017-J71")
     (property "Reference" "J71" (at 114.3 114.3 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "U.FL WiFi/BLE ANT" (at 114.3 116.84 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "U.FL WiFi ANT" (at 114.3 116.84 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "Connector_Coaxial:U.FL_Hirose_U.FL-R-SMT-1_Solder" (at 114.3 120.65 0) (effects (font (size 1.27 1.27)) hide))
     (property "MPN" "U.FL-R-SMT-1(80)" (at 114.3 120.65 0) (effects (font (size 1.27 1.27)) hide))
     (property "Manufacturer" "Hirose" (at 114.3 120.65 0) (effects (font (size 1.27 1.27)) hide))
   )
 
   ;; ============================================================
-  ;; GSM/LTE MODULE - SIM7600G-H
+  ;; BLE MODULE - RN4870-I/RM128 (Microchip)
+  ;; Bluetooth Low Energy 5.0
+  ;; UART interface (UART7 on STM32H743)
+  ;; Industrial temp: -40°C to +85°C
+  ;; Built-in antenna, ASCII command interface
+  ;; ============================================================
+  (symbol
+    (lib_id "RF_Bluetooth:RN4870")
+    (at 190.5 63.5)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "WL-0030-U62B")
+    (property "Reference" "U62B"
+      (at 190.5 44.45 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "RN4870-I/RM128"
+      (at 190.5 46.99 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "RF_Bluetooth:Microchip_RN4870"
+      (at 190.5 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://ww1.microchip.com/downloads/en/DeviceDoc/RN4870-71-Bluetooth-Low-Energy-Module-Data-Sheet-DS50002489E.pdf"
+      (at 190.5 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "RN4870-I/RM128"
+      (at 190.5 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Microchip"
+      (at 190.5 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; RN4870 decoupling
+  (symbol (lib_id "Device:C") (at 165.1 50.8) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0031-C96")
+    (property "Reference" "C96" (at 167.64 49.53 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10uF" (at 165.1 53.34 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (at 165.1 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM21BR61A106ME51L" (at 165.1 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 165.1 50.8 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C") (at 171.45 50.8) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0032-C97")
+    (property "Reference" "C97" (at 173.99 49.53 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 171.45 53.34 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 171.45 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 171.45 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 171.45 50.8 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; RN4870 RST_N pull-up
+  (symbol (lib_id "Device:R") (at 165.1 57.15) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0033-R64")
+    (property "Reference" "R64" (at 167.64 57.15 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 165.1 59.69 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 165.1 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 165.1 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 165.1 57.15 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; RN4870 status LED
+  (symbol (lib_id "Device:LED") (at 215.9 57.15) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0034-LED4")
+    (property "Reference" "LED4" (at 215.9 52.07 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "Blue BLE" (at 215.9 54.61 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "LED_SMD:LED_0603_1608Metric" (at 215.9 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "19-213/BHC-ZL1M2RY/3T" (at 215.9 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Everlight" (at 215.9 57.15 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:R") (at 215.9 66.675) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0035-R65")
+    (property "Reference" "R65" (at 218.44 66.675 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "1k" (at 215.9 69.215 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 215.9 66.675 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-071KL" (at 215.9 66.675 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 215.9 66.675 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; GSM/LTE MODULE - SIM7600G-H (SIMCom)
   ;; Global LTE Cat-1 + 2G/3G fallback
   ;; UART4 interface to STM32H743
-  ;; Supports voice, SMS, data (up to 10Mbps DL)
   ;; ============================================================
   (symbol
     (lib_id "RF_GSM:SIM7600")
@@ -230,7 +407,7 @@
     (property "Manufacturer" "Molex" (at 152.4 215.9 0) (effects (font (size 1.27 1.27)) hide))
   )
 
-  ;; GSM/LTE Antenna connector (SMA)
+  ;; GSM/LTE Antenna connectors (SMA)
   (symbol (lib_id "Connector:Conn_Coaxial") (at 114.3 196.85) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
     (uuid "WL-0022-J73")
@@ -240,8 +417,6 @@
     (property "MPN" "132289" (at 114.3 196.85 0) (effects (font (size 1.27 1.27)) hide))
     (property "Manufacturer" "Amphenol" (at 114.3 196.85 0) (effects (font (size 1.27 1.27)) hide))
   )
-
-  ;; GNSS Antenna connector
   (symbol (lib_id "Connector:Conn_Coaxial") (at 114.3 209.55) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
     (uuid "WL-0023-J74")
@@ -252,8 +427,7 @@
     (property "Manufacturer" "Amphenol" (at 114.3 209.55 0) (effects (font (size 1.27 1.27)) hide))
   )
 
-  ;; GSM power supply (needs high current pulses up to 2A at 4.1V)
-  ;; Dedicated LDO or buck from 5V rail
+  ;; GSM power supply LDO (4.1V, high current transients)
   (symbol (lib_id "Regulator_Linear:TLV1117-33") (at 38.1 196.85) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
     (uuid "WL-0030-U63")
@@ -296,11 +470,62 @@
   )
 
   ;; ============================================================
+  ;; HARDWARE WATCHDOG - TPS3823-33DBVR
+  ;; External watchdog timer for industrial reliability
+  ;; 1.6s timeout, manual reset input, active-low output
+  ;; ============================================================
+  (symbol
+    (lib_id "Timer:TPS3823")
+    (at 190.5 133.35)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "WL-0040-U64")
+    (property "Reference" "U64"
+      (at 190.5 123.19 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "TPS3823-33DBVR"
+      (at 190.5 125.73 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
+      (at 190.5 133.35 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps3823.pdf"
+      (at 190.5 133.35 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "TPS3823-33DBVR"
+      (at 190.5 133.35 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Texas Instruments"
+      (at 190.5 133.35 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; Watchdog decoupling
+  (symbol (lib_id "Device:C") (at 171.45 127.0) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0041-C98")
+    (property "Reference" "C98" (at 173.99 125.73 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 171.45 129.54 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 171.45 127.0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 171.45 127.0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 171.45 127.0 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
   ;; TEXT ANNOTATIONS
   ;; ============================================================
-  (text "WIRELESS COMMUNICATIONS\n\n1. LoRa (SX1276/RFM95W):\n   - SPI1 interface, 868/915MHz\n   - +20dBm TX, -148dBm sensitivity\n   - SMA antenna connector\n   - Range: up to 15km LOS\n\n2. BLE + WiFi (ESP32-C3-MINI-1):\n   - WiFi 802.11 b/g/n (2.4GHz)\n   - Bluetooth 5.0 LE\n   - UART7 for AT commands\n   - u.FL antenna connector\n\n3. GSM/LTE (SIM7600G-H):\n   - LTE Cat-1 global bands\n   - 2G/3G fallback\n   - UART4 interface, AT commands\n   - Nano SIM push-push holder\n   - SMA connectors (Main + GNSS)\n   - Dedicated 4.1V LDO, 100uF bulk caps"
+  (text "WIRELESS COMMUNICATIONS (Rev 1.2 - Full Industrial Grade)\n\n1. LoRa (SX1276IMLTRT - Bare IC):\n   - SPI1 interface, 868/915MHz\n   - +20dBm TX, -148dBm sensitivity\n   - SMA antenna connector + pi-matching network\n   - INDUSTRIAL TEMP: -40 to +85C (bare IC, not module)\n   - QFN-28 package, custom RF section with matching\n   - 32MHz TCXO for frequency stability\n\n2. WiFi (ATWINC1500-MR210PB):\n   - SPI2 interface, 802.11 b/g/n\n   - Built-in TCP/IP + TLS 1.2 stack\n   - u.FL antenna connector\n   - Industrial temp: -40 to +85C\n   - No second MCU required (SPI slave)\n\n3. BLE (RN4870-I/RM128):\n   - UART7 interface, ASCII command set\n   - BLE 5.0, built-in antenna\n   - Industrial temp: -40 to +85C\n   - Microchip ecosystem\n\n4. GSM/LTE (SIM7600G-H):\n   - UART4 interface, AT commands\n   - LTE Cat-1 global + 2G/3G fallback\n   - Nano SIM push-push holder\n   - SMA connectors (Main + GNSS)\n   - Dedicated 4.1V LDO, 100uF bulk caps\n\n5. Hardware Watchdog (TPS3823-33):\n   - External WDT, 1.6s timeout\n   - Monitors 3.3V supply voltage\n   - Active-low RESET output to STM32 NRST"
     (exclude_from_sim no)
-    (at 152.4 25.4 0)
+    (at 152.4 160.02 0)
     (effects (font (size 1.524 1.524)) (justify left bottom))
     (uuid "WL-TEXT-0001")
   )
