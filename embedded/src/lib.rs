@@ -22,3 +22,7 @@ pub mod storage;
 pub mod comm;
 #[cfg(feature = "stm32h743")]
 pub mod datalogger;
+#[cfg(feature = "stm32h743")]
+pub mod security;
+#[cfg(feature = "stm32h743")]
+pub mod ota;

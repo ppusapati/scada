@@ -31,6 +31,8 @@ use scada_embedded::storage::StorageHealth;
 use scada_embedded::storage::microsd::{MicroSdDriver, SdLogConfig, SdCardInfo, SdCardType, SdState};
 use scada_embedded::storage::sd_logger::{SdLogger, SdLoggerMode};
 use scada_embedded::hal::drivers::debug_console::{DebugConsole, DebugConsoleConfig, LogLevel};
+use scada_embedded::security::flash_protection::{FlashProtection, ProvisioningManager, ProvisioningState};
+use scada_embedded::ota::firmware_update::{FirmwareUpdater, OtaState, OtaSource};
 
 /// Shared channel for passing data records from acquisition to logging task
 static DATA_CHANNEL: Channel<CriticalSectionRawMutex, DataRecord, 8> = Channel::new();
@@ -268,6 +270,82 @@ async fn debug_console_task() {
     }
 }
 
+/// OTA firmware update task
+///
+/// Listens for firmware update commands via any communication channel,
+/// manages the download/verify/apply lifecycle, and handles rollback.
+#[embassy_executor::task]
+async fn ota_task() {
+    info!("OTA update task started");
+
+    // Initialize updater in production mode (rejects debug builds when locked)
+    let mut updater = FirmwareUpdater::new(false); // Set true after provisioning
+
+    // On first boot after OTA, confirm the update succeeded
+    // If this isn't called within watchdog timeout, bootloader rolls back
+    // TODO: Only call after all subsystem checks pass
+    updater.confirm_boot();
+    info!("Boot confirmed for current firmware");
+
+    let mut ticker = Ticker::every(Duration::from_millis(5000));
+
+    loop {
+        ticker.next().await;
+
+        match updater.state() {
+            OtaState::Idle => {
+                // Check for update notifications from comm channels
+                // Check SD card for /SCADA_FW/UPDATE.BIN
+                // TODO: Integrate with comm_task for MQTT OTA commands
+            }
+            OtaState::Downloading => {
+                // Check for download timeout
+                // TODO: Pass actual timestamp
+                if updater.check_timeout(0) {
+                    defmt::warn!("OTA download timed out");
+                }
+            }
+            OtaState::Verifying => {
+                match updater.verify_download() {
+                    Ok(()) => {
+                        info!("OTA image verified, ready to apply");
+                    }
+                    Err(e) => {
+                        defmt::error!("OTA verification failed: {:?}", defmt::Debug2Format(&e));
+                    }
+                }
+            }
+            OtaState::ReadyToApply => {
+                // Apply the update (bank swap + reboot)
+                match updater.apply_update() {
+                    Ok(config) => {
+                        info!(
+                            "Applying OTA update v{}.{}.{}, rebooting...",
+                            config.new_version[0],
+                            config.new_version[1],
+                            config.new_version[2],
+                        );
+                        // TODO: Program option bytes for bank swap
+                        // TODO: Trigger system reset
+                        //   cortex_m::peripheral::SCB::sys_reset();
+                    }
+                    Err(e) => {
+                        defmt::error!("OTA apply failed: {:?}", defmt::Debug2Format(&e));
+                    }
+                }
+            }
+            OtaState::Error => {
+                // Log error and return to idle
+                if let Some(err) = updater.error() {
+                    defmt::error!("OTA error: {:?}", defmt::Debug2Format(&err));
+                }
+                updater.abort();
+            }
+            _ => {}
+        }
+    }
+}
+
 /// System monitor task - temperature, voltage, diagnostics
 #[embassy_executor::task]
 async fn system_monitor_task() {
@@ -350,6 +428,23 @@ async fn main(spawner: Spawner) {
     // Card detect via Molex 104031-0811 connector CD pin
     info!("SDMMC1 pins reserved for SD card (4-bit mode)");
 
+    // ---- Security: Read Flash Protection Status ----
+    let mut provisioning = ProvisioningManager::new();
+    provisioning.init();
+    match provisioning.state() {
+        ProvisioningState::Unprovisioned => {
+            info!("SECURITY: Device is UNPROVISIONED (SWD/DFU open)");
+            info!("  -> Run lockdown after verifying OTA works");
+        }
+        ProvisioningState::Locked => {
+            info!("SECURITY: Device is LOCKED (OTA-only updates)");
+        }
+        state => {
+            info!("SECURITY: Provisioning state: {:?}", defmt::Debug2Format(&state));
+        }
+    }
+    info!("Protection: {}", provisioning.protection().status().summary().as_str());
+
     // ---- Hardware Reset Sequence ----
 
     // Reset W5500 Ethernet
@@ -371,6 +466,7 @@ async fn main(spawner: Spawner) {
     spawner.must_spawn(ble_task());
     spawner.must_spawn(system_monitor_task());
     spawner.must_spawn(debug_console_task());
+    spawner.must_spawn(ota_task());
 
     info!("All tasks spawned, system running");
 
