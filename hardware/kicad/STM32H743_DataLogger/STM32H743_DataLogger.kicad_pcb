@@ -1,0 +1,316 @@
+(kicad_pcb
+  (version 20231014)
+  (generator "pcbnew")
+  (generator_version "8.0")
+  (general
+    (thickness 1.6)
+    (legacy_teardrops no)
+  )
+  (paper "A4")
+  (title_block
+    (title "STM32H743 PLC-Grade Data Logger PCB")
+    (date "2026-03-15")
+    (rev "1.0")
+    (company "SCADA Systems")
+    (comment 1 "4-Layer PCB, 1.6mm, ENIG finish")
+    (comment 2 "160mm x 100mm Eurocard format")
+  )
+
+  ;; ============================================================
+  ;; LAYER STACKUP - 4 Layer Industrial Grade
+  ;; Layer 1 (F.Cu):  Signal + Components (35um copper)
+  ;; Layer 2 (In1.Cu): Ground Plane (35um copper)
+  ;; Layer 3 (In2.Cu): Power Plane (35um copper)
+  ;; Layer 4 (B.Cu):  Signal + Components (35um copper)
+  ;; Prepreg: FR-4, 0.2mm between L1-L2, L3-L4
+  ;; Core: FR-4, 0.8mm between L2-L3
+  ;; Total: ~1.6mm
+  ;; ============================================================
+  (layers
+    (0 "F.Cu" signal)
+    (1 "In1.Cu" signal "GND Plane")
+    (2 "In2.Cu" signal "Power Plane")
+    (31 "B.Cu" signal)
+    (32 "B.Adhes" user "B.Adhesive")
+    (33 "F.Adhes" user "F.Adhesive")
+    (34 "B.Paste" user)
+    (35 "F.Paste" user)
+    (36 "B.SilkS" user "B.Silkscreen")
+    (37 "F.SilkS" user "F.Silkscreen")
+    (38 "B.Mask" user "B.Mask")
+    (39 "F.Mask" user "F.Mask")
+    (40 "Dwgs.User" user "User.Drawings")
+    (41 "Cmts.User" user "User.Comments")
+    (42 "Eco1.User" user "User.Eco1")
+    (43 "Eco2.User" user "User.Eco2")
+    (44 "Edge.Cuts" user)
+    (45 "Margin" user)
+    (46 "B.CrtYd" user "B.Courtyard")
+    (47 "F.CrtYd" user "F.Courtyard")
+    (48 "B.Fab" user "B.Fabrication")
+    (49 "F.Fab" user "F.Fabrication")
+    (50 "User.1" user)
+    (51 "User.2" user)
+  )
+
+  (setup
+    (stackup
+      (layer "F.SilkS" (type "Top Silk Screen"))
+      (layer "F.Paste" (type "Top Solder Paste"))
+      (layer "F.Mask" (type "Top Solder Mask") (thickness 0.01) (material "Epoxy") (epsilon_r 3.3))
+      (layer "F.Cu" (type "copper") (thickness 0.035))
+      (layer "dielectric 1" (type "prepreg") (thickness 0.2) (material "FR4") (epsilon_r 4.5) (loss_tangent 0.02))
+      (layer "In1.Cu" (type "copper") (thickness 0.035))
+      (layer "dielectric 2" (type "core") (thickness 0.8) (material "FR4") (epsilon_r 4.5) (loss_tangent 0.02))
+      (layer "In2.Cu" (type "copper") (thickness 0.035))
+      (layer "dielectric 3" (type "prepreg") (thickness 0.2) (material "FR4") (epsilon_r 4.5) (loss_tangent 0.02))
+      (layer "B.Cu" (type "copper") (thickness 0.035))
+      (layer "B.Mask" (type "Bottom Solder Mask") (thickness 0.01) (material "Epoxy") (epsilon_r 3.3))
+      (layer "B.Paste" (type "Bottom Solder Paste"))
+      (layer "B.SilkS" (type "Bottom Silk Screen"))
+      (copper_finish "ENIG")
+      (dielectric_constraints no)
+    )
+    (pad_to_mask_clearance 0.05)
+    (allow_soldermask_bridges_in_footprints no)
+    (pcbplotparams
+      (layerselection 0x00010fc_ffffffff)
+      (plot_on_all_layers_selection 0x0000000_00000000)
+      (disableapertmacros no)
+      (usegerberextensions yes)
+      (usegerberattributes yes)
+      (usegerberadvancedattributes yes)
+      (creategerberjobfile yes)
+      (dashed_line_dash_ratio 12.000000)
+      (dashed_line_gap_ratio 3.000000)
+      (svgprecision 4)
+      (plotframeref no)
+      (viasonmask no)
+      (mode 1)
+      (useauxorigin no)
+      (hpglpennumber 1)
+      (hpglpenspeed 20)
+      (hpglpendiameter 15.000000)
+      (pdf_front_fp_property_popups yes)
+      (pdf_back_fp_property_popups yes)
+      (dxfpolygonmode yes)
+      (dxfimperialunits yes)
+      (dxfusepcbnewfont yes)
+      (psnegative no)
+      (psa4output no)
+      (plotreference yes)
+      (plotvalue no)
+      (plotfptext no)
+      (plotinvisibletext no)
+      (sketchpadsonfab no)
+      (subtractmaskfromsilk yes)
+      (outputformat 1)
+      (mirror no)
+      (drillshape 1)
+      (scaleselection 1)
+      (outputdirectory "gerber/")
+    )
+  )
+
+  ;; ============================================================
+  ;; BOARD OUTLINE - 160mm x 100mm (Eurocard format)
+  ;; With DIN rail mounting holes
+  ;; ============================================================
+  (gr_rect
+    (start 0 0)
+    (end 160 100)
+    (stroke (width 0.15) (type default))
+    (fill none)
+    (layer "Edge.Cuts")
+    (uuid "PCB-EDGE-0001")
+  )
+
+  ;; Corner radius (3mm fillet on all corners)
+  ;; Mounting holes (M3, 4 corners + 2 center for DIN rail)
+  (footprint "MountingHole:MountingHole_3.2mm_M3_Pad_Via"
+    (layer "F.Cu")
+    (uuid "PCB-MTG-0001")
+    (at 5 5)
+    (property "Reference" "H1" (at 0 -3.5) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "M3 Mount" (at 0 3.5) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
+  )
+  (footprint "MountingHole:MountingHole_3.2mm_M3_Pad_Via"
+    (layer "F.Cu")
+    (uuid "PCB-MTG-0002")
+    (at 155 5)
+    (property "Reference" "H2" (at 0 -3.5) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "M3 Mount" (at 0 3.5) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
+  )
+  (footprint "MountingHole:MountingHole_3.2mm_M3_Pad_Via"
+    (layer "F.Cu")
+    (uuid "PCB-MTG-0003")
+    (at 5 95)
+    (property "Reference" "H3" (at 0 -3.5) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "M3 Mount" (at 0 3.5) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
+  )
+  (footprint "MountingHole:MountingHole_3.2mm_M3_Pad_Via"
+    (layer "F.Cu")
+    (uuid "PCB-MTG-0004")
+    (at 155 95)
+    (property "Reference" "H4" (at 0 -3.5) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "M3 Mount" (at 0 3.5) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
+  )
+
+  ;; DIN rail mounting holes (center)
+  (footprint "MountingHole:MountingHole_3.2mm_M3_Pad_Via"
+    (layer "F.Cu")
+    (uuid "PCB-MTG-0005")
+    (at 80 5)
+    (property "Reference" "H5" (at 0 -3.5) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "DIN Mount" (at 0 3.5) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
+  )
+  (footprint "MountingHole:MountingHole_3.2mm_M3_Pad_Via"
+    (layer "F.Cu")
+    (uuid "PCB-MTG-0006")
+    (at 80 95)
+    (property "Reference" "H6" (at 0 -3.5) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "DIN Mount" (at 0 3.5) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
+  )
+
+  ;; ============================================================
+  ;; ZONE FILLS
+  ;; ============================================================
+
+  ;; Top layer GND pour
+  (zone
+    (net 0)
+    (net_name "GND")
+    (layer "F.Cu")
+    (uuid "PCB-ZONE-F-GND")
+    (hatch edge 0.5)
+    (connect_pads (clearance 0.3))
+    (min_thickness 0.2)
+    (filled_areas_thickness no)
+    (fill yes (thermal_gap 0.3) (thermal_bridge_width 0.3))
+    (polygon (pts
+      (xy 1 1) (xy 159 1) (xy 159 99) (xy 1 99)
+    ))
+  )
+
+  ;; Inner layer 1: Solid GND plane
+  (zone
+    (net 0)
+    (net_name "GND")
+    (layer "In1.Cu")
+    (uuid "PCB-ZONE-IN1-GND")
+    (hatch edge 0.5)
+    (connect_pads (clearance 0.3))
+    (min_thickness 0.2)
+    (filled_areas_thickness no)
+    (fill yes (thermal_gap 0.3) (thermal_bridge_width 0.3))
+    (polygon (pts
+      (xy 0.5 0.5) (xy 159.5 0.5) (xy 159.5 99.5) (xy 0.5 99.5)
+    ))
+  )
+
+  ;; Inner layer 2: Split power plane (+3V3, +5V, +3V3_A)
+  (zone
+    (net 0)
+    (net_name "+3V3")
+    (layer "In2.Cu")
+    (uuid "PCB-ZONE-IN2-3V3")
+    (hatch edge 0.5)
+    (connect_pads (clearance 0.3))
+    (min_thickness 0.2)
+    (filled_areas_thickness no)
+    (fill yes (thermal_gap 0.3) (thermal_bridge_width 0.3))
+    (polygon (pts
+      (xy 0.5 0.5) (xy 100 0.5) (xy 100 99.5) (xy 0.5 99.5)
+    ))
+  )
+
+  (zone
+    (net 0)
+    (net_name "+5V")
+    (layer "In2.Cu")
+    (uuid "PCB-ZONE-IN2-5V")
+    (hatch edge 0.5)
+    (connect_pads (clearance 0.3))
+    (min_thickness 0.2)
+    (filled_areas_thickness no)
+    (fill yes (thermal_gap 0.3) (thermal_bridge_width 0.3))
+    (polygon (pts
+      (xy 101 0.5) (xy 159.5 0.5) (xy 159.5 99.5) (xy 101 99.5)
+    ))
+  )
+
+  ;; Bottom layer GND pour
+  (zone
+    (net 0)
+    (net_name "GND")
+    (layer "B.Cu")
+    (uuid "PCB-ZONE-B-GND")
+    (hatch edge 0.5)
+    (connect_pads (clearance 0.3))
+    (min_thickness 0.2)
+    (filled_areas_thickness no)
+    (fill yes (thermal_gap 0.3) (thermal_bridge_width 0.3))
+    (polygon (pts
+      (xy 1 1) (xy 159 1) (xy 159 99) (xy 1 99)
+    ))
+  )
+
+  ;; ============================================================
+  ;; PLACEMENT ZONES (documented as drawings)
+  ;; ============================================================
+
+  ;; Power supply area (top-left)
+  (gr_rect (start 5 5) (end 45 40)
+    (stroke (width 0.15) (type dash)) (fill none) (layer "Dwgs.User") (uuid "PCB-AREA-PSU"))
+  (gr_text "POWER SUPPLY\n24V->5V->3.3V" (at 25 22.5) (layer "Dwgs.User")
+    (effects (font (size 1.5 1.5) (thickness 0.15)) (justify center))
+    (uuid "PCB-TXT-PSU"))
+
+  ;; MCU area (center)
+  (gr_rect (start 50 20) (end 110 80)
+    (stroke (width 0.15) (type dash)) (fill none) (layer "Dwgs.User") (uuid "PCB-AREA-MCU"))
+  (gr_text "STM32H743VIT6\nMCU + Decoupling\n+ Crystal" (at 80 50) (layer "Dwgs.User")
+    (effects (font (size 1.5 1.5) (thickness 0.15)) (justify center))
+    (uuid "PCB-TXT-MCU"))
+
+  ;; Ethernet area (top-right, near RJ45 edge)
+  (gr_rect (start 120 5) (end 155 40)
+    (stroke (width 0.15) (type dash)) (fill none) (layer "Dwgs.User") (uuid "PCB-AREA-ETH"))
+  (gr_text "ETHERNET\nLAN8742A + RJ45" (at 137.5 22.5) (layer "Dwgs.User")
+    (effects (font (size 1.5 1.5) (thickness 0.15)) (justify center))
+    (uuid "PCB-TXT-ETH"))
+
+  ;; Wireless area (right side)
+  (gr_rect (start 115 45) (end 155 95)
+    (stroke (width 0.15) (type dash)) (fill none) (layer "Dwgs.User") (uuid "PCB-AREA-WL"))
+  (gr_text "WIRELESS\nLoRa+BLE/WiFi\n+GSM/LTE" (at 135 70) (layer "Dwgs.User")
+    (effects (font (size 1.5 1.5) (thickness 0.15)) (justify center))
+    (uuid "PCB-TXT-WL"))
+
+  ;; Analog inputs (bottom-left)
+  (gr_rect (start 5 55) (end 45 95)
+    (stroke (width 0.15) (type dash)) (fill none) (layer "Dwgs.User") (uuid "PCB-AREA-AI"))
+  (gr_text "ANALOG INPUTS\n4ch 4-20mA/0-10V" (at 25 75) (layer "Dwgs.User")
+    (effects (font (size 1.5 1.5) (thickness 0.15)) (justify center))
+    (uuid "PCB-TXT-AI"))
+
+  ;; Digital I/O + RS485/CAN (bottom-center)
+  (gr_rect (start 50 82) (end 110 98)
+    (stroke (width 0.15) (type dash)) (fill none) (layer "Dwgs.User") (uuid "PCB-AREA-DIO"))
+  (gr_text "DIGITAL I/O + RS485 + CAN" (at 80 90) (layer "Dwgs.User")
+    (effects (font (size 1.5 1.5) (thickness 0.15)) (justify center))
+    (uuid "PCB-TXT-DIO"))
+
+  ;; Connectors along edges
+  (gr_text "TERMINAL BLOCKS (BOTTOM EDGE)" (at 80 98) (layer "Cmts.User")
+    (effects (font (size 1 1) (thickness 0.1)) (justify center))
+    (uuid "PCB-TXT-CONN"))
+
+  ;; ============================================================
+  ;; DESIGN RULES TEXT
+  ;; ============================================================
+  (gr_text "PCB SPECIFICATIONS:\nBoard: 160x100mm, 4-Layer, 1.6mm, FR-4 TG170\nCopper: 1oz (35um) all layers\nFinish: ENIG (Electroless Nickel Immersion Gold)\nMin Track: 0.15mm (6mil)\nMin Clearance: 0.15mm (6mil)\nMin Via: 0.5mm/0.3mm (pad/drill)\nImpedance: 50ohm single-ended (ETH), controlled\nSolder Mask: Green, both sides\nSilkscreen: White, both sides\nOperating Temp: -40C to +85C (Industrial)"
+    (at 5 105) (layer "Cmts.User")
+    (effects (font (size 1.2 1.2) (thickness 0.12)) (justify left))
+    (uuid "PCB-TXT-SPECS"))
+)

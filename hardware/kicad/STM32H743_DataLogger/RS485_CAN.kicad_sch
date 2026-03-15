@@ -1,0 +1,183 @@
+(kicad_sch
+  (version 20231120)
+  (generator "eeschema")
+  (generator_version "8.0")
+  (uuid "a1b2c3d4-0005-4000-8000-000000000005")
+  (paper "A4")
+  (title_block
+    (title "RS485 Modbus & CAN/FD Bus Interfaces")
+    (date "2026-03-15")
+    (rev "1.0")
+    (company "SCADA Systems")
+    (comment 1 "Isolated RS485 (ISO3082) + Isolated CAN FD (ISO1042)")
+    (comment 2 "Industrial fieldbus connectivity")
+  )
+
+  ;; ============================================================
+  ;; RS485 INTERFACE (Isolated)
+  ;; ISO3082DWR - Isolated RS-485 transceiver
+  ;; 5kVrms isolation, half-duplex
+  ;; Auto direction control via DE/RE pin from STM32
+  ;; ============================================================
+  (symbol
+    (lib_id "Interface_UART:ISO3082DW")
+    (at 88.9 57.15)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "COM-0001-U40")
+    (property "Reference" "U40"
+      (at 88.9 44.45 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "ISO3082DWR"
+      (at 88.9 46.99 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_SO:SOIC-16W_7.5x10.3mm_P1.27mm"
+      (at 88.9 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.ti.com/lit/ds/symlink/iso3082.pdf"
+      (at 88.9 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "ISO3082DWR"
+      (at 88.9 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Texas Instruments"
+      (at 88.9 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; RS485 Bus termination resistor (120 ohm, jumper selectable)
+  (symbol (lib_id "Device:R") (at 120.65 57.15) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "COM-0002-R40")
+    (property "Reference" "R40" (at 123.19 57.15 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "120R" (at 120.65 59.69 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0805_2012Metric" (at 120.65 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0805FR-07120RL" (at 120.65 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 120.65 57.15 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; RS485 bus ESD protection
+  (symbol (lib_id "Device:D_TVS") (at 127.0 63.5) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "COM-0003-D20")
+    (property "Reference" "D20" (at 127.0 58.42 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "PESD2CAN" (at 127.0 60.96 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Diode_SMD:D_SOT-23_ANK" (at 127.0 63.5 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "PESD2CAN,215" (at 127.0 63.5 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Nexperia" (at 127.0 63.5 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; RS485 Connector (screw terminal)
+  (symbol (lib_id "Connector:Screw_Terminal_01x03") (at 139.7 57.15) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "COM-0004-J50")
+    (property "Reference" "J50" (at 139.7 49.53 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "RS485 (A/B/GND)" (at 139.7 52.07 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-3-5.08_1x03_P5.08mm_Horizontal" (at 139.7 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "1729131" (at 139.7 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Phoenix Contact" (at 139.7 57.15 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; Decoupling capacitors for ISO3082
+  (symbol (lib_id "Device:C") (at 69.85 50.8) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "COM-0005-C70")
+    (property "Reference" "C70" (at 72.39 49.53 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 69.85 53.34 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 69.85 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 69.85 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 69.85 50.8 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; CAN FD INTERFACE (Isolated)
+  ;; ISO1042BQDWRQ1 - Isolated CAN FD transceiver
+  ;; 5kVrms isolation, up to 5Mbps data rate
+  ;; ============================================================
+  (symbol
+    (lib_id "Interface_CAN_LIN:ISO1042")
+    (at 88.9 107.95)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "COM-0010-U41")
+    (property "Reference" "U41"
+      (at 88.9 95.25 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "ISO1042BQDWRQ1"
+      (at 88.9 97.79 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_SO:SOIC-16W_7.5x10.3mm_P1.27mm"
+      (at 88.9 107.95 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.ti.com/lit/ds/symlink/iso1042.pdf"
+      (at 88.9 107.95 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "ISO1042BQDWRQ1"
+      (at 88.9 107.95 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Texas Instruments"
+      (at 88.9 107.95 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; CAN bus termination (120 ohm, jumper selectable)
+  (symbol (lib_id "Device:R") (at 120.65 107.95) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "COM-0011-R41")
+    (property "Reference" "R41" (at 123.19 107.95 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "120R" (at 120.65 110.49 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0805_2012Metric" (at 120.65 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0805FR-07120RL" (at 120.65 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 120.65 107.95 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; CAN bus ESD protection
+  (symbol (lib_id "Device:D_TVS") (at 127.0 114.3) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "COM-0012-D21")
+    (property "Reference" "D21" (at 127.0 109.22 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "PESD2CAN" (at 127.0 111.76 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Diode_SMD:D_SOT-23_ANK" (at 127.0 114.3 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "PESD2CAN,215" (at 127.0 114.3 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Nexperia" (at 127.0 114.3 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; CAN Connector
+  (symbol (lib_id "Connector:Screw_Terminal_01x03") (at 139.7 107.95) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "COM-0013-J51")
+    (property "Reference" "J51" (at 139.7 100.33 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "CAN (H/L/GND)" (at 139.7 102.87 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-3-5.08_1x03_P5.08mm_Horizontal" (at 139.7 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "1729131" (at 139.7 107.95 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Phoenix Contact" (at 139.7 107.95 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; TEXT ANNOTATIONS
+  ;; ============================================================
+  (text "RS485 & CAN BUS DESIGN\n\nRS485 (Modbus RTU):\n- ISO3082DWR isolated transceiver (5kVrms)\n- Half-duplex, auto DE/RE control\n- 120R termination (jumper selectable)\n- PESD2CAN ESD protection\n- Baud rate up to 20Mbps\n\nCAN FD Bus:\n- ISO1042BQDWRQ1 isolated transceiver (5kVrms)\n- CAN FD support up to 5Mbps\n- 120R termination (jumper selectable)\n- PESD2CAN ESD protection\n- STM32H743 FDCAN1 peripheral"
+    (exclude_from_sim no)
+    (at 25.4 25.4 0)
+    (effects (font (size 1.524 1.524)) (justify left bottom))
+    (uuid "COM-TEXT-0001")
+  )
+)

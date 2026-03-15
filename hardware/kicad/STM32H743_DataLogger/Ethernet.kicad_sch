@@ -1,0 +1,175 @@
+(kicad_sch
+  (version 20231120)
+  (generator "eeschema")
+  (generator_version "8.0")
+  (uuid "a1b2c3d4-0006-4000-8000-000000000006")
+  (paper "A4")
+  (title_block
+    (title "Ethernet 10/100 - LAN8742A RMII PHY")
+    (date "2026-03-15")
+    (rev "1.0")
+    (company "SCADA Systems")
+    (comment 1 "LAN8742A-CZ-TR Ethernet PHY with RMII interface")
+    (comment 2 "RJ45 with integrated magnetics and LEDs")
+  )
+
+  ;; ============================================================
+  ;; ETHERNET PHY - LAN8742A-CZ-TR
+  ;; RMII interface to STM32H743
+  ;; 25MHz clock from HSE (shared with MCU)
+  ;; ============================================================
+  (symbol
+    (lib_id "Interface_Ethernet:LAN8742A-CZ-TR")
+    (at 101.6 88.9)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "ETH-0001-U50")
+    (property "Reference" "U50"
+      (at 101.6 63.5 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "LAN8742A-CZ-TR"
+      (at 101.6 66.04 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_DFN_QFN:QFN-24-1EP_4x4mm_P0.5mm_EP2.6x2.6mm"
+      (at 101.6 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://ww1.microchip.com/downloads/en/DeviceDoc/8742A.pdf"
+      (at 101.6 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "LAN8742A-CZ-TR"
+      (at 101.6 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Microchip"
+      (at 101.6 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; PHY decoupling capacitors
+  (symbol (lib_id "Device:C") (at 69.85 76.2) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0002-C80")
+    (property "Reference" "C80" (at 72.39 74.93 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 69.85 78.74 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 69.85 76.2 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 69.85 76.2 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 69.85 76.2 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C") (at 76.2 76.2) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0003-C81")
+    (property "Reference" "C81" (at 78.74 74.93 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 76.2 78.74 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 76.2 76.2 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 76.2 76.2 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 76.2 76.2 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C") (at 82.55 76.2) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0004-C82")
+    (property "Reference" "C82" (at 85.09 74.93 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10uF" (at 82.55 78.74 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (at 82.55 76.2 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM21BR61A106ME51L" (at 82.55 76.2 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 82.55 76.2 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; RJ45 with Integrated Magnetics (Pulse J0011D21BNL)
+  ;; Includes LEDs for link/activity
+  ;; ============================================================
+  (symbol
+    (lib_id "Connector:RJ45_Shielded_Magnetics")
+    (at 177.8 88.9)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "ETH-0010-J60")
+    (property "Reference" "J60"
+      (at 177.8 69.85 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "J0011D21BNL"
+      (at 177.8 72.39 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Connector_RJ:RJ45_Pulse_JXD0-0019NL"
+      (at 177.8 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://productfinder.pulseelectronics.com/api/open/part-attachments/datasheet/J0011D21BNL"
+      (at 177.8 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "J0011D21BNL"
+      (at 177.8 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Pulse Electronics"
+      (at 177.8 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; Series termination resistors for TX pairs (49.9 ohm per datasheet)
+  (symbol (lib_id "Device:R") (at 139.7 82.55) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0011-R50")
+    (property "Reference" "R50" (at 142.24 82.55 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "49.9R" (at 139.7 85.09 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 139.7 82.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0749R9L" (at 139.7 82.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 139.7 82.55 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:R") (at 139.7 95.25) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0012-R51")
+    (property "Reference" "R51" (at 142.24 95.25 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "49.9R" (at 139.7 97.79 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 139.7 95.25 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0749R9L" (at 139.7 95.25 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 139.7 95.25 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ESD protection on Ethernet lines
+  (symbol (lib_id "Device:D_TVS") (at 152.4 101.6) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0013-D30")
+    (property "Reference" "D30" (at 152.4 96.52 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "PESD5V0S2BT" (at 152.4 99.06 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Diode_SMD:D_SOT-23_ANK" (at 152.4 101.6 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "PESD5V0S2BT,215" (at 152.4 101.6 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Nexperia" (at 152.4 101.6 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; PHY NRST pull-up
+  (symbol (lib_id "Device:R") (at 69.85 88.9) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ETH-0014-R52")
+    (property "Reference" "R52" (at 72.39 88.9 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 69.85 91.44 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 69.85 88.9 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 69.85 88.9 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 69.85 88.9 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; TEXT ANNOTATIONS
+  ;; ============================================================
+  (text "ETHERNET 10/100 DESIGN\n\nPHY: LAN8742A-CZ-TR (QFN-24)\n- RMII interface to STM32H743\n- 25MHz REF_CLK from HSE crystal\n- Internal 1.2V regulator\n- Auto-MDIX support\n- IEEE 802.3 / 802.3u compliant\n\nMagnetics: J0011D21BNL (RJ45 + integrated magnetics)\n- 10/100 Base-TX\n- Link/Activity LEDs integrated\n- Shielded connector\n\nESD: PESD5V0S2BT on all data lines\nTermination: 49.9R series on TX+/TX-"
+    (exclude_from_sim no)
+    (at 25.4 25.4 0)
+    (effects (font (size 1.524 1.524)) (justify left bottom))
+    (uuid "ETH-TEXT-0001")
+  )
+)

@@ -1,0 +1,462 @@
+(kicad_sch
+  (version 20231120)
+  (generator "eeschema")
+  (generator_version "8.0")
+  (uuid "cc027e44-bff2-4725-9ab0-8f79e0de46b7")
+  (paper "A3")
+  (title_block
+    (title "STM32H743 PLC-Grade Data Logger - Top Level")
+    (date "2026-03-15")
+    (rev "1.0")
+    (company "SCADA Systems")
+    (comment 1 "PLC-Grade Industrial Data Logger")
+    (comment 2 "LoRa / BLE / WiFi / Ethernet / GSM")
+    (comment 3 "24V Industrial Power Input")
+    (comment 4 "STM32H743VIT6 ARM Cortex-M7 480MHz")
+  )
+
+  ;; ============================================================
+  ;; HIERARCHICAL SHEET: Power Supply
+  ;; ============================================================
+  (sheet
+    (at 25.4 38.1)
+    (size 38.1 25.4)
+    (fields_autoplaced yes)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 1))
+    (fill (color 255 255 200 1.0))
+    (uuid "a1b2c3d4-0001-4000-8000-000000000001")
+    (property "Sheetname" "Power_Supply"
+      (at 25.4 37.3858 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "Power_Supply.kicad_sch"
+      (at 25.4 64.2342 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "VIN_24V" input
+      (at 25.4 44.45)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000001-0001-0001-0001-000000000001")
+    )
+    (pin "+5V" output
+      (at 63.5 44.45)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000001-0001-0001-0001-000000000002")
+    )
+    (pin "+3V3" output
+      (at 63.5 50.8)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000001-0001-0001-0001-000000000003")
+    )
+    (pin "+3V3_A" output
+      (at 63.5 57.15)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000001-0001-0001-0001-000000000004")
+    )
+    (pin "GND" bidirectional
+      (at 25.4 57.15)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000001-0001-0001-0001-000000000005")
+    )
+  )
+
+  ;; ============================================================
+  ;; HIERARCHICAL SHEET: STM32H743 MCU
+  ;; ============================================================
+  (sheet
+    (at 88.9 38.1)
+    (size 50.8 50.8)
+    (fields_autoplaced yes)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 1))
+    (fill (color 200 255 200 1.0))
+    (uuid "a1b2c3d4-0002-4000-8000-000000000002")
+    (property "Sheetname" "STM32H743_MCU"
+      (at 88.9 37.3858 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "STM32H743_MCU.kicad_sch"
+      (at 88.9 89.6342 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "+3V3" input
+      (at 88.9 44.45)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000002-0001-0001-0001-000000000001")
+    )
+    (pin "+3V3_A" input
+      (at 88.9 50.8)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000002-0001-0001-0001-000000000002")
+    )
+    (pin "GND" bidirectional
+      (at 88.9 82.55)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000002-0001-0001-0001-000000000003")
+    )
+    (pin "SPI1_SCK" output
+      (at 139.7 44.45)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000002-0001-0001-0001-000000000010")
+    )
+    (pin "SPI1_MOSI" output
+      (at 139.7 47.625)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000002-0001-0001-0001-000000000011")
+    )
+    (pin "SPI1_MISO" input
+      (at 139.7 50.8)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000002-0001-0001-0001-000000000012")
+    )
+    (pin "UART4_TX" output
+      (at 139.7 57.15)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000002-0001-0001-0001-000000000013")
+    )
+    (pin "UART4_RX" input
+      (at 139.7 60.325)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000002-0001-0001-0001-000000000014")
+    )
+    (pin "ETH_RMII" bidirectional
+      (at 139.7 66.675)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000002-0001-0001-0001-000000000015")
+    )
+    (pin "FDCAN1" bidirectional
+      (at 139.7 73.025)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000002-0001-0001-0001-000000000016")
+    )
+    (pin "USART2" bidirectional
+      (at 139.7 79.375)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000002-0001-0001-0001-000000000017")
+    )
+    (pin "ADC1_IN" input
+      (at 88.9 63.5)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000002-0001-0001-0001-000000000018")
+    )
+    (pin "GPIO_DI" input
+      (at 88.9 69.85)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000002-0001-0001-0001-000000000019")
+    )
+    (pin "GPIO_DO" output
+      (at 88.9 76.2)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000002-0001-0001-0001-000000000020")
+    )
+  )
+
+  ;; ============================================================
+  ;; HIERARCHICAL SHEET: Analog Inputs
+  ;; ============================================================
+  (sheet
+    (at 25.4 101.6)
+    (size 38.1 25.4)
+    (fields_autoplaced yes)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 1))
+    (fill (color 200 200 255 1.0))
+    (uuid "a1b2c3d4-0003-4000-8000-000000000003")
+    (property "Sheetname" "Analog_Inputs"
+      (at 25.4 100.8858 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "Analog_Inputs.kicad_sch"
+      (at 25.4 127.7342 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "AI_CH0" output
+      (at 63.5 107.95)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000003-0001-0001-0001-000000000001")
+    )
+    (pin "AI_CH1" output
+      (at 63.5 111.125)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000003-0001-0001-0001-000000000002")
+    )
+    (pin "AI_CH2" output
+      (at 63.5 114.3)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000003-0001-0001-0001-000000000003")
+    )
+    (pin "AI_CH3" output
+      (at 63.5 117.475)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000003-0001-0001-0001-000000000004")
+    )
+    (pin "+3V3_A" input
+      (at 25.4 107.95)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000003-0001-0001-0001-000000000005")
+    )
+    (pin "GND" bidirectional
+      (at 25.4 120.65)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000003-0001-0001-0001-000000000006")
+    )
+  )
+
+  ;; ============================================================
+  ;; HIERARCHICAL SHEET: Digital IO
+  ;; ============================================================
+  (sheet
+    (at 25.4 139.7)
+    (size 38.1 25.4)
+    (fields_autoplaced yes)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 1))
+    (fill (color 255 200 255 1.0))
+    (uuid "a1b2c3d4-0004-4000-8000-000000000004")
+    (property "Sheetname" "Digital_IO"
+      (at 25.4 138.9858 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "Digital_IO.kicad_sch"
+      (at 25.4 165.8342 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "DI_0" output
+      (at 63.5 146.05)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000004-0001-0001-0001-000000000001")
+    )
+    (pin "DI_1" output
+      (at 63.5 149.225)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000004-0001-0001-0001-000000000002")
+    )
+    (pin "DO_0" input
+      (at 63.5 155.575)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000004-0001-0001-0001-000000000003")
+    )
+    (pin "DO_1" input
+      (at 63.5 158.75)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000004-0001-0001-0001-000000000004")
+    )
+    (pin "+5V" input
+      (at 25.4 146.05)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000004-0001-0001-0001-000000000005")
+    )
+    (pin "+24V_ISO" input
+      (at 25.4 152.4)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000004-0001-0001-0001-000000000006")
+    )
+    (pin "GND" bidirectional
+      (at 25.4 158.75)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000004-0001-0001-0001-000000000007")
+    )
+  )
+
+  ;; ============================================================
+  ;; HIERARCHICAL SHEET: RS485 / CAN Bus
+  ;; ============================================================
+  (sheet
+    (at 165.1 38.1)
+    (size 38.1 25.4)
+    (fields_autoplaced yes)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 1))
+    (fill (color 255 220 200 1.0))
+    (uuid "a1b2c3d4-0005-4000-8000-000000000005")
+    (property "Sheetname" "RS485_CAN"
+      (at 165.1 37.3858 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "RS485_CAN.kicad_sch"
+      (at 165.1 64.2342 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "USART2_TX" input
+      (at 165.1 44.45)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000005-0001-0001-0001-000000000001")
+    )
+    (pin "USART2_RX" output
+      (at 165.1 47.625)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000005-0001-0001-0001-000000000002")
+    )
+    (pin "FDCAN1_TX" input
+      (at 165.1 53.975)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000005-0001-0001-0001-000000000003")
+    )
+    (pin "FDCAN1_RX" output
+      (at 165.1 57.15)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000005-0001-0001-0001-000000000004")
+    )
+    (pin "+3V3" input
+      (at 203.2 44.45)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000005-0001-0001-0001-000000000005")
+    )
+    (pin "+5V" input
+      (at 203.2 50.8)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000005-0001-0001-0001-000000000006")
+    )
+    (pin "GND" bidirectional
+      (at 203.2 57.15)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000005-0001-0001-0001-000000000007")
+    )
+  )
+
+  ;; ============================================================
+  ;; HIERARCHICAL SHEET: Ethernet
+  ;; ============================================================
+  (sheet
+    (at 165.1 76.2)
+    (size 38.1 25.4)
+    (fields_autoplaced yes)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 1))
+    (fill (color 200 255 255 1.0))
+    (uuid "a1b2c3d4-0006-4000-8000-000000000006")
+    (property "Sheetname" "Ethernet"
+      (at 165.1 75.4858 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "Ethernet.kicad_sch"
+      (at 165.1 102.3342 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "ETH_RMII" bidirectional
+      (at 165.1 82.55)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000006-0001-0001-0001-000000000001")
+    )
+    (pin "+3V3" input
+      (at 203.2 82.55)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000006-0001-0001-0001-000000000002")
+    )
+    (pin "GND" bidirectional
+      (at 203.2 95.25)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000006-0001-0001-0001-000000000003")
+    )
+  )
+
+  ;; ============================================================
+  ;; HIERARCHICAL SHEET: Wireless (LoRa, BLE, WiFi, GSM)
+  ;; ============================================================
+  (sheet
+    (at 165.1 114.3)
+    (size 50.8 38.1)
+    (fields_autoplaced yes)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 1))
+    (fill (color 255 255 200 1.0))
+    (uuid "a1b2c3d4-0007-4000-8000-000000000007")
+    (property "Sheetname" "Wireless"
+      (at 165.1 113.5858 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "Wireless.kicad_sch"
+      (at 165.1 153.1342 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "SPI1_SCK" input
+      (at 165.1 120.65)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000007-0001-0001-0001-000000000001")
+    )
+    (pin "SPI1_MOSI" input
+      (at 165.1 123.825)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000007-0001-0001-0001-000000000002")
+    )
+    (pin "SPI1_MISO" output
+      (at 165.1 127.0)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000007-0001-0001-0001-000000000003")
+    )
+    (pin "UART4_TX" input
+      (at 165.1 133.35)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000007-0001-0001-0001-000000000004")
+    )
+    (pin "UART4_RX" output
+      (at 165.1 136.525)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000007-0001-0001-0001-000000000005")
+    )
+    (pin "+3V3" input
+      (at 215.9 120.65)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000007-0001-0001-0001-000000000006")
+    )
+    (pin "+5V" input
+      (at 215.9 127.0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000007-0001-0001-0001-000000000007")
+    )
+    (pin "+4V1" input
+      (at 215.9 133.35)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000007-0001-0001-0001-000000000008")
+    )
+    (pin "GND" bidirectional
+      (at 215.9 146.05)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000007-0001-0001-0001-000000000009")
+    )
+  )
+
+  ;; ============================================================
+  ;; HIERARCHICAL SHEET: Storage (SD, EEPROM, Flash)
+  ;; ============================================================
+  (sheet
+    (at 88.9 101.6)
+    (size 38.1 25.4)
+    (fields_autoplaced yes)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 1))
+    (fill (color 220 220 220 1.0))
+    (uuid "a1b2c3d4-0008-4000-8000-000000000008")
+    (property "Sheetname" "Storage"
+      (at 88.9 100.8858 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "Storage.kicad_sch"
+      (at 88.9 127.7342 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "SDMMC1" bidirectional
+      (at 88.9 107.95)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000008-0001-0001-0001-000000000001")
+    )
+    (pin "SPI3" bidirectional
+      (at 88.9 114.3)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid "00000008-0001-0001-0001-000000000002")
+    )
+    (pin "+3V3" input
+      (at 127.0 107.95)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000008-0001-0001-0001-000000000003")
+    )
+    (pin "GND" bidirectional
+      (at 127.0 120.65)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid "00000008-0001-0001-0001-000000000004")
+    )
+  )
+
+  ;; ============================================================
+  ;; TEXT ANNOTATIONS
+  ;; ============================================================
+  (text "STM32H743 PLC-Grade Data Logger\nCommunications: LoRa, BLE, WiFi, Ethernet, GSM\nIndustrial I/O: 4x AI (4-20mA/0-10V), 8x DI (24V), 4x DO (Relay)\nFieldbus: RS485 Modbus, CAN/FD Bus\nStorage: microSD, 64Mbit Flash, 256Kbit EEPROM\nPower: 24VDC Industrial (9-36V range)"
+    (exclude_from_sim no)
+    (at 25.4 25.4 0)
+    (effects (font (size 2.54 2.54) bold) (justify left bottom))
+    (uuid "00000000-text-0001-0001-000000000001")
+  )
+)

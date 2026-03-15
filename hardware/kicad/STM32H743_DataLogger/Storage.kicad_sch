@@ -1,0 +1,212 @@
+(kicad_sch
+  (version 20231120)
+  (generator "eeschema")
+  (generator_version "8.0")
+  (uuid "a1b2c3d4-0008-4000-8000-000000000008")
+  (paper "A4")
+  (title_block
+    (title "Storage - SD Card, Flash, EEPROM")
+    (date "2026-03-15")
+    (rev "1.0")
+    (company "SCADA Systems")
+    (comment 1 "microSD (SDMMC1), W25Q64JV Flash (SPI3), AT24C256 EEPROM (I2C1)")
+    (comment 2 "Data logging and configuration storage")
+  )
+
+  ;; ============================================================
+  ;; microSD CARD SLOT
+  ;; SDMMC1 4-bit mode for high-speed logging
+  ;; Push-push connector with card detect
+  ;; ============================================================
+  (symbol
+    (lib_id "Connector:Micro_SD_Card_Det")
+    (at 88.9 57.15)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "ST-0001-J80")
+    (property "Reference" "J80"
+      (at 88.9 38.1 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "microSD Slot"
+      (at 88.9 40.64 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Connector_Card:microSD_HC_Molex_104031-0811"
+      (at 88.9 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "104031-0811"
+      (at 88.9 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Molex"
+      (at 88.9 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; SD card decoupling
+  (symbol (lib_id "Device:C") (at 63.5 50.8) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ST-0002-C100")
+    (property "Reference" "C100" (at 66.04 49.53 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 63.5 53.34 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 63.5 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 63.5 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 63.5 50.8 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C") (at 69.85 50.8) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ST-0003-C101")
+    (property "Reference" "C101" (at 72.39 49.53 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10uF" (at 69.85 53.34 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (at 69.85 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM21BR61A106ME51L" (at 69.85 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 69.85 50.8 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; SD card data line pull-ups (47k)
+  (symbol (lib_id "Device:R_Pack04") (at 63.5 38.1) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ST-0004-RN1")
+    (property "Reference" "RN1" (at 63.5 30.48 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "47k x4" (at 63.5 33.02 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_Array_Convex_4x0402" (at 63.5 38.1 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "YC164-JR-0747KL" (at 63.5 38.1 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 63.5 38.1 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; EXTERNAL FLASH - W25Q64JVSSIQ (64Mbit / 8MB)
+  ;; SPI3 interface, for firmware OTA and data backup
+  ;; ============================================================
+  (symbol
+    (lib_id "Memory_Flash:W25Q64JVxxQ")
+    (at 88.9 107.95)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "ST-0010-U70")
+    (property "Reference" "U70"
+      (at 88.9 95.25 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "W25Q64JVSSIQ"
+      (at 88.9 97.79 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+      (at 88.9 107.95 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.winbond.com/resource-files/w25q64jv%20revj%2003272018%20plus.pdf"
+      (at 88.9 107.95 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "W25Q64JVSSIQ"
+      (at 88.9 107.95 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Winbond"
+      (at 88.9 107.95 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; Flash decoupling
+  (symbol (lib_id "Device:C") (at 69.85 101.6) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ST-0011-C102")
+    (property "Reference" "C102" (at 72.39 100.33 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 69.85 104.14 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 69.85 101.6 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 69.85 101.6 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 69.85 101.6 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; EEPROM - AT24C256C (256Kbit / 32KB)
+  ;; I2C1 interface, for configuration/calibration storage
+  ;; ============================================================
+  (symbol
+    (lib_id "Memory_EEPROM:AT24C256C")
+    (at 88.9 152.4)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "ST-0020-U71")
+    (property "Reference" "U71"
+      (at 88.9 139.7 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "AT24C256C-SSHL-T"
+      (at 88.9 142.24 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+      (at 88.9 152.4 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://ww1.microchip.com/downloads/en/DeviceDoc/AT24C256C-I2C-Compatible-Two-Wire-Serial-EEPROM-20006270A.pdf"
+      (at 88.9 152.4 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "AT24C256C-SSHL-T"
+      (at 88.9 152.4 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Microchip"
+      (at 88.9 152.4 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; EEPROM decoupling
+  (symbol (lib_id "Device:C") (at 69.85 146.05) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ST-0021-C103")
+    (property "Reference" "C103" (at 72.39 144.78 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 69.85 148.59 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 69.85 146.05 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 69.85 146.05 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 69.85 146.05 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; I2C pull-ups
+  (symbol (lib_id "Device:R") (at 63.5 139.7) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ST-0022-R70")
+    (property "Reference" "R70" (at 66.04 139.7 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "4.7k" (at 63.5 142.24 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 63.5 139.7 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-074K7L" (at 63.5 139.7 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 63.5 139.7 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:R") (at 57.15 139.7) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ST-0023-R71")
+    (property "Reference" "R71" (at 59.69 139.7 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "4.7k" (at 57.15 142.24 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 57.15 139.7 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-074K7L" (at 57.15 139.7 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 57.15 139.7 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; TEXT ANNOTATIONS
+  ;; ============================================================
+  (text "STORAGE SUBSYSTEM\n\nmicroSD Card (SDMMC1 4-bit):\n- Molex push-push connector with card detect\n- 47k pull-ups on data lines\n- Up to 50MHz high-speed mode\n- For continuous data logging\n\nExternal Flash W25Q64JV (SPI3):\n- 64Mbit (8MB) NOR Flash\n- Quad SPI capable\n- For firmware OTA updates and data backup\n- 100k erase cycles\n\nEEPROM AT24C256C (I2C1):\n- 256Kbit (32KB)\n- For calibration data and configuration\n- 1M write cycles\n- 4.7k I2C pull-ups"
+    (exclude_from_sim no)
+    (at 25.4 25.4 0)
+    (effects (font (size 1.524 1.524)) (justify left bottom))
+    (uuid "ST-TEXT-0001")
+  )
+)

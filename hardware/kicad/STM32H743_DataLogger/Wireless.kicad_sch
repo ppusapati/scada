@@ -1,0 +1,307 @@
+(kicad_sch
+  (version 20231120)
+  (generator "eeschema")
+  (generator_version "8.0")
+  (uuid "a1b2c3d4-0007-4000-8000-000000000007")
+  (paper "A3")
+  (title_block
+    (title "Wireless Communications - LoRa, BLE, WiFi, GSM")
+    (date "2026-03-15")
+    (rev "1.0")
+    (company "SCADA Systems")
+    (comment 1 "LoRa: SX1276 (SPI1) | BLE+WiFi: ESP32-C3 (UART7/SPI2)")
+    (comment 2 "GSM/LTE: SIM7600G-H (UART4) with SIM card holder")
+  )
+
+  ;; ============================================================
+  ;; LoRa MODULE - SX1276 (Semtech)
+  ;; SPI interface to STM32H743 (SPI1)
+  ;; 868/915MHz ISM band, up to +20dBm TX
+  ;; Range: up to 15km LOS
+  ;; ============================================================
+  (symbol
+    (lib_id "RF_Module:RFM95W-868S2")
+    (at 76.2 63.5)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "WL-0001-U60")
+    (property "Reference" "U60"
+      (at 76.2 44.45 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "RFM95W-915S2"
+      (at 76.2 46.99 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "RF_Module:HOPERF_RFM9XW_SMD"
+      (at 76.2 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.hoperf.com/data/upload/portal/20190801/RFM95W-V2.0.pdf"
+      (at 76.2 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "RFM95W-915S2"
+      (at 76.2 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "HopeRF"
+      (at 76.2 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; LoRa antenna connector (SMA)
+  (symbol (lib_id "Connector:Conn_Coaxial") (at 114.3 50.8) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0002-J70")
+    (property "Reference" "J70" (at 114.3 44.45 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "SMA LoRa ANT" (at 114.3 46.99 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount" (at 114.3 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "132289" (at 114.3 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Amphenol" (at 114.3 50.8 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; LoRa decoupling
+  (symbol (lib_id "Device:C") (at 50.8 57.15) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0003-C90")
+    (property "Reference" "C90" (at 53.34 55.88 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 50.8 59.69 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 50.8 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 50.8 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 50.8 57.15 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C") (at 57.15 57.15) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0004-C91")
+    (property "Reference" "C91" (at 59.69 55.88 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10uF" (at 57.15 59.69 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (at 57.15 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM21BR61A106ME51L" (at 57.15 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 57.15 57.15 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; LoRa antenna matching network (pi-network, values depend on antenna)
+  (symbol (lib_id "Device:L") (at 101.6 50.8) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0005-L10")
+    (property "Reference" "L10" (at 101.6 45.72 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "5.6nH" (at 101.6 48.26 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Inductor_SMD:L_0402_1005Metric" (at 101.6 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "LQW15AN5N6B80D" (at 101.6 50.8 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 101.6 50.8 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; BLE + WiFi MODULE - ESP32-C3-MINI-1
+  ;; WiFi 802.11 b/g/n + BLE 5.0
+  ;; UART7 for AT commands, SPI2 for high-speed data
+  ;; ============================================================
+  (symbol
+    (lib_id "RF_Module:ESP32-C3-MINI-1")
+    (at 76.2 139.7)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "WL-0010-U61")
+    (property "Reference" "U61"
+      (at 76.2 114.3 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "ESP32-C3-MINI-1-N4"
+      (at 76.2 116.84 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "RF_Module:ESP32-C3-MINI-1"
+      (at 76.2 139.7 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.espressif.com/sites/default/files/documentation/esp32-c3-mini-1_datasheet_en.pdf"
+      (at 76.2 139.7 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "ESP32-C3-MINI-1-N4"
+      (at 76.2 139.7 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Espressif"
+      (at 76.2 139.7 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; ESP32 decoupling
+  (symbol (lib_id "Device:C") (at 50.8 127.0) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0011-C92")
+    (property "Reference" "C92" (at 53.34 125.73 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10uF" (at 50.8 129.54 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (at 50.8 127.0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM21BR61A106ME51L" (at 50.8 127.0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 50.8 127.0 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C") (at 57.15 127.0) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0012-C93")
+    (property "Reference" "C93" (at 59.69 125.73 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 57.15 129.54 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 57.15 127.0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 57.15 127.0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 57.15 127.0 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ESP32 EN pull-up and auto-reset circuit
+  (symbol (lib_id "Device:R") (at 50.8 120.65) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0013-R60")
+    (property "Reference" "R60" (at 53.34 120.65 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "10k" (at 50.8 123.19 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 50.8 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "RC0402FR-0710KL" (at 50.8 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Yageo" (at 50.8 120.65 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; WiFi/BLE antenna connector (u.FL/IPEX)
+  (symbol (lib_id "Connector:Conn_Coaxial") (at 114.3 120.65) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0014-J71")
+    (property "Reference" "J71" (at 114.3 114.3 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "U.FL WiFi/BLE ANT" (at 114.3 116.84 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Connector_Coaxial:U.FL_Hirose_U.FL-R-SMT-1_Solder" (at 114.3 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "U.FL-R-SMT-1(80)" (at 114.3 120.65 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Hirose" (at 114.3 120.65 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; GSM/LTE MODULE - SIM7600G-H
+  ;; Global LTE Cat-1 + 2G/3G fallback
+  ;; UART4 interface to STM32H743
+  ;; Supports voice, SMS, data (up to 10Mbps DL)
+  ;; ============================================================
+  (symbol
+    (lib_id "RF_GSM:SIM7600")
+    (at 76.2 215.9)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "WL-0020-U62")
+    (property "Reference" "U62"
+      (at 76.2 190.5 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "SIM7600G-H"
+      (at 76.2 193.04 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "RF_GSM:SIMCom_SIM7600"
+      (at 76.2 215.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.simcom.com/product/SIM7600G-H.html"
+      (at 76.2 215.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "SIM7600G-H"
+      (at 76.2 215.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "SIMCom"
+      (at 76.2 215.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; SIM Card Holder (Nano SIM push-push)
+  (symbol (lib_id "Connector:SIM_Card") (at 152.4 215.9) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0021-J72")
+    (property "Reference" "J72" (at 152.4 203.2 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "Nano SIM Holder" (at 152.4 205.74 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Connector_Card:SIM_Nano_Molex_503398-1892" (at 152.4 215.9 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "503398-1892" (at 152.4 215.9 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Molex" (at 152.4 215.9 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; GSM/LTE Antenna connector (SMA)
+  (symbol (lib_id "Connector:Conn_Coaxial") (at 114.3 196.85) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0022-J73")
+    (property "Reference" "J73" (at 114.3 190.5 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "SMA LTE Main ANT" (at 114.3 193.04 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount" (at 114.3 196.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "132289" (at 114.3 196.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Amphenol" (at 114.3 196.85 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; GNSS Antenna connector
+  (symbol (lib_id "Connector:Conn_Coaxial") (at 114.3 209.55) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0023-J74")
+    (property "Reference" "J74" (at 114.3 203.2 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "SMA GNSS ANT" (at 114.3 205.74 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount" (at 114.3 209.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "132289" (at 114.3 209.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Amphenol" (at 114.3 209.55 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; GSM power supply (needs high current pulses up to 2A at 4.1V)
+  ;; Dedicated LDO or buck from 5V rail
+  (symbol (lib_id "Regulator_Linear:TLV1117-33") (at 38.1 196.85) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0030-U63")
+    (property "Reference" "U63" (at 38.1 190.5 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "TPS73641DCQR" (at 38.1 193.04 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Package_TO_SOT_SMD:SOT-223-3_TabPin2" (at 38.1 196.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "TPS73641DCQR" (at 38.1 196.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Texas Instruments" (at 38.1 196.85 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; Bulk capacitors for GSM module (handles 2A transient bursts)
+  (symbol (lib_id "Device:C_Polarized") (at 50.8 209.55) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0031-C94")
+    (property "Reference" "C94" (at 53.34 208.28 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100uF/10V" (at 50.8 212.09 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:CP_Elec_6.3x5.8" (at 50.8 209.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GVT1A101M6L006VR0" (at 50.8 209.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 50.8 209.55 0) (effects (font (size 1.27 1.27)) hide))
+  )
+  (symbol (lib_id "Device:C_Polarized") (at 57.15 209.55) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0032-C95")
+    (property "Reference" "C95" (at 59.69 208.28 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100uF/10V" (at 57.15 212.09 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:CP_Elec_6.3x5.8" (at 57.15 209.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GVT1A101M6L006VR0" (at 57.15 209.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 57.15 209.55 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; SIM ESD protection
+  (symbol (lib_id "Device:D_TVS") (at 139.7 222.25) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "WL-0033-D40")
+    (property "Reference" "D40" (at 139.7 217.17 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "PRTR5V0U2X" (at 139.7 219.71 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Diode_SMD:D_SOT-363_SC-70-6" (at 139.7 222.25 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "PRTR5V0U2X,215" (at 139.7 222.25 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Nexperia" (at 139.7 222.25 0) (effects (font (size 1.27 1.27)) hide))
+  )
+
+  ;; ============================================================
+  ;; TEXT ANNOTATIONS
+  ;; ============================================================
+  (text "WIRELESS COMMUNICATIONS\n\n1. LoRa (SX1276/RFM95W):\n   - SPI1 interface, 868/915MHz\n   - +20dBm TX, -148dBm sensitivity\n   - SMA antenna connector\n   - Range: up to 15km LOS\n\n2. BLE + WiFi (ESP32-C3-MINI-1):\n   - WiFi 802.11 b/g/n (2.4GHz)\n   - Bluetooth 5.0 LE\n   - UART7 for AT commands\n   - u.FL antenna connector\n\n3. GSM/LTE (SIM7600G-H):\n   - LTE Cat-1 global bands\n   - 2G/3G fallback\n   - UART4 interface, AT commands\n   - Nano SIM push-push holder\n   - SMA connectors (Main + GNSS)\n   - Dedicated 4.1V LDO, 100uF bulk caps"
+    (exclude_from_sim no)
+    (at 152.4 25.4 0)
+    (effects (font (size 1.524 1.524)) (justify left bottom))
+    (uuid "WL-TEXT-0001")
+  )
+)

@@ -1,0 +1,691 @@
+(kicad_sch
+  (version 20231120)
+  (generator "eeschema")
+  (generator_version "8.0")
+  (uuid "a1b2c3d4-0001-4000-8000-000000000001")
+  (paper "A4")
+  (title_block
+    (title "Power Supply - 24VDC Industrial Input")
+    (date "2026-03-15")
+    (rev "1.0")
+    (company "SCADA Systems")
+    (comment 1 "24V -> 5V (TPS54560) -> 3.3V (TLV1117-33) -> 3.3VA (TPS7A4533)")
+    (comment 2 "Input protection: TVS, reverse polarity, EMI filter")
+  )
+
+  ;; ============================================================
+  ;; INPUT PROTECTION
+  ;; ============================================================
+  ;; D1 - TVS Diode for surge protection (SMDJ36A)
+  (symbol
+    (lib_id "Device:D_TVS")
+    (at 38.1 57.15)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0001-TVS1")
+    (property "Reference" "D1"
+      (at 38.1 52.07 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "SMDJ36A"
+      (at 38.1 54.61 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Diode_SMD:D_SMC"
+      (at 38.1 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "SMDJ36A"
+      (at 38.1 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Littelfuse"
+      (at 38.1 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; D2 - Reverse polarity protection MOSFET
+  (symbol
+    (lib_id "Device:Q_PMOS_GSD")
+    (at 50.8 44.45)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0002-Q1")
+    (property "Reference" "Q1"
+      (at 50.8 39.37 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "SI4435DDY"
+      (at 50.8 41.91 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_SO:SO-8_3.9x4.9mm_P1.27mm"
+      (at 50.8 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "SI4435DDY-T1-GE3"
+      (at 50.8 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Vishay"
+      (at 50.8 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; F1 - Resettable PTC fuse
+  (symbol
+    (lib_id "Device:Polyfuse")
+    (at 27.94 44.45)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0003-F1")
+    (property "Reference" "F1"
+      (at 27.94 39.37 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "1.5A PTC"
+      (at 27.94 41.91 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Fuse:Fuse_1812_4532Metric"
+      (at 27.94 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "MF-MSMF150-2"
+      (at 27.94 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Bourns"
+      (at 27.94 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; L1 - Common mode choke for EMI filtering
+  (symbol
+    (lib_id "Device:L_Core_Ferrite")
+    (at 63.5 44.45)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0004-L1")
+    (property "Reference" "L1"
+      (at 63.5 39.37 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "10uH 2A"
+      (at 63.5 41.91 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Inductor_SMD:L_1210_3225Metric"
+      (at 63.5 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "SRN3015TA-100M"
+      (at 63.5 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Bourns"
+      (at 63.5 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; ============================================================
+  ;; STAGE 1: 24V -> 5V DC-DC Buck Converter (TPS54560)
+  ;; Wide input range: 4.5V to 60V, 5A output
+  ;; ============================================================
+  (symbol
+    (lib_id "Regulator_Switching:TPS54560")
+    (at 101.6 57.15)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0010-U1")
+    (property "Reference" "U1"
+      (at 101.6 44.45 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "TPS54560DDAR"
+      (at 101.6 46.99 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_SO:HSOP-8-1EP_3.9x4.9mm_P1.27mm_EP2.41x3.1mm"
+      (at 101.6 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps54560.pdf"
+      (at 101.6 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "TPS54560DDAR"
+      (at 101.6 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Texas Instruments"
+      (at 101.6 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; Buck converter external components
+  ;; L2 - Buck inductor 22uH
+  (symbol
+    (lib_id "Device:L")
+    (at 127.0 50.8)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0011-L2")
+    (property "Reference" "L2"
+      (at 127.0 45.72 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "22uH 3A"
+      (at 127.0 48.26 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Inductor_SMD:L_1210_3225Metric"
+      (at 127.0 50.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "SRP1265A-220M"
+      (at 127.0 50.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Bourns"
+      (at 127.0 50.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; D3 - Bootstrap diode
+  (symbol
+    (lib_id "Device:D_Schottky")
+    (at 119.38 57.15)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0012-D3")
+    (property "Reference" "D3"
+      (at 119.38 52.07 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "SS34"
+      (at 119.38 54.61 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Diode_SMD:D_SMA"
+      (at 119.38 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "SS34"
+      (at 119.38 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "ON Semiconductor"
+      (at 119.38 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; C1-C4 - Input capacitors for buck converter
+  (symbol
+    (lib_id "Device:C")
+    (at 82.55 63.5)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0013-C1")
+    (property "Reference" "C1"
+      (at 85.09 62.23 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "10uF/50V X7R"
+      (at 82.55 66.04 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+      (at 82.55 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "GRM32ER71H106KA12L"
+      (at 82.55 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Murata"
+      (at 82.55 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; C5-C6 - Output capacitors for 5V rail
+  (symbol
+    (lib_id "Device:C")
+    (at 139.7 63.5)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0014-C5")
+    (property "Reference" "C5"
+      (at 142.24 62.23 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "22uF/10V X5R"
+      (at 139.7 66.04 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+      (at 139.7 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "GRM32ER61A226ME20L"
+      (at 139.7 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Murata"
+      (at 139.7 63.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; R1, R2 - Feedback resistor divider (5V output)
+  ;; Vout = 0.8V * (1 + R1/R2) => R1=52.3k, R2=10k for 5.0V
+  (symbol
+    (lib_id "Device:R")
+    (at 134.62 69.85)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0015-R1")
+    (property "Reference" "R1"
+      (at 137.16 69.85 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "52.3k 1%"
+      (at 134.62 72.39 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+      (at 134.62 69.85 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "RC0402FR-0752K3L"
+      (at 134.62 69.85 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Yageo"
+      (at 134.62 69.85 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (symbol
+    (lib_id "Device:R")
+    (at 134.62 82.55)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0016-R2")
+    (property "Reference" "R2"
+      (at 137.16 82.55 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "10k 1%"
+      (at 134.62 85.09 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+      (at 134.62 82.55 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "RC0402FR-0710KL"
+      (at 134.62 82.55 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Yageo"
+      (at 134.62 82.55 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; ============================================================
+  ;; STAGE 2: 5V -> 3.3V LDO (TLV1117LV33)
+  ;; Digital 3.3V rail - 1A output
+  ;; ============================================================
+  (symbol
+    (lib_id "Regulator_Linear:TLV1117-33")
+    (at 177.8 50.8)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0020-U2")
+    (property "Reference" "U2"
+      (at 177.8 44.45 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "TLV1117LV33DCYR"
+      (at 177.8 46.99 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_TO_SOT_SMD:SOT-223-3_TabPin2"
+      (at 177.8 50.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.ti.com/lit/ds/symlink/tlv1117lv.pdf"
+      (at 177.8 50.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "TLV1117LV33DCYR"
+      (at 177.8 50.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Texas Instruments"
+      (at 177.8 50.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; C7, C8 - Input/Output caps for 3.3V LDO
+  (symbol
+    (lib_id "Device:C")
+    (at 165.1 57.15)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0021-C7")
+    (property "Reference" "C7"
+      (at 167.64 55.88 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "10uF/10V"
+      (at 165.1 59.69 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+      (at 165.1 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "GRM21BR61A106ME51L"
+      (at 165.1 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Murata"
+      (at 165.1 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (symbol
+    (lib_id "Device:C")
+    (at 190.5 57.15)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0022-C8")
+    (property "Reference" "C8"
+      (at 193.04 55.88 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "22uF/6.3V"
+      (at 190.5 59.69 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+      (at 190.5 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "GRM21BR60J226ME39L"
+      (at 190.5 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Murata"
+      (at 190.5 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; ============================================================
+  ;; STAGE 3: 5V -> 3.3VA Ultra-Low-Noise LDO (TPS7A4533)
+  ;; Analog 3.3V rail - dedicated for ADC VREF and analog circuits
+  ;; ============================================================
+  (symbol
+    (lib_id "Regulator_Linear:TPS7A4533")
+    (at 177.8 82.55)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0030-U3")
+    (property "Reference" "U3"
+      (at 177.8 76.2 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "TPS7A4533DGNR"
+      (at 177.8 78.74 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_SO:MSOP-8-1EP_3x3mm_P0.65mm_EP1.68x1.88mm"
+      (at 177.8 82.55 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps7a45.pdf"
+      (at 177.8 82.55 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "TPS7A4533DGNR"
+      (at 177.8 82.55 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Texas Instruments"
+      (at 177.8 82.55 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; C9, C10 - Input/Output caps for analog LDO
+  (symbol
+    (lib_id "Device:C")
+    (at 165.1 88.9)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0031-C9")
+    (property "Reference" "C9"
+      (at 167.64 87.63 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "10uF/10V"
+      (at 165.1 91.44 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+      (at 165.1 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "GRM21BR61A106ME51L"
+      (at 165.1 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Murata"
+      (at 165.1 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (symbol
+    (lib_id "Device:C")
+    (at 190.5 88.9)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0032-C10")
+    (property "Reference" "C10"
+      (at 193.04 87.63 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "10uF/6.3V"
+      (at 190.5 91.44 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+      (at 190.5 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "GRM21BR60J106ME19L"
+      (at 190.5 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Murata"
+      (at 190.5 88.9 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; ============================================================
+  ;; POWER INDICATOR LED
+  ;; ============================================================
+  (symbol
+    (lib_id "Device:LED")
+    (at 203.2 57.15)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0040-LED1")
+    (property "Reference" "LED1"
+      (at 203.2 52.07 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "Green PWR"
+      (at 203.2 54.61 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "LED_SMD:LED_0603_1608Metric"
+      (at 203.2 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "19-217/GHC-YR1S2/3T"
+      (at 203.2 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Everlight"
+      (at 203.2 57.15 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (symbol
+    (lib_id "Device:R")
+    (at 203.2 44.45)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0041-R3")
+    (property "Reference" "R3"
+      (at 205.74 44.45 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "1k"
+      (at 203.2 46.99 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+      (at 203.2 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "RC0402FR-071KL"
+      (at 203.2 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Yageo"
+      (at 203.2 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; ============================================================
+  ;; TERMINAL BLOCKS
+  ;; ============================================================
+  (symbol
+    (lib_id "Connector:Screw_Terminal_01x02")
+    (at 15.24 50.8)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "PS-0050-J1")
+    (property "Reference" "J1"
+      (at 15.24 44.45 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "24VDC Input"
+      (at 15.24 46.99 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal"
+      (at 15.24 50.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "MPN" "1729128"
+      (at 15.24 50.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Manufacturer" "Phoenix Contact"
+      (at 15.24 50.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  ;; ============================================================
+  ;; TEXT ANNOTATIONS
+  ;; ============================================================
+  (text "POWER SUPPLY DESIGN\n24VDC Industrial Input (9-36V range)\nStage 1: TPS54560 Buck 24V->5V (3A max)\nStage 2: TLV1117LV33 LDO 5V->3.3V Digital\nStage 3: TPS7A4533 Ultra-Low-Noise LDO 5V->3.3VA Analog\nProtection: TVS + PTC Fuse + Reverse Polarity MOSFET + EMI Filter"
+    (exclude_from_sim no)
+    (at 25.4 25.4 0)
+    (effects (font (size 1.524 1.524)) (justify left bottom))
+    (uuid "PS-TEXT-0001")
+  )
+)
