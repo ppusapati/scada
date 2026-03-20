@@ -9,11 +9,12 @@
   (paper "A4")
   (title_block
     (title "STM32H743 PLC-Grade Data Logger PCB")
-    (date "2026-03-15")
-    (rev "1.0")
-    (company "SCADA Systems")
+    (date "2026-03-20")
+    (rev "2.0")
+    (company "P9E Microsystems Pvt Ltd")
     (comment 1 "4-Layer PCB, 1.6mm, ENIG finish")
     (comment 2 "160mm x 100mm Eurocard format")
+    (comment 3 "www.p9e.in")
   )
 
   ;; ============================================================
@@ -313,4 +314,280 @@
     (at 5 105) (layer "Cmts.User")
     (effects (font (size 1.2 1.2) (thickness 0.12)) (justify left))
     (uuid "PCB-TXT-SPECS"))
+
+  ;; ============================================================
+  ;; FRONT SILKSCREEN - Company Branding & Board Info
+  ;; ============================================================
+
+  ;; P9E Company Mark - bold 3.5mm (top-center of board)
+  (gr_text "P9E" (at 80 12) (layer "F.SilkS")
+    (effects (font (size 3.5 3.5) (thickness 0.5) bold) (justify center))
+    (uuid "PCB-SILK-BRAND-01"))
+
+  ;; Full company name - 1.2mm bold
+  (gr_text "P9E Microsystems Pvt Ltd" (at 80 16.5) (layer "F.SilkS")
+    (effects (font (size 1.2 1.2) (thickness 0.2) bold) (justify center))
+    (uuid "PCB-SILK-BRAND-02"))
+
+  ;; Website - 1.0mm
+  (gr_text "www.p9e.in" (at 80 19.5) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)) (justify center))
+    (uuid "PCB-SILK-BRAND-03"))
+
+  ;; Product name - 1.2mm
+  (gr_text "Weather Station v2.0" (at 80 23) (layer "F.SilkS")
+    (effects (font (size 1.2 1.2) (thickness 0.18)) (justify center))
+    (uuid "PCB-SILK-BRAND-04"))
+
+  ;; Product specs - 1.0mm
+  (gr_text "STM32H743VIT6 | Industrial" (at 80 26) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)) (justify center))
+    (uuid "PCB-SILK-BRAND-05"))
+
+  ;; ============================================================
+  ;; FRONT SILKSCREEN - Functional Area Labels
+  ;; ============================================================
+
+  ;; Power supply section label
+  (gr_text "PWR" (at 25 8) (layer "F.SilkS")
+    (effects (font (size 1.5 1.5) (thickness 0.2) bold) (justify center))
+    (uuid "PCB-SILK-AREA-PSU"))
+
+  ;; 24V input indicator
+  (gr_text "24VDC IN" (at 15 43) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)) (justify center))
+    (uuid "PCB-SILK-LBL-24V"))
+
+  ;; Ethernet section
+  (gr_text "ETH" (at 137.5 8) (layer "F.SilkS")
+    (effects (font (size 1.5 1.5) (thickness 0.2) bold) (justify center))
+    (uuid "PCB-SILK-AREA-ETH"))
+
+  ;; Wireless section
+  (gr_text "RF" (at 135 48) (layer "F.SilkS")
+    (effects (font (size 1.5 1.5) (thickness 0.2) bold) (justify center))
+    (uuid "PCB-SILK-AREA-RF"))
+
+  ;; Analog inputs section
+  (gr_text "AI" (at 25 58) (layer "F.SilkS")
+    (effects (font (size 1.5 1.5) (thickness 0.2) bold) (justify center))
+    (uuid "PCB-SILK-AREA-AI"))
+
+  ;; Digital I/O section
+  (gr_text "DIO" (at 65 85) (layer "F.SilkS")
+    (effects (font (size 1.5 1.5) (thickness 0.2) bold) (justify center))
+    (uuid "PCB-SILK-AREA-DIO"))
+
+  ;; RS485 / CAN section
+  (gr_text "RS485/CAN" (at 95 85) (layer "F.SilkS")
+    (effects (font (size 1.2 1.2) (thickness 0.15) bold) (justify center))
+    (uuid "PCB-SILK-AREA-COM"))
+
+  ;; ============================================================
+  ;; FRONT SILKSCREEN - Connector Labels
+  ;; ============================================================
+
+  ;; Power input connector
+  (gr_text "J1" (at 10 46) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)) (justify center))
+    (uuid "PCB-SILK-J1"))
+  (gr_text "+" (at 8 48) (layer "F.SilkS")
+    (effects (font (size 1.2 1.2) (thickness 0.2) bold) (justify center))
+    (uuid "PCB-SILK-J1-POL-P"))
+  (gr_text "-" (at 12 48) (layer "F.SilkS")
+    (effects (font (size 1.2 1.2) (thickness 0.2) bold) (justify center))
+    (uuid "PCB-SILK-J1-POL-N"))
+
+  ;; SWD debug header
+  (gr_text "SWD" (at 60 15) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.15) bold) (justify center))
+    (uuid "PCB-SILK-SWD"))
+
+  ;; USB-C connector
+  (gr_text "USB" (at 50 8) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.15) bold) (justify center))
+    (uuid "PCB-SILK-USB"))
+
+  ;; UART debug
+  (gr_text "DBG" (at 67 15) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DBG"))
+
+  ;; Analog input channel labels
+  (gr_text "AI0" (at 10 62) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-AI0"))
+  (gr_text "AI1" (at 10 68) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-AI1"))
+  (gr_text "AI2" (at 10 74) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-AI2"))
+  (gr_text "AI3" (at 10 80) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-AI3"))
+
+  ;; Digital input labels
+  (gr_text "DI0" (at 53 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DI0"))
+  (gr_text "DI1" (at 56.5 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DI1"))
+  (gr_text "DI2" (at 60 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DI2"))
+  (gr_text "DI3" (at 63.5 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DI3"))
+  (gr_text "DI4" (at 67 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DI4"))
+  (gr_text "DI5" (at 70.5 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DI5"))
+  (gr_text "DI6" (at 74 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DI6"))
+  (gr_text "DI7" (at 77.5 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DI7"))
+
+  ;; Digital output labels
+  (gr_text "DO0" (at 53 93) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DO0"))
+  (gr_text "DO1" (at 56.5 93) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DO1"))
+  (gr_text "DO2" (at 60 93) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DO2"))
+  (gr_text "DO3" (at 63.5 93) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DO3"))
+
+  ;; RS485 terminal label
+  (gr_text "A" (at 88 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-RS485-A"))
+  (gr_text "B" (at 91 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-RS485-B"))
+  (gr_text "G" (at 94 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-RS485-G"))
+
+  ;; CAN terminal label
+  (gr_text "H" (at 100 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-CAN-H"))
+  (gr_text "L" (at 103 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-CAN-L"))
+  (gr_text "G" (at 106 88) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-CAN-G"))
+
+  ;; Antenna connector labels
+  (gr_text "LoRa" (at 120 55) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-ANT-LORA"))
+  (gr_text "WiFi" (at 130 55) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-ANT-WIFI"))
+  (gr_text "LTE" (at 140 55) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-ANT-LTE"))
+  (gr_text "GNSS" (at 150 55) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-ANT-GNSS"))
+
+  ;; SIM card slot
+  (gr_text "SIM" (at 145 75) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-SIM"))
+
+  ;; SD card slot
+  (gr_text "SD" (at 45 50) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.15) bold) (justify center))
+    (uuid "PCB-SILK-SD"))
+
+  ;; RJ45 Ethernet
+  (gr_text "LAN" (at 145 12) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.15) bold) (justify center))
+    (uuid "PCB-SILK-LAN"))
+
+  ;; ============================================================
+  ;; FRONT SILKSCREEN - Status LEDs
+  ;; ============================================================
+  (gr_text "PWR" (at 38 32) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-LED-PWR"))
+  (gr_text "STS" (at 42 32) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-LED-STS"))
+  (gr_text "ERR" (at 46 32) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-LED-ERR"))
+
+  ;; ============================================================
+  ;; FRONT SILKSCREEN - Pin 1 / Polarity Markers
+  ;; ============================================================
+  ;; MCU Pin 1 marker
+  (gr_circle (center 53 23) (end 53.5 23)
+    (stroke (width 0.2) (type solid)) (fill solid) (layer "F.SilkS")
+    (uuid "PCB-SILK-MCU-PIN1"))
+
+  ;; ============================================================
+  ;; FRONT SILKSCREEN - Board Info (bottom-right)
+  ;; ============================================================
+  (gr_text "Rev 2.0" (at 148 92) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)) (justify center))
+    (uuid "PCB-SILK-REV"))
+  (gr_text "2026-03" (at 148 95) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center))
+    (uuid "PCB-SILK-DATE"))
+
+  ;; ============================================================
+  ;; BACK SILKSCREEN - Company Info & Compliance
+  ;; ============================================================
+
+  ;; P9E branding on back
+  (gr_text "P9E" (at 80 40) (layer "B.SilkS")
+    (effects (font (size 2.5 2.5) (thickness 0.35) bold) (justify center mirror))
+    (uuid "PCB-BSILK-BRAND-01"))
+  (gr_text "P9E Microsystems Pvt Ltd" (at 80 44) (layer "B.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)) (justify center mirror))
+    (uuid "PCB-BSILK-BRAND-02"))
+  (gr_text "www.p9e.in" (at 80 47) (layer "B.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)) (justify center mirror))
+    (uuid "PCB-BSILK-BRAND-03"))
+
+  ;; Part number and serial number area
+  (gr_text "P/N: P9E-WS-200" (at 80 53) (layer "B.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)) (justify center mirror))
+    (uuid "PCB-BSILK-PN"))
+  (gr_text "S/N: _______________" (at 80 56) (layer "B.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)) (justify center mirror))
+    (uuid "PCB-BSILK-SN"))
+
+  ;; Compliance markings
+  (gr_text "CE" (at 68 65) (layer "B.SilkS")
+    (effects (font (size 2 2) (thickness 0.3) bold) (justify center mirror))
+    (uuid "PCB-BSILK-CE"))
+  (gr_text "RoHS" (at 80 65) (layer "B.SilkS")
+    (effects (font (size 1.5 1.5) (thickness 0.2) bold) (justify center mirror))
+    (uuid "PCB-BSILK-ROHS"))
+  (gr_text "WEEE" (at 92 65) (layer "B.SilkS")
+    (effects (font (size 1.5 1.5) (thickness 0.2) bold) (justify center mirror))
+    (uuid "PCB-BSILK-WEEE"))
+
+  ;; Manufacturing info
+  (gr_text "Made in India" (at 80 72) (layer "B.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)) (justify center mirror))
+    (uuid "PCB-BSILK-MFG"))
+  (gr_text "4-Layer PCB | FR-4 TG170 | ENIG | -40C to +85C" (at 80 76) (layer "B.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify center mirror))
+    (uuid "PCB-BSILK-SPECS"))
 )

@@ -8,7 +8,7 @@
     (title "RS485 Modbus & CAN/FD Bus Interfaces")
     (date "2026-03-15")
     (rev "1.0")
-    (company "SCADA Systems")
+    (company "P9E Microsystems Pvt Ltd")
     (comment 1 "Isolated RS485 (ISO3082) + Isolated CAN FD (ISO1042)")
     (comment 2 "Industrial fieldbus connectivity")
   )

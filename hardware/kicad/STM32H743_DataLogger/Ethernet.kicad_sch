@@ -8,7 +8,7 @@
     (title "Ethernet 10/100 - W5500 SPI Ethernet Controller")
     (date "2026-03-15")
     (rev "1.1")
-    (company "SCADA Systems")
+    (company "P9E Microsystems Pvt Ltd")
     (comment 1 "W5500 Hardwired TCP/IP + MAC + PHY, SPI interface")
     (comment 2 "RJ45 with integrated magnetics and LEDs")
   )

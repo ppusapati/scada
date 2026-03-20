@@ -8,7 +8,7 @@
     (title "STM32H743VIT6 MCU - Core System")
     (date "2026-03-15")
     (rev "1.1")
-    (company "SCADA Systems")
+    (company "P9E Microsystems Pvt Ltd")
     (comment 1 "ARM Cortex-M7 480MHz, 2MB Flash, 1MB RAM")
     (comment 2 "LQFP-100 package, SPI-based peripherals (W5500/ATWINC1500/SX1276/RN4870)")
   )

@@ -11,7 +11,7 @@
     (title "STM32H743 PLC-Grade Data Logger - Manufacturing Ready")
     (date "2026-03-19")
     (rev "1.0 MFG")
-    (company "SCADA Systems")
+    (company "P9E Microsystems Pvt Ltd")
     (comment 1 "4-Layer PCB, 1.6mm FR-4 TG170, ENIG finish")
     (comment 2 "160mm x 100mm Eurocard - MANUFACTURING RELEASE")
     (comment 3 "IPC Class 2, Lead-free RoHS, SAC305")

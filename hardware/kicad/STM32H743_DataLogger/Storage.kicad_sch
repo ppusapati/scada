@@ -8,7 +8,7 @@
     (title "Storage - SD Card, Flash, EEPROM")
     (date "2026-03-15")
     (rev "1.0")
-    (company "SCADA Systems")
+    (company "P9E Microsystems Pvt Ltd")
     (comment 1 "microSD (SDMMC1), W25Q64JV Flash (SPI3), AT24C256 EEPROM (I2C1)")
     (comment 2 "Data logging and configuration storage")
   )

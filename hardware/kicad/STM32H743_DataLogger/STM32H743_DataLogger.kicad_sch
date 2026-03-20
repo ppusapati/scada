@@ -5,14 +5,14 @@
   (uuid "cc027e44-bff2-4725-9ab0-8f79e0de46b7")
   (paper "A3")
   (title_block
-    (title "STM32H743 PLC-Grade Data Logger - Top Level")
-    (date "2026-03-15")
-    (rev "1.0")
-    (company "SCADA Systems")
+    (title "Weather Station v2.0 - STM32H743 Data Logger")
+    (date "2026-03-20")
+    (rev "2.0")
+    (company "P9E Microsystems Pvt Ltd")
     (comment 1 "PLC-Grade Industrial Data Logger")
     (comment 2 "LoRa / BLE / WiFi / Ethernet / GSM")
     (comment 3 "24V Industrial Power Input")
-    (comment 4 "STM32H743VIT6 ARM Cortex-M7 480MHz")
+    (comment 4 "STM32H743VIT6 ARM Cortex-M7 480MHz | www.p9e.in")
   )
 
   ;; ============================================================

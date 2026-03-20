@@ -8,7 +8,7 @@
     (title "Power Supply - 24VDC Industrial Input")
     (date "2026-03-15")
     (rev "1.0")
-    (company "SCADA Systems")
+    (company "P9E Microsystems Pvt Ltd")
     (comment 1 "24V -> 5V (TPS54560) -> 3.3V (TLV1117-33) -> 3.3VA (TPS7A4533)")
     (comment 2 "Input protection: TVS, reverse polarity, EMI filter")
   )
