@@ -20,11 +20,12 @@
 | Solder Mask | Green LPI, both sides |
 | Silkscreen | White, both sides |
 | Min Track Width | 0.15mm (6mil) |
-| Min Track Spacing | 0.15mm (6mil) |
-| Min Via Pad/Drill | 0.5mm/0.3mm |
+| Min Track Spacing | 0.125mm (5mil) |
+| Min Via Pad/Drill | 0.45mm/0.25mm |
 | Edge Clearance | 0.3mm min copper to board edge |
 | Controlled Impedance | 50Ω single-ended (Ethernet, USB) |
 | | 100Ω differential (Ethernet pairs) |
+| Milled Slots | 4 isolation slots, 1.2mm wide, under U40-U43 (see 5.5) |
 | V-Score/Tab | None (individual boards) |
 | Panelization | As required by assembler |
 
@@ -35,12 +36,19 @@ Layer 1 (F.Cu)   : Signal + SMD Components    35μm Cu
 Prepreg 1        : FR-4 2116                   0.200mm (εr=4.5)
 Layer 2 (In1.Cu) : Solid GND Plane            35μm Cu
 Core             : FR-4 1080x2                 0.800mm (εr=4.5)
-Layer 3 (In2.Cu) : Split Power (+3V3/+5V)     35μm Cu
+Layer 3 (In2.Cu) : Signal + +3V3 power fill   35μm Cu
 Prepreg 2        : FR-4 2116                   0.200mm (εr=4.5)
 Layer 4 (B.Cu)   : Signal + SMD Components    35μm Cu
                                                ─────────
 Total                                          ~1.600mm
 ```
+
+Routing uses **F.Cu, In2.Cu and B.Cu**. In1.Cu is kept as an unbroken ground plane —
+no tracks on it — so the outer layers always have a solid reference beneath them.
+In2.Cu carries signal routing with the +3V3 pour filling the space around it, rather
+than being a solid plane; the LQFP-100 escape needs the third routing layer. Note
+that this makes +3V3 distribution a fill rather than a plane, so check the drop to
+the heavier 3V3 loads if the load budget changes.
 
 ## 3. Impedance Control Requirements
 

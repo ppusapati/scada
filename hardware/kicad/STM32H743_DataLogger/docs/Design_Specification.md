@@ -100,12 +100,18 @@ Layer 1 (F.Cu)  : Signal + Components        35μm
 Prepreg         : FR-4                        0.2mm (εr=4.5)
 Layer 2 (In1.Cu): Solid GND Plane            35μm
 Core            : FR-4                        0.8mm (εr=4.5)
-Layer 3 (In2.Cu): Split Power Plane          35μm
+Layer 3 (In2.Cu): Signal + +3V3 power fill   35μm
 Prepreg         : FR-4                        0.2mm (εr=4.5)
 Layer 4 (B.Cu)  : Signal + Components        35μm
 ──────────────────────────────────────────────
 Total                                         ~1.6mm
 ```
+
+Three routing layers (F.Cu, In2.Cu, B.Cu); In1.Cu stays an unbroken ground plane so
+the outer layers keep a solid reference. The third routing layer is needed for the
+0.5mm-pitch LQFP-100 escape — with only the two outer layers the autorouter could not
+complete the fanout. Design rules: 0.15mm track, 0.125mm clearance, 0.45mm/0.25mm
+vias.
 
 ## 6. STM32H743 Pin Assignment Summary (Rev 1.1)
 
