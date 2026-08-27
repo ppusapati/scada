@@ -179,6 +179,16 @@
     (property "MPN" "GRM155R71C104KA88D" (at 69.85 146.05 0) (effects (font (size 1.27 1.27)) hide))
     (property "Manufacturer" "Murata" (at 69.85 146.05 0) (effects (font (size 1.27 1.27)) hide))
   )
+  ;; C104 - AT24C256 EEPROM decoupling
+  (symbol (lib_id "Device:C") (at 78.74 146.05) (unit 1)
+    (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+    (uuid "ST-0021-C104")
+    (property "Reference" "C104" (at 81.28 144.78 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (at 78.74 148.59 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 78.74 146.05 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "GRM155R71C104KA88D" (at 78.74 146.05 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "Murata" (at 78.74 146.05 0) (effects (font (size 1.27 1.27)) hide))
+  )
 
   ;; I2C pull-ups
   (symbol (lib_id "Device:R") (at 63.5 139.7) (unit 1)
