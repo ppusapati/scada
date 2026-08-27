@@ -408,12 +408,12 @@
   ;; ============================================================
 
   ;; J1 - 24VDC Power Input Terminal Block (bottom edge)
-  (footprint "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal"
-    (layer "F.Cu") (uuid "MFG-PS-J1") (at 10 98)
+  (footprint "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal" (layer "F.Cu") (uuid "MFG-PS-J1") (at 14.54 94)
     (property "Reference" "J1" (at 0 -4) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
     (property "Value" "24VDC_Input" (at 0 4) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
     (pad "1" thru_hole circle (at 0 0) (size 2.4 2.4) (drill 1.3) (layers "*.Cu" "*.Mask") (net 4 "+24V"))
     (pad "2" thru_hole circle (at 5.08 0) (size 2.4 2.4) (drill 1.3) (layers "*.Cu" "*.Mask") (net 1 "GND"))
+    (fp_rect (start -2.54 -4) (end 7.62 5.6) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (uuid "MFG-PS-J1-CY"))
   )
 
   ;; F1 - PTC Fuse 1.5A

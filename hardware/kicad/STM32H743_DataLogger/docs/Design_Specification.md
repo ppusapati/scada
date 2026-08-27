@@ -190,12 +190,40 @@ Total                                         ~1.6mm
 
 ### 7.5 Isolation Summary
 
-| Interface | Isolation Method | Rating |
-|-----------|-----------------|--------|
-| Digital Inputs | TLP293 Optocoupler | 3.75kVrms |
-| RS485 | ISO3082DWR | 5kVrms |
-| CAN FD | ISO1042BQDWRQ1 | 5kVrms |
-| Ethernet | RJ45 magnetics (J0011D21BNL) | 1.5kVrms |
+| Interface | Isolation Method | Rating | Field-side supply |
+|-----------|-----------------|--------|-------------------|
+| Digital Inputs | TLP293 Optocoupler | 3.75kVrms | none needed (loop powered from the field, return on DI_COM) |
+| RS485 | ISO3082DWR | 5kVrms | U42 NXJ1S0505MC-R13, 5.2kVDC |
+| CAN FD | ISO1042BQDWRQ1 | 5kVrms | U43 NXJ1S0505MC-R13, 5.2kVDC |
+| Ethernet | RJ45 magnetics (J0011D21BNL) | 1.5kVrms | n/a |
+
+The isolation is carried through into the copper, not just the parts: the GND and
++3V3 pours are notched out of the top-left corner, each field bus has its own
+floating pour, milled slots run under the four packages that straddle the barrier
+at y=22mm, and a four-layer keepout stops copper bridging the optocoupler row.
+The digital-input field return is DI_COM, a floating node - it is deliberately not
+tied to logic ground.
+
+### 7.6 Board Floorplan
+
+Field wiring is confined to the two long edges, logic sits in the middle band.
+
+| Edge | Contents (left to right) |
+|------|--------------------------|
+| Top | RS485 (J50), CAN (J51), then digital inputs J30-J37 |
+| Bottom | 24VDC in (J1), analog inputs J20-J23, relay outputs J40-J43 |
+| Right | RJ45 (J60), USB-C (J11), LoRa/WiFi/LTE antennas (J73/J74/J70) |
+| Left | microSD (J80) |
+
+Relay contacts (mains-capable) are kept on the opposite edge from the low-voltage
+analog inputs. Each circuit block is placed against its own connector: analog
+conditioning over its terminals, the relay bank over J40-J43, the W5500 beside the
+RJ45, the optocoupler row directly under the digital-input terminals.
+
+Mounting holes are at the four corners plus (5, 32) and (155, 50); the two extra
+holes were moved off the long-edge midpoints because the terminal rows now occupy
+them, and H1 in particular had to leave the isolated corner so a chassis screw
+cannot bridge the barrier.
 
 ## 8. Design Files
 

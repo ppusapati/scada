@@ -130,34 +130,63 @@ Total                                          ~1.600mm
 - **Y4 (32MHz TCXO SX1276):** Place within 5mm of SX1276
 
 ### 5.5 Isolated Interfaces
-- **U40 (ISO3082 RS485):** Maintain isolation gap >0.4mm on PCB
-  - Separate GND zones: digital GND (pin side) vs bus GND (bus side)
-- **U41 (ISO1042 CAN):** Same isolation requirements as RS485
-  - Route bus-side traces away from digital traces
+
+The isolation barrier runs horizontally at **y = 22mm** through U40-U43. Everything
+above it is field side; everything below is logic side.
+
+- **Milled slots** run under each package that crosses the barrier. Do not fill,
+  tent, or bridge them:
+
+| Package | Slot (x range, y 21.4-22.6) |
+|---------|------------------------------|
+| U40 ISO3082 (RS485) | 11.5 - 21.5 |
+| U42 NXJ1S (RS485 isolated 5V) | 23.0 - 32.6 |
+| U41 ISO1042 (CAN) | 37.5 - 47.5 |
+| U43 NXJ1S (CAN isolated 5V) | 49.0 - 58.6 |
+
+- **Copper pours.** GND and +3V3 are notched out of the whole corner x 0-63,
+  y 0-26. Inside that notch the RS485 field side has its own floating
+  RS485_ISO_GND pour (x 8-34, y 1-19) and CAN has CAN_ISO_GND (x 38-59, y 1-19),
+  on F.Cu and B.Cu only - the inner layers carry no copper in the notch at all.
+- **Clearances achieved:** 8mm from each field pour to main copper on the outer
+  side, 7mm below, and 4mm between the RS485 and CAN domains. Verify these against
+  the ISO3082/ISO1042 and NXJ1S datasheets for your target creepage class before
+  release.
+- **U42/U43 are not optional.** Without them RS485_ISO_VCC and CAN_ISO_VCC are
+  undriven and neither transceiver's bus side will power up.
+- **Digital inputs** are isolated by the TLP293 optocouplers only. Their field
+  return is DI_COM, which is *not* logic ground - do not strap them together. A
+  copper keepout on all four layers (x 64-111, y 19.3-20.7) stops any layer
+  bridging the optocoupler row. Working voltage is 24V, so no slot is used here.
 
 ## 6. Fiducial Markers
 
 | ID | Location | Purpose |
 |----|----------|---------|
-| FID1 | (3, 3) | Global fiducial - top-left |
-| FID2 | (157, 3) | Global fiducial - top-right |
-| FID3 | (3, 97) | Global fiducial - bottom-left |
+| FID1 | (4.5, 60.0) | Global fiducial - left edge |
+| FID2 | (145.0, 97.0) | Global fiducial - bottom-right |
+| FID3 | (10.5, 97.0) | Global fiducial - bottom-left |
 
 - 1.0mm diameter copper circle, 2.54mm solder mask opening
 - Used by pick-and-place machine for board alignment
 
 ## 7. Test Points
 
-| ID | Net | Location | Purpose |
-|----|-----|----------|---------|
-| TP1 | +3V3 | (45, 30) | Digital 3.3V rail |
-| TP2 | +5V | (45, 25) | 5V buck output |
-| TP3 | +3V3A | (45, 40) | Analog 3.3V rail |
-| TP4 | GND | (48, 30) | Ground reference |
-| TP5 | SWDIO | (108, 10) | SWD debug data |
-| TP6 | SWCLK | (110, 10) | SWD debug clock |
-| TP7 | NRST | (112, 10) | MCU reset |
-| TP8 | BOOT0 | (114, 10) | Boot mode select |
+| ID | Net | Location |
+|----|-----|----------|
+| TP1 | +3V3 | (71.1, 58.2) |
+| TP2 | +5V | (73.4, 58.2) |
+| TP3 | +3V3A | (75.7, 58.2) |
+| TP4 | GND | (78.0, 58.2) |
+| TP5 | SWDIO | (58.2, 49.4) |
+| TP6 | SWCLK | (31.1, 53.7) |
+| TP7 | NRST | (28.2, 30.8) |
+| TP8 | BOOT0 | (127.5, 75.3) |
+| TP9 | GSM_RI | (99.5, 47.0) |
+| TP10 | LORA_DIO1 | (129.0, 69.5) |
+
+TP9 and TP10 exist because the MCU has no spare pin: GSM_RI and LORA_DIO1 have
+nowhere else to go, so they are brought out as probe pads.
 
 ## 8. Conformal Coating
 
