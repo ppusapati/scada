@@ -80,25 +80,29 @@ the heavier 3V3 loads if the load budget changes.
 1. **SMD Top Side (F.Cu):** Stencil print → Place SMD → Reflow solder
 2. **SMD Bottom Side (B.Cu):** Flip → Stencil print → Place SMD → Reflow solder
 3. **Through-Hole:** Wave solder or hand solder remaining THT components
-4. **Manual Assembly:** Relay K1, through-hole terminal blocks, antenna connectors
+4. **Manual Assembly:** Relays K1-K4, through-hole terminal blocks, antenna connectors
 5. **Inspection:** AOI (Automated Optical Inspection) both sides
 6. **Testing:** ICT/functional test per test plan
 
 ### 4.4 Through-Hole Components (Manual/Wave)
 | Reference | Description | Notes |
 |-----------|-------------|-------|
-| K1 | HF46F-G relay (SPDT) | Check orientation, 5V coil |
-| J1 | 24VDC power terminal (2-pin) | Phoenix Contact 5.08mm |
-| J20-J23 | Analog input terminals (2-pin x4) | Phoenix Contact 5.08mm |
-| J30-J37 | Digital input terminals (2-pin x8) | Phoenix Contact 5.08mm |
-| J40-J43 | Relay output terminals (3-pin x4) | Phoenix Contact 5.08mm |
-| J50 | RS485 terminal (3-pin) | Phoenix Contact 5.08mm |
-| J51 | CAN terminal (3-pin) | Phoenix Contact 5.08mm |
+| K1-K4 | HF46F-G/5-HS1T relay (SPST-NO, form A) | Check orientation, 5V coil. Form A — there is no NC contact |
+| J1 | 24VDC power terminal (2-pin) | Bottom edge, wire entry to the board edge |
+| J20-J23 | Analog input terminals (2-pin x4) | Bottom edge, right of J1 |
+| J40-J43 | Relay output terminals (3-pin x4) | Bottom edge, right of J23. NO/COM used; third pole spare |
+| J50 | RS485 terminal (3-pin) | **Top edge, rotated 180°** — wire entry faces the top board edge |
+| J51 | CAN terminal (3-pin) | **Top edge, rotated 180°**, separated from J50 by the isolation gap |
+| J30-J37 | Digital input terminals (2-pin x8) | **Top edge, rotated 180°**. Pin 2 is DI_COM, a floating field return — not ground |
 | J12 | UART debug header (1x4 2.54mm) | Optional, for development |
 | J13 | BOOT0 jumper (1x3 2.54mm) | Optional, for development |
-| J60 | RJ45 Ethernet jack | Pulse J0011D21BNL with magnetics |
-| J70, J73, J74 | SMA antenna connectors (x3) | Edge-mount, LoRa + LTE |
-| H1-H6 | M3 mounting hardware | Install after conformal coating |
+| J60 | RJ45 Ethernet jack | Pulse J0011D21BNL with magnetics. Right edge, rotated 90° |
+| J70, J73, J74 | SMA antenna connectors (x3) | Right edge, rotated 90°. LoRa / WiFi / LTE |
+| H1-H6 | M3 mounting hardware | Install after conformal coating. **H1 was moved off the top-left corner so a chassis screw cannot bridge the isolation barrier — do not relocate it back** |
+
+All terminal blocks are 5.08mm Phoenix Contact. Every block on the top edge is placed
+at 180° so its wire entry faces outward; check orientation before soldering, because
+a 180° error puts the wire entry inside the board.
 
 ## 5. Critical Component Notes
 
