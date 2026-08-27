@@ -225,6 +225,25 @@ holes were moved off the long-edge midpoints because the terminal rows now occup
 them, and H1 in particular had to leave the isolated corner so a chassis screw
 cannot bridge the barrier.
 
+### 7.7 Known Gap: Schematic Connectivity
+
+The nine `.kicad_sch` sheets contain **symbols and text annotations only**. There are
+no wires, net labels, junctions or no-connect flags anywhere in the project — checked
+across every sheet. All connectivity lives in the pad `(net ...)` assignments inside
+`STM32H743_DataLogger_mfg.kicad_pcb`.
+
+Consequences to be aware of before opening the project in KiCad:
+
+- The schematic cannot be netlisted, and ERC will report every pin unconnected.
+- There is no schematic-to-board consistency check available.
+- **Running *Tools > Update PCB from Schematic* would erase the board's
+  connectivity.** Do not run it until the sheets are wired.
+
+`docs/Netlist_from_PCB.md` lists all 157 nets with their pads, and
+`docs/netlist_from_pcb.net` is the same data as a KiCad netlist. Wiring the sheets
+against that reference is the outstanding task; the board itself is self-consistent
+(every net reaches at least two pads).
+
 ## 8. Design Files
 
 ```
