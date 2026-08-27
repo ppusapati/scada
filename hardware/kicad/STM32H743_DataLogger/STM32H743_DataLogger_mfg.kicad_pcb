@@ -934,8 +934,8 @@
     (property "Reference" "J12" (at 0 -3) (layer "F.SilkS") (effects (font (size 0.8 0.8) (thickness 0.12))))
     (property "Value" "UART_Debug" (at 0 3) (layer "F.Fab") (effects (font (size 0.8 0.8) (thickness 0.12))))
     (pad "1" thru_hole rect (at 0 0) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net 2 "+3V3"))
-    (pad "2" thru_hole circle (at 0 2.54) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net 35 "USART1_TX"))
-    (pad "3" thru_hole circle (at 0 5.08) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net 36 "USART1_RX"))
+    (pad "2" thru_hole circle (at 0 2.54) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net 103 "USART1_TX_BUF"))
+    (pad "3" thru_hole circle (at 0 5.08) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net 104 "USART1_RX_BUF"))
     (pad "4" thru_hole circle (at 0 7.62) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net 1 "GND"))
     (fp_rect (start -1.100 -1.100) (end 1.100 8.720) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (uuid "MFG-MCU-J12-CY"))
   )
@@ -2467,6 +2467,35 @@
     (fp_rect (start -1.030 -0.570) (end 1.030 0.570) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (uuid "MFG-ST-C104-CY"))
   )
 
+  ;; ============================================================
+  ;; DANGLING-NET FIXES
+  ;; ============================================================
+  (footprint "Capacitor_SMD:C_0402_1005Metric" (layer "F.Cu") (uuid "MFG-PS-C11") (at 38.5 46)
+    (property "Reference" "C11" (at 0 -1.2) (layer "F.SilkS") (effects (font (size 0.5 0.5) (thickness 0.08))))
+    (property "Value" "100nF" (at 0 1.2) (layer "F.Fab") (effects (font (size 0.5 0.5) (thickness 0.08))))
+    (pad "1" smd roundrect (at -0.51 0) (size 0.54 0.64) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 92 "VBUCK_BST"))
+    (pad "2" smd roundrect (at 0.51 0) (size 0.54 0.64) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 91 "VBUCK_SW"))
+    (fp_rect (start -1 -0.55) (end 1 0.55) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (uuid "MFG-PS-C11-CY"))
+  )
+  (footprint "Resistor_SMD:R_0402_1005Metric" (layer "F.Cu") (uuid "MFG-WL-R18") (at 116 30.5)
+    (property "Reference" "R18" (at 0 -1.2) (layer "F.SilkS") (effects (font (size 0.5 0.5) (thickness 0.08))))
+    (property "Value" "10k" (at 0 1.2) (layer "F.Fab") (effects (font (size 0.5 0.5) (thickness 0.08))))
+    (pad "1" smd roundrect (at -0.51 0) (size 0.54 0.64) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 142 "GSM_DTR"))
+    (pad "2" smd roundrect (at 0.51 0) (size 0.54 0.64) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 1 "GND"))
+    (fp_rect (start -1 -0.55) (end 1 0.55) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (uuid "MFG-WL-R18-CY"))
+  )
+  (footprint "TestPoint:TestPoint_Pad_1.0x1.0mm" (layer "F.Cu") (uuid "MFG-WL-TP9") (at 99.5 47)
+    (property "Reference" "TP9" (at 0 -1.4) (layer "F.SilkS") (effects (font (size 0.5 0.5) (thickness 0.08))))
+    (property "Value" "GSM_RI" (at 0 1.4) (layer "F.Fab") (effects (font (size 0.5 0.5) (thickness 0.08))))
+    (pad "1" smd roundrect (at 0 0) (size 1.0 1.0) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 143 "GSM_RI"))
+    (fp_rect (start -0.8 -0.8) (end 0.8 0.8) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (uuid "MFG-WL-TP9-CY"))
+  )
+  (footprint "TestPoint:TestPoint_Pad_1.0x1.0mm" (layer "F.Cu") (uuid "MFG-WL-TP10") (at 129 69.5)
+    (property "Reference" "TP10" (at 0 -1.4) (layer "F.SilkS") (effects (font (size 0.5 0.5) (thickness 0.08))))
+    (property "Value" "LORA_DIO1" (at 0 1.4) (layer "F.Fab") (effects (font (size 0.5 0.5) (thickness 0.08))))
+    (pad "1" smd roundrect (at 0 0) (size 1.0 1.0) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 141 "LORA_DIO1"))
+    (fp_rect (start -0.8 -0.8) (end 0.8 0.8) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd") (uuid "MFG-WL-TP10-CY"))
+  )
   ;; ============================================================
   ;; P9E BRANDING + SILKSCREEN TEXT
   ;; ============================================================
