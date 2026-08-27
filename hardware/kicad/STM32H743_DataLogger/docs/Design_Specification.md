@@ -298,6 +298,39 @@ but the W5500 (U50) shows GND on an alternating pad pattern and the SX1276 (U60)
 on pads 2-5 in sequence, both of which look like the same placeholder treatment and need
 verifying against their datasheets.
 
+### 7.9 Routing status
+
+Autorouted with freerouting on F.Cu / In2.Cu / B.Cu; In1.Cu stays an unbroken ground
+plane. Verified independently against the pad list rather than trusting the router's
+own report:
+
+| | |
+|---|---|
+| Connections realised | 271 of 322 (84%) |
+| Nets fully routed | 110 of 155 |
+| Nets partially routed | 35 |
+| Nets with no copper | 10 |
+| Tracks / vias | 1520 / 303 (152 routing + 151 GND stitching) |
+| Isolation violations | 0 |
+
+`docs/unrouted_nets.txt` lists the 45 nets that still need work.
+
+Note that freerouting reported "3 unrouted" for this session. That figure is wrong —
+checking each net's pads against the imported copper shows many MCU pins never
+reached, so the router's own count should not be relied on. The 84% above comes from
+walking the connectivity graph per net.
+
+Ten track segments and vias were removed after import because freerouting had routed
+NRST, RS485_DE and FDCAN1_TX through the isolated corner. The router has no concept of
+which nets may enter the field-side pocket, so this needs re-checking after every
+routing pass. The isolator logic pins sit at y=26.7 with the notch edge at y=26, which
+leaves almost no routing channel — if this recurs, move the U40-U43 barrier row down
+about 2mm so the logic pins clear the notch.
+
+**This routing will need redoing once the MCU pin assignment in 7.8 is fixed**, since
+every MCU connection moves. It is kept because the placement, isolation geometry and
+design rules it validates all stand.
+
 ## 8. Design Files
 
 ```
