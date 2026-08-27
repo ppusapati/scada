@@ -226,11 +226,30 @@ nowhere else to go, so they are brought out as probe pads.
 ### 9.2 Functional Test
 1. SWD connection (via J10 or J14)
 2. Flash firmware via SWD
-3. Verify UART debug console (J12) at 115200 baud
+3. Verify UART debug console (J12) at 115200 baud — note J12 sits behind the
+   33R series resistors R14/R15, so a dead console may be an open resistor
 4. Verify Ethernet link (J60)
 5. Verify SD card detect
 6. Verify watchdog kick (PB8 toggle)
 7. Verify all SPI CS lines toggle
+
+### 9.3 Isolation Test (do this before applying field wiring)
+
+The RS485 and CAN field sides are floating. Confirm they really are:
+
+1. With the board unpowered, measure resistance from RS485_ISO_GND (J50 pin 3)
+   to logic GND: must be open circuit. Repeat for CAN_ISO_GND (J51 pin 3).
+   Any continuity means a pour, track or slot has been bridged.
+2. Same check from DI_COM (pin 2 of any of J30-J37) to logic GND: must be open.
+   DI_COM is the floating field return for the optocouplers — it is deliberately
+   not logic ground, and strapping the two together defeats the input isolation.
+3. Power the board and verify the isolated rails come up: 5.0V ±5% from
+   RS485_ISO_VCC to RS485_ISO_GND, and from CAN_ISO_VCC to CAN_ISO_GND. These
+   come from U42/U43. If they read zero, neither transceiver's bus side will
+   work, however healthy the logic side looks.
+4. Hi-pot per your compliance plan: field side to logic ground, referencing the
+   ISO3082/ISO1042 and NXJ1S ratings. Verify the achieved creepage on the board
+   first (see 5.5) — the layout gives 8mm outer, 7mm below, 4mm between domains.
 
 ## 10. Packaging & Handling
 
