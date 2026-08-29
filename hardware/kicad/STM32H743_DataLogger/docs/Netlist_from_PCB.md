@@ -7,7 +7,7 @@ schematic, ERC will report everything unconnected, and running *Update PCB from
 Schematic* would erase the board's connectivity. Wiring the sheets is the
 outstanding task; this table is the reference to wire them against.
 
-Generated from the board — 160 nets, 231 components.
+Generated from the board — 164 nets, 231 components.
 
 Every net reaches at least two pads.
 
@@ -15,20 +15,24 @@ Every net reaches at least two pads.
 |-----|------|-------------|
 | `+24V` | 20 | C1.1 D1.1 F1.1 F1.2 J1.1 K1.2 K2.2 K3.2 K4.2 L1.1 L1.2 Q1.1 Q1.2 Q1.3 Q1.5 Q1.6 Q1.7 Q1.8 U1.2 U31.9 |
 | `+3V3` | 93 | C100.1 C101.1 C102.1 C103.1 C104.1 C30.1 C31.1 C32.1 C33.1 C34.1 C35.1 C36.1 C37.1 C38.1 C70.1 C8.1 C80.1 C81.1 C82.1 C82B.1 C90.1 C91.1 C92.1 C93.1 C93B.1 C96.1 C97.1 C98.1 J10.1 J12.1 J13.3 J14.1 J80.6 LED1.1 LED4.2 R10.1 R108.1 R109.1 R110.1 R111.1 R112.1 R113.1 R114.1 R115.1 R53.1 R54.1 R55.1 R60.1 R61.1 R62.1 R63.1 R64.1 R70.1 R71.1 RN1.1 RN1.2 RN1.3 RN1.4 TP1.1 U10.100 U10.11 U10.27 U10.50 U10.6 U10.75 U2.2 U2.4 U40.1 U41.1 U50.11 U50.15 U50.17 U50.21 U50.28 U50.4 U50.8 U60.10 U60.12 U60.16 U60.20 U60.22 U60.24 U60.26 U60.28 U61.1 U61.13 U61.15 U62B.4 U64.1 U70.3 U70.7 U70.8 U71.8 |
-| `+3V3A` | 10 | C10.1 C39.1 C40.1 TP3.1 U10.20 U10.21 U20.7 U21.7 U3.5 U3.6 |
+| `+3V3A` | 10 | C10.1 C39.1 C40.1 TP3.1 U10.20 U10.21 U20.8 U21.8 U3.5 U3.6 |
 | `+4V1` | 6 | C94.1 C95.1 U62.1 U62.2 U63.2 U63.4 |
 | `+5V` | 17 | C5.1 C7.1 C71.1 C73.1 C9.1 J11.A4 J11.A9 J11.B4 J11.B9 L2.2 R1.1 TP2.1 U2.3 U3.1 U42.2 U43.2 U63.1 |
-| `ADC1_CH0` | 6 | C60.1 R23.2 U10.22 U20.1 U20.2 U20.8 |
-| `ADC1_CH1` | 6 | C61.1 R27.2 U10.23 U20.3 U20.5 U20.6 |
-| `ADC1_CH2` | 6 | C62.1 R31.2 U10.24 U21.1 U21.2 U21.8 |
-| `ADC1_CH3` | 6 | C63.1 R35.2 U10.25 U21.3 U21.5 U21.6 |
+| `ADC1_CH0` | 3 | U10.22 U20.1 U20.2 |
+| `ADC1_CH1` | 3 | U10.23 U20.6 U20.7 |
+| `ADC1_CH2` | 3 | U10.24 U21.1 U21.2 |
+| `ADC1_CH3` | 3 | U10.25 U21.6 U21.7 |
 | `AI_CH0_FILT` | 3 | R21.2 R22.1 R23.1 |
+| `AI_CH0_IN` | 3 | C60.1 R23.2 U20.3 |
 | `AI_CH0_RAW` | 4 | D10.1 J20.1 R20.1 R21.1 |
 | `AI_CH1_FILT` | 3 | R25.2 R26.1 R27.1 |
+| `AI_CH1_IN` | 3 | C61.1 R27.2 U20.5 |
 | `AI_CH1_RAW` | 4 | D11.1 J21.1 R24.1 R25.1 |
 | `AI_CH2_FILT` | 3 | R29.2 R30.1 R31.1 |
+| `AI_CH2_IN` | 3 | C62.1 R31.2 U21.3 |
 | `AI_CH2_RAW` | 4 | D12.1 J22.1 R28.1 R29.1 |
 | `AI_CH3_FILT` | 3 | R33.2 R34.1 R35.1 |
+| `AI_CH3_IN` | 3 | C63.1 R35.2 U21.5 |
 | `AI_CH3_RAW` | 4 | D13.1 J23.1 R32.1 R33.1 |
 | `BLE_RST` | 3 | R64.2 U10.59 U62B.5 |
 | `BLE_STATUS` | 3 | LED5.1 U10.60 U62B.6 |

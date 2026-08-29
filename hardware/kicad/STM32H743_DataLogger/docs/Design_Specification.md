@@ -295,19 +295,24 @@ against the pin names its datasheet-derived symbol gives. The test is simple and
 to argue with: if a pin the datasheet calls VDD is not on a supply net, or one it calls
 GND is not on a ground net, the pad-to-net map was not derived from the datasheet.
 
-**19 of 21 checkable ICs are now consistent. Three were rebuilt from their symbols:**
+**18 of 19 checkable ICs are now consistent. Four were rebuilt from their symbols:**
 
 | Part | What was wrong | Now |
 |------|----------------|-----|
 | U50 W5500 | SPI on the Ethernet differential pins, supplies and grounds scattered across 10 wrong pads — the whole map was sequential | Rebuilt from the 48-pin datasheet pinout. SPI on 32-37, TX/RX pairs on 1/2/5/6, PMODE2..0 grounded for all-capable auto-negotiation |
 | U40 ISO3082DW | receiver and driver swapped (R/D on pins 3/6), bus A/B one pin out, GND2 on pin 15 carrying the isolated supply | Rebuilt from the 16-pin pinout |
 | U1 TPS54560 | SW on both pins 7 and 8, so the switch node shorted to GND; FB not on pin 5 | BOOT/VIN/FB/SW/GND corrected |
+| U20, U21 OPA2376 | supply and output swapped — pin 8 (V+) carried an ADC signal while pin 7 (OUT_B) held +3V3A. Each buffer also had its input and output on one net, shorting it and putting the amplifier in parallel with the ADC node instead of in series | rewired as unity-gain buffers: +IN from the filter node (new AI_CHn_IN nets), OUT tied back to -IN and on to the ADC pin, V+ on +3V3A, V- on GND |
 
 **Two remain unverifiable** because the stock library has no symbol for the exact part:
 
 - **U60 SX1276** — the footprint is `QFN-28-1EP_4x4mm_P0.4mm`, but SX1276IMLTRT is a
   **6x6mm QFN-28 on 0.65mm pitch**. The footprint is the wrong size as well as
   sequentially wired. This needs the datasheet before it can be corrected.
+- **U63 TPS73641DCQR** — a 4.1V LDO sharing the `TLV1117-33` symbol, which is a
+  different part. Against that symbol its IN and GND look swapped, but the symbol is
+  the wrong one, so the reading is not trustworthy either way. U2 uses the same symbol
+  and *is* a TLV1117, and it checks out clean.
 - **U3 TPS7A4533DGN** — MSOP-8-EP. The library only carries the KTT (TO-263-5)
   variant, which has a different pinout, so it cannot be used as a stand-in.
 
