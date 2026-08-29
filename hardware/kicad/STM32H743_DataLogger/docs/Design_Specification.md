@@ -250,53 +250,43 @@ Consequences to be aware of before opening the project in KiCad:
 against that reference is the outstanding task; the board itself is self-consistent
 (every net reaches at least two pads).
 
-### 7.8 BLOCKING: MCU pin assignment is a placeholder
+### 7.8 MCU pin assignment (resolved)
 
-**The board must not be fabricated as it stands.** The pad-to-net map on U10 does not
-correspond to the STM32H743VIT6 LQFP-100 pinout. It was filled in sequentially:
+An earlier revision of this board had U10's pad-to-net map filled in sequentially
+rather than mapped to the LQFP-100 pinout — supply pins at evenly spaced pads,
+peripherals in contiguous blocks, and **+24V on pin 1**, which would have destroyed the
+MCU on power-up.
 
-```
-  1:+24V     2:HSE_IN    3:HSE_OUT   4:NRST      5:LSE_IN    6:LSE_OUT
-  7:GND      8:+3V3      9:ADC1_CH0 10:ADC1_CH1 11:ADC1_CH2 12:ADC1_CH3
- 13:+3V3A   14:GND      15:SPI1_SCK 16:SPI1_MISO 17:SPI1_MOSI ...
-```
+It has been rebuilt from the KiCad `MCU_ST_STM32H7` symbol for STM32H743VITx, which is
+generated from the ST datasheet. The result is checked against the pins whose position
+is fixed by the package, all of which now land correctly:
 
-Three things give it away:
+| Function | Pin(s) |
+|----------|--------|
+| NRST | 14 |
+| BOOT0 | 94 |
+| VBAT | 6 |
+| VDDA / VREF+ / VSSA | 21 / 20 / 19 |
+| VCAP | 48, 73 |
+| VDD | 11, 27, 50, 75, 100 |
+| VSS | 10, 26, 49, 74, 99 |
 
-1. **Pin 1 carries +24V.** No STM32 pin tolerates 24V — absolute maximum on any I/O is
-   VDD+0.3V, about 3.6V. Powering this board would destroy the MCU immediately.
-2. **The supply pins are evenly spaced** (GND/+3V3 at 7, 8, 14, 21, 22, 30, 31, 48, 49,
-   55, 56 …). No real QFP has a regular rail pattern.
-3. **Peripherals sit in perfectly contiguous blocks** — SPI1 on 15-20, SPI2 on 23-29,
-   SDMMC on 42-47, DI_0..DI_7 on 81-88, DO_0..DO_3 on 89-92. The real part scatters
-   these across the package, and NRST, VCAP, VBAT, VDDA and BOOT0 are at fixed
-   positions that do not match the ones used here.
+90 of 100 pins are assigned; 10 are left spare (PC1, PC2_C, PC3_C, PA7, PC4, PC5, PD8,
+PC6, PC7, PA8).
 
-The *intended* assignment exists, but only as the text annotation on the MCU sheet, and
-it is written in port names (PA5, PB13, PE2 …) rather than package pin numbers. Nobody
-ever converted it into pin numbers on the footprint.
+**Four changes were forced during the conversion** — the old port-level notes could not
+be transcribed as written, and these need firmware-side sign-off:
 
-**Two conflicts in that intended assignment must be resolved first** — it cannot be
-transcribed as written:
+| Signal | Was | Now | Why |
+|--------|-----|-----|-----|
+| UART4_TX | PA0 | **PB9** | PA0 is an ADC1 channel. The four analog inputs must stay on PA0-PA3, and PB9 was the only free pin offering UART4_TX. |
+| UART4_RX | PC11 | **PB8** | PC11 is SDMMC1_D3. All five UART4_RX-capable pins were occupied, so WDT_KICK gave up PB8. |
+| WDT_KICK | PB8 | **PD9** | Displaced by UART4_RX. It is a plain GPIO output to the TPS3823 WDI, so any free pin serves. |
+| LORA_RST, GSM_PWR_KEY | PC2, PC3 | **PB10, PB11** | On the 100-pin package those are the dual-pad PC2_C/PC3_C direct-analog variants. Both signals are plain GPIO resets, so ordinary GPIOs are used rather than relying on the analog switch. |
 
-| Port pin | Claimed by | and also by |
-|----------|-----------|-------------|
-| PA0 | ADC1_CH0 (`ADC1: PA0-PA3`) | UART4_TX to the SIM7600 |
-| PC11 | SDMMC1_D3 | UART4_RX from the SIM7600 |
+`SD_CD` was not assigned at all in the old notes and is now on PD15.
 
-To close this out someone needs to (a) decide those two reassignments, then (b) map all
-78 signals from port name to LQFP-100 pin number against the ST datasheet pinout table,
-and (c) re-run the routing, since every MCU connection moves.
-
-Everything else in this project is built on the current netlist, so the layout, the
-isolation work and the routing all remain valid as structure — but the MCU connections
-themselves are placeholders and the board is not manufacturable until they are real.
-
-The same pattern should be checked on the other complex ICs. Spot checks: the W25Q64
-flash (U70) **is** correct — /CS, DO, /WP, GND, DI, CLK, /HOLD, VCC in the right order —
-but the W5500 (U50) shows GND on an alternating pad pattern and the SX1276 (U60) has SPI
-on pads 2-5 in sequence, both of which look like the same placeholder treatment and need
-verifying against their datasheets.
+The full signal-to-pin table is in the MCU sheet's annotation.
 
 ### 7.9 Routing status
 

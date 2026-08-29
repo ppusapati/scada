@@ -7,11 +7,6 @@
 
 ---
 
-> **DO NOT FABRICATE YET.** The MCU pad-to-net map on U10 is a placeholder that does
-> not match the STM32H743VIT6 LQFP-100 pinout — pin 1 is wired to +24V, which would
-> destroy the MCU on power-up. See Design_Specification.md section 7.8. The MCU pin
-> assignment must be corrected and the board re-routed before release to fab.
-
 ## 1. Board Fabrication Specifications
 
 | Parameter | Value |
