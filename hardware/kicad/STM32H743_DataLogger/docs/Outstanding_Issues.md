@@ -19,10 +19,21 @@ one partly (TPS54560), but these remain:
 | U62 | SIM7600G-H | no symbol; sequential pattern | datasheet pinout |
 | U62B | RN4870-I/RM128 | no symbol; sequential pattern | datasheet pinout |
 | U70 | W25Q64JVSSIQ | no symbol, but **verifies clean** by inspection | confirm only |
+| U63 | TPS73641DCQR | shares the TLV1117-33 symbol, a different part; IN and GND look swapped against it but that symbol is the wrong reference | datasheet pinout |
 | J60 | Pulse J0011D21BNL | footprint has 10 pads; the part is a 12-pin RJ45 with magnetics and LEDs | datasheet |
 
-Not everything is affected — W25Q64 and AT24C256 both check out, so the placeholder
-wiring went into the complex parts rather than uniformly.
+Not everything is affected — W25Q64, AT24C256 and the TLV1117 on U2 all check out, so
+the placeholder wiring went into the complex parts rather than uniformly.
+
+Note that several KiCad symbols derive from a parent through `extends`, so a naive pin
+read returns nothing and the part silently passes. The audit script follows inheritance;
+anyone repeating this check should make sure theirs does too — it was hiding the
+op-amp fault below.
+
+**Fixed since first raised, listed so it is not re-reported:** the OPA2376 analog
+buffers (U20/U21) had supply and output swapped and each amplifier shorted
+input-to-output, sitting in parallel with the ADC node instead of buffering it. Rewired
+as unity-gain buffers on new AI_CHn_IN filter nodes.
 
 **Buck converter is unfinished.** U1 (TPS54560) has nothing on EN, RT/CLK or COMP.
 RT/CLK sets the switching frequency and COMP is the compensation network; the regulator
