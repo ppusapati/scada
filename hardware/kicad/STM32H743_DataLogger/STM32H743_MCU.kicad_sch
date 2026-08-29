@@ -452,7 +452,7 @@
   ;; USB Type-C Connector (for programming/debug)
   ;; ============================================================
   (symbol
-    (lib_id "Connector:USB_C_Receptacle_USB2.0")
+    (lib_id "Connector:USB_C_Receptacle_USB2.0_16P")
     (at 215.9 139.7)
     (unit 1)
     (exclude_from_sim no)
@@ -601,7 +601,7 @@
   ;; No connector cost per board - just PCB pads
   ;; ============================================================
   (symbol
-    (lib_id "Connector:Tag-Connect_TC2050-IDC")
+    (lib_id "Connector:TC2050")
     (at 254.0 143.51)
     (unit 1)
     (exclude_from_sim no)

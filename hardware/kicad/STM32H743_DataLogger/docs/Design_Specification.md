@@ -288,6 +288,48 @@ be transcribed as written, and these need firmware-side sign-off:
 
 The full signal-to-pin table is in the MCU sheet's annotation.
 
+### 7.9 IC pinout verification
+
+With the KiCad symbol libraries available, every IC's footprint wiring was checked
+against the pin names its datasheet-derived symbol gives. The test is simple and hard
+to argue with: if a pin the datasheet calls VDD is not on a supply net, or one it calls
+GND is not on a ground net, the pad-to-net map was not derived from the datasheet.
+
+**19 of 21 checkable ICs are now consistent. Three were rebuilt from their symbols:**
+
+| Part | What was wrong | Now |
+|------|----------------|-----|
+| U50 W5500 | SPI on the Ethernet differential pins, supplies and grounds scattered across 10 wrong pads — the whole map was sequential | Rebuilt from the 48-pin datasheet pinout. SPI on 32-37, TX/RX pairs on 1/2/5/6, PMODE2..0 grounded for all-capable auto-negotiation |
+| U40 ISO3082DW | receiver and driver swapped (R/D on pins 3/6), bus A/B one pin out, GND2 on pin 15 carrying the isolated supply | Rebuilt from the 16-pin pinout |
+| U1 TPS54560 | SW on both pins 7 and 8, so the switch node shorted to GND; FB not on pin 5 | BOOT/VIN/FB/SW/GND corrected |
+
+**Two remain unverifiable** because the stock library has no symbol for the exact part:
+
+- **U60 SX1276** — the footprint is `QFN-28-1EP_4x4mm_P0.4mm`, but SX1276IMLTRT is a
+  **6x6mm QFN-28 on 0.65mm pitch**. The footprint is the wrong size as well as
+  sequentially wired. This needs the datasheet before it can be corrected.
+- **U3 TPS7A4533DGN** — MSOP-8-EP. The library only carries the KTT (TO-263-5)
+  variant, which has a different pinout, so it cannot be used as a stand-in.
+
+Also unverifiable for want of a symbol: U41 ISO1042, U42/U43 NXJ1S, U61 ATWINC1500,
+U62 SIM7600, U62B RN4870, U70 W25Q64. Their pad maps show the same sequential pattern
+and should be assumed wrong until checked against datasheets.
+
+### 7.10 Missing support components found during verification
+
+The W5500 datasheet requires three parts the design never included; all are now placed:
+
+| Part | Pin | Purpose |
+|------|-----|---------|
+| R56 12.4k 1% | EXRES1 (10) | sets the transmit bias current; without it the PHY does not meet the 802.3 output spec |
+| C87 4.7uF | TOCAP (20) | decouples the internal 1.2V transceiver regulator |
+| C88 100nF | VBG (18) | bandgap reference decoupling |
+
+Still outstanding on U1 (TPS54560): **EN, RT/CLK and COMP have no parts on them.**
+RT/CLK needs a resistor to set the switching frequency and COMP needs a compensation
+network — the buck will not regulate without them. EN can be left open (internal
+pull-up) but a divider is the usual choice for programmed UVLO.
+
 ### 7.9 Routing status
 
 Autorouted with freerouting on F.Cu / In2.Cu / B.Cu; In1.Cu stays an unbroken ground

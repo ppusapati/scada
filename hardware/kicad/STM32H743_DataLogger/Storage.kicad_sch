@@ -19,7 +19,7 @@
   ;; Push-push connector with card detect
   ;; ============================================================
   (symbol
-    (lib_id "Connector:Micro_SD_Card_Det")
+    (lib_id "Connector:Micro_SD_Card_Det1")
     (at 88.9 57.15)
     (unit 1)
     (exclude_from_sim no)
@@ -135,7 +135,7 @@
   ;; I2C1 interface, for configuration/calibration storage
   ;; ============================================================
   (symbol
-    (lib_id "Memory_EEPROM:AT24C256C")
+    (lib_id "Memory_EEPROM:CAT24C256")
     (at 88.9 152.4)
     (unit 1)
     (exclude_from_sim no)

@@ -50,7 +50,7 @@
 
   ;; D2 - Reverse polarity protection MOSFET
   (symbol
-    (lib_id "Device:Q_PMOS_GSD")
+    (lib_id "Transistor_FET:Q_PMOS_GSD")
     (at 50.8 44.45)
     (unit 1)
     (exclude_from_sim no)
@@ -114,7 +114,7 @@
 
   ;; L1 - Common mode choke for EMI filtering
   (symbol
-    (lib_id "Device:L_Core_Ferrite")
+    (lib_id "Device:L_Ferrite")
     (at 63.5 44.45)
     (unit 1)
     (exclude_from_sim no)
@@ -149,7 +149,7 @@
   ;; Wide input range: 4.5V to 60V, 5A output
   ;; ============================================================
   (symbol
-    (lib_id "Regulator_Switching:TPS54560")
+    (lib_id "Regulator_Switching:TPS54560BDDA")
     (at 101.6 57.15)
     (unit 1)
     (exclude_from_sim no)
@@ -483,7 +483,7 @@
   ;; Analog 3.3V rail - dedicated for ADC VREF and analog circuits
   ;; ============================================================
   (symbol
-    (lib_id "Regulator_Linear:TPS7A4533")
+    (lib_id "Regulator_Linear:TPS7A4533DGN")
     (at 177.8 82.55)
     (unit 1)
     (exclude_from_sim no)

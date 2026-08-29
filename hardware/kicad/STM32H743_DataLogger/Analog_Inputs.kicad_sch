@@ -96,7 +96,7 @@
   )
 
   ;; Op-amp buffer (unity gain) - OPA2376 rail-to-rail, low offset
-  (symbol (lib_id "Amplifier_Operational:OPA2376") (at 107.95 50.8) (unit 1)
+  (symbol (lib_id "Amplifier_Operational:OPA2376xxDGK") (at 107.95 50.8) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
     (uuid "AI-0010-U20")
     (property "Reference" "U20" (at 107.95 41.91 0) (effects (font (size 1.27 1.27))))
@@ -309,7 +309,7 @@
     (property "Manufacturer" "Murata" (at 88.9 152.4 0) (effects (font (size 1.27 1.27)) hide))
   )
   ;; U21 - Second OPA2376 serves Channels 2 & 3
-  (symbol (lib_id "Amplifier_Operational:OPA2376") (at 107.95 114.3) (unit 1)
+  (symbol (lib_id "Amplifier_Operational:OPA2376xxDGK") (at 107.95 114.3) (unit 1)
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
     (uuid "AI-0050-U21")
     (property "Reference" "U21" (at 107.95 105.41 0) (effects (font (size 1.27 1.27))))

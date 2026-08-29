@@ -20,7 +20,7 @@
   ;; Range: up to 15km LOS
   ;; ============================================================
   (symbol
-    (lib_id "RF_Module:RFM95W-868S2")
+    (lib_id "RF_Module:SX1276")
     (at 76.2 63.5)
     (unit 1)
     (exclude_from_sim no)
@@ -475,7 +475,7 @@
   ;; 1.6s timeout, manual reset input, active-low output
   ;; ============================================================
   (symbol
-    (lib_id "Timer:TPS3823")
+    (lib_id "Power_Supervisor:TPS3823-xxDBV")
     (at 190.5 133.35)
     (unit 1)
     (exclude_from_sim no)
