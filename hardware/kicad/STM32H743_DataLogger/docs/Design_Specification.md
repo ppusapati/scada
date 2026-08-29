@@ -312,8 +312,31 @@ GND is not on a ground net, the pad-to-net map was not derived from the datashee
   variant, which has a different pinout, so it cannot be used as a stand-in.
 
 Also unverifiable for want of a symbol: U41 ISO1042, U42/U43 NXJ1S, U61 ATWINC1500,
-U62 SIM7600, U62B RN4870, U70 W25Q64. Their pad maps show the same sequential pattern
-and should be assumed wrong until checked against datasheets.
+U62 SIM7600, U62B RN4870, U70 W25Q64.
+
+U41 is worth showing, because it carries the *same signature* the ISO3082 had before it
+was rebuilt — both are TI isolated transceivers in SOIC-16W, so the two maps are
+directly comparable:
+
+| Pin | ISO3082 function | U40 after rebuild | U41 as it stands |
+|-----|------------------|-------------------|------------------|
+| 11 | NC | (open) | CAN_H |
+| 12 | A | RS485_A | CAN_L |
+| 13 | B | RS485_B | CAN_ISO_GND |
+| 14 | NC | (open) | CAN_ISO_GND |
+| 15 | GND2 | RS485_ISO_GND | CAN_ISO_VCC |
+| 16 | Vcc2 | RS485_ISO_VCC | CAN_ISO_VCC |
+
+The bus pair sits one pin low, the isolated ground is on the two NC pins, and the
+isolated supply is on both 15 and 16 — the identical off-by-one that the RS485 side had.
+TI places GND2 on 9/10/15 and VCC2 on 16 across this family, so VCC2 on both 15 and 16
+is almost certainly wrong. It is left alone rather than guessed at: no ISO1042 symbol
+exists in the library (ISO1044BD is SOIC-8 and ISO1050DUB is SOP-8, neither comparable),
+so this needs the datasheet.
+
+The rest should be assumed wrong until checked the same way. Note that not everything
+is: U70 (W25Q64) and U71 (AT24C256) both verify clean, so the placeholder wiring was
+applied to the complex parts rather than uniformly.
 
 ### 7.10 Missing support components found during verification
 
