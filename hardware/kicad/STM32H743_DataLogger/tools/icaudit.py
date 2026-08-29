@@ -10,7 +10,9 @@ import os
 import re
 
 SCR = "./"
-LIB = SCR + "ksym/"
+# KiCad symbol libraries. Override with KICAD_SYMBOL_DIR, or clone
+# https://gitlab.com/kicad/libraries/kicad-symbols and point at it.
+LIB = os.environ.get("KICAD_SYMBOL_DIR", SCR + "ksym/").rstrip("/") + "/"
 SCH = "../"
 PCB = SCH + "STM32H743_DataLogger_mfg.kicad_pcb"
 
@@ -59,6 +61,13 @@ for f in glob.glob(SCH + "*.kicad_sch"):
 
 t = open(PCB).read()
 FP = re.compile(r'\(footprint "([^"]+)"[^\n]*\(uuid "([^"]+)"\) \(at [^)]*\)(.*?)\n  \)', re.S)
+
+if not glob.glob(LIB + "*.kicad_symdir") and not glob.glob(LIB + "*.kicad_sym"):
+    raise SystemExit(
+        "No KiCad symbol libraries at %s.\n"
+        "Every part would report 'not checkable' and the audit would look clean.\n"
+        "Set KICAD_SYMBOL_DIR, or clone "
+        "https://gitlab.com/kicad/libraries/kicad-symbols" % LIB)
 
 rows = []
 for m in FP.finditer(t):

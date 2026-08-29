@@ -16,8 +16,15 @@ Run them from this directory. Paths are relative to `..`.
 | `postcheck.py` | After routing: per-net connectivity walked from the pad list, plus isolation-barrier integrity. |
 | `courtyard.py` | One-off: attaches F.CrtYd geometry to footprints that lack it. |
 
-`icaudit.py` expects the KiCad symbol libraries. Point `LIB` at a checkout of
-<https://gitlab.com/kicad/libraries/kicad-symbols> or an installed library directory.
+`icaudit.py` needs the KiCad symbol libraries:
+
+```
+git clone --depth 1 https://gitlab.com/kicad/libraries/kicad-symbols
+KICAD_SYMBOL_DIR=kicad-symbols python3 icaudit.py
+```
+
+It refuses to run without them rather than reporting every part "not checkable",
+which would read as a clean audit.
 
 ## Routing
 
