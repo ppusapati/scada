@@ -360,36 +360,36 @@ pull-up) but a divider is the usual choice for programmed UVLO.
 
 ### 7.9 Routing status
 
-Autorouted with freerouting on F.Cu / In2.Cu / B.Cu; In1.Cu stays an unbroken ground
-plane. Verified independently against the pad list rather than trusting the router's
-own report:
+**The board is currently unrouted, deliberately.**
+
+It was autorouted three times during this work. Each time, correcting an IC pin map
+moved every one of that part's connections and the route had to be discarded. With
+seven or eight pin maps still unresolved (section 7.8 and `Outstanding_Issues.md`),
+routing again now would only be thrown away a fourth time, so the last route was
+stripped rather than left in place to look finished.
+
+For reference, what the toolchain achieved on the netlist as it stood before the
+analog-buffer fix:
 
 | | |
 |---|---|
 | Connections realised | 271 of 322 (84%) |
 | Nets fully routed | 110 of 155 |
-| Nets partially routed | 35 |
-| Nets with no copper | 10 |
-| Tracks / vias | 1520 / 303 (152 routing + 151 GND stitching) |
-| Isolation violations | 0 |
+| Tracks / vias | 1520 / 303 |
+| Isolation violations | 0, after stripping 10 segments the router had taken through the isolated corner |
 
-`docs/unrouted_nets.txt` lists the 45 nets that still need work.
+Two findings from that work that carry forward:
 
-Note that freerouting reported "3 unrouted" for this session. That figure is wrong —
-checking each net's pads against the imported copper shows many MCU pins never
-reached, so the router's own count should not be relied on. The 84% above comes from
-walking the connectivity graph per net.
+- **Freerouting's own completion figure is not trustworthy.** It reported "3 unrouted"
+  for a session where walking each net's pads against the imported copper showed 49
+  connections missing and many MCU pins never reached. Verify with `tools/postcheck.py`,
+  which does that walk.
+- **Via size, not layer count, gates the LQFP-100 escape.** At 0.6mm the router
+  completed under half the board; at 0.45mm/0.25mm with 0.125mm clearance it passed 90%.
+  This is why the fabrication spec calls for the smaller via.
 
-Ten track segments and vias were removed after import because freerouting had routed
-NRST, RS485_DE and FDCAN1_TX through the isolated corner. The router has no concept of
-which nets may enter the field-side pocket, so this needs re-checking after every
-routing pass. The isolator logic pins sit at y=26.7 with the notch edge at y=26, which
-leaves almost no routing channel — if this recurs, move the U40-U43 barrier row down
-about 2mm so the logic pins clear the notch.
-
-**This routing will need redoing once the MCU pin assignment in 7.8 is fixed**, since
-every MCU connection moves. It is kept because the placement, isolation geometry and
-design rules it validates all stand.
+`tools/README.md` has the full pipeline and the format traps. Re-route once the pin maps
+are settled.
 
 ## 8. Design Files
 

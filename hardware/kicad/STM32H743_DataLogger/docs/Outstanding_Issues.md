@@ -69,17 +69,14 @@ assignments.
 
 ## 4. Routing
 
-Autorouted and verified independently against the pad list rather than trusting the
-router's own count. See section 7.9 for the current figures and
-`unrouted_nets.txt` for what is left.
+**The board is unrouted, on purpose.** It was routed three times and discarded three
+times, because each IC pin-map correction moves all of that part's connections. Route
+once section 1 is closed, not before.
 
-Two things to watch on any re-route:
-
-- Freerouting has no concept of which nets may enter the isolated corner; it took logic
-  tracks through it on the previous pass and they had to be stripped. Re-check after
-  every run.
-- The isolator logic pins sit 0.7mm from the notch edge, which is what invites that. If
-  it keeps happening, move the U40-U43 barrier row down about 2mm.
+The pipeline is in `../tools/` and its README covers the traps — including that
+freerouting's own "unrouted" count is not trustworthy (it claimed 3 on a board with 49
+connections missing) and that it is difficult to persuade to terminate and write its
+session at all.
 
 ## 5. Verified and not outstanding
 

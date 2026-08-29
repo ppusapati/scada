@@ -46,11 +46,14 @@ python3 postcheck.py                                        # verify what actual
   clearance gets it past 90%.
 - **The router has no idea what isolation means.** It will take logic tracks through the
   RS485/CAN field pocket. `striso.py` removes them; run it every time.
-- **Getting freerouting to terminate.** It ignores `-mp` and the config's `max_passes`
-  and `job_timeout` for CLI jobs, and will optimise indefinitely — killing it on a
-  wall-clock timeout loses everything, since it only writes the session at job end.
-  Setting `router.optimizer.enabled: false` in `~/.freerouting/freerouting.json` (or
-  `/tmp/freerouting/`) makes the job stop after the routing passes and actually write.
+- **Getting freerouting to terminate is the hard part.** It only writes the session at
+  job end, so a wall-clock kill loses everything. On this board it ran past every limit
+  tried: `-mp`, `-oit`, and the config's `max_passes`, `job_timeout`,
+  `optimizer.max_passes` and `optimizer.enabled` were all ignored, and it kept churning
+  at 15-30 unrouted for 25+ minutes each time. It *did* terminate and write once, at
+  pass 210 after ~35 minutes on a slightly smaller netlist, so it converges eventually
+  rather than never — budget an hour and do not interrupt it. If you find the actual
+  lever, put it here; I did not.
 
 ## Order of work
 
